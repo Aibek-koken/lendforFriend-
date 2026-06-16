@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --background: 232 45% 6%;
+  --foreground: 222 42% 96%;
+  --muted: 232 24% 14%;
+  --muted-foreground: 226 18% 72%;
+  --border: 230 20% 24%;
+  --input: 230 20% 20%;
+  --ring: 190 95% 58%;
+  --primary: 252 92% 68%;
+  --primary-foreground: 228 45% 98%;
+  --accent: 190 95% 58%;
+  --accent-foreground: 232 45% 6%;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+::selection {
+  background: hsl(var(--primary) / 0.35);
+  color: hsl(var(--foreground));
+}
