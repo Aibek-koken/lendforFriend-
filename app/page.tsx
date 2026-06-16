@@ -1,717 +1,751 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState, useEffect, useRef, FormEvent } from "react";
 import {
-  ArrowRight,
-  BadgeCheck,
-  BookOpenCheck,
-  Building2,
-  Car,
+  FileText,
+  FileSearch,
+  Layers,
+  Keyboard,
+  Mic,
+  Shield,
+  Plus,
   Check,
-  ChevronRight,
-  CircleHelp,
-  Clock3,
-  Command,
-  FileCheck2,
-  GraduationCap,
-  Headphones,
-  HeartPulse,
-  Home,
-  KeyRound,
-  Layers3,
   MessageSquareText,
-  Mic2,
-  Plane,
-  Search,
-  ShieldCheck,
-  Sparkles,
-  UploadCloud,
-  UsersRound,
-  Wand2
+  Headphones,
 } from "lucide-react";
+import { strings, type Lang } from "../lib/strings";
+import ProductMockup from "./components/ProductMockup";
 
-type Icon = typeof Command;
+const useIcons = ["\uD83C\uDF93", "\u2708\uFE0F", "\u279A", "\u2699", "\u2302", "\u25A3", "\u260E", "\u25C7"];
 
-const navLinks = [
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Use cases", href: "#use-cases" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "FAQ", href: "#faq" }
-];
-
-const heroBullets = [
-  "Press a hotkey during a live conversation",
-  "Get a short answer in 1-2 seconds",
-  "See the exact source from your company documents"
-];
-
-const painCards = [
-  {
-    icon: Search,
-    title: "Searching kills momentum",
-    body: "Every tab switch and Slack search creates silence. The customer waits while the rep loses the thread."
-  },
-  {
-    icon: GraduationCap,
-    title: "New reps do not know every detail",
-    body: "Pricing rules, policies, and onboarding terms take time to learn. Live calls do not wait for ramp-up."
-  },
-  {
-    icon: CircleHelp,
-    title: "Experienced reps still forget edge cases",
-    body: "Even strong teams miss the exact clause, plan limit, or exception when the answer is buried in documents."
-  }
-];
-
-const steps = [
-  {
-    icon: UploadCloud,
-    title: "Upload company documents",
-    body: "Add pricing PDFs, FAQs, terms, SOPs, and knowledge base files."
-  },
-  {
-    icon: MessageSquareText,
-    title: "Start a customer conversation",
-    body: "Keep working in your call tool, CRM, inbox, or chat app."
-  },
-  {
-    icon: KeyRound,
-    title: "Press the hotkey",
-    body: "Ask for help the moment a customer asks something specific."
-  },
-  {
-    icon: BadgeCheck,
-    title: "Answer with a source",
-    body: "Use a short, cited response without breaking the flow."
-  }
-];
-
-const features = [
-  {
-    icon: FileCheck2,
-    title: "Instant answers from PDFs, FAQ, pricing and SOPs",
-    body: "Company knowledge becomes available in the moment it matters.",
-    className: "md:col-span-2"
-  },
-  {
-    icon: BookOpenCheck,
-    title: "Source citations for every answer",
-    body: "Reps can see the document and page behind the response."
-  },
-  {
-    icon: Layers3,
-    title: "Floating overlay above every app",
-    body: "Works over calls, CRM screens, inboxes, and internal tools."
-  },
-  {
-    icon: Command,
-    title: "Hotkey-first workflow",
-    body: "No heavy context switch, no digging through folders."
-  },
-  {
-    icon: Mic2,
-    title: "Voice or text question input",
-    body: "Ask in the way that fits the conversation."
-  },
-  {
-    icon: Headphones,
-    title: "Built for live customer conversations",
-    body: "Designed for short, accurate answers while someone is waiting.",
-    className: "md:col-span-2"
-  },
-  {
-    icon: ShieldCheck,
-    title: "No constant listening by default",
-    body: "The assistant activates when the user asks for help."
-  },
-  {
-    icon: UsersRound,
-    title: "Works for individuals and teams",
-    body: "Start with one rep or roll out a shared knowledge base."
-  }
-];
-
-const useCases = [
-  { icon: GraduationCap, title: "Online school managers" },
-  { icon: Plane, title: "Travel agents" },
-  { icon: HeartPulse, title: "Clinic administrators" },
-  { icon: Car, title: "Car service managers" },
-  { icon: Home, title: "Real estate agents" },
-  { icon: Building2, title: "B2B sales teams" },
-  { icon: Headphones, title: "Support agents" },
-  { icon: Wand2, title: "Freelancers and consultants" }
-];
-
-const pricing = [
-  {
-    name: "Solo",
-    price: "$19",
-    period: "/month",
-    description: "For individual sellers, agents, consultants, and support reps.",
-    features: [
-      "Personal document library",
-      "Desktop overlay",
-      "Hotkey answers",
-      "Source citations"
-    ]
-  },
-  {
-    name: "Team",
-    price: "$99",
-    period: "/month",
-    description: "Up to 5 users.",
-    popular: true,
-    features: [
-      "Shared company knowledge base",
-      "Team document library",
-      "Admin controls",
-      "Priority support"
-    ]
-  },
-  {
-    name: "Custom",
-    price: "Contact us",
-    period: "",
-    description: "For larger teams.",
-    features: [
-      "Custom onboarding",
-      "Compliance needs",
-      "Larger document volume",
-      "Team rollout support"
-    ]
-  }
-];
-
-const faqs = [
-  {
-    question: "Does LiveAssist AI listen all the time?",
-    answer:
-      "No. It is designed as a hotkey-first assistant. It activates when the user asks for help."
-  },
-  {
-    question: "Where do answers come from?",
-    answer:
-      "From the documents you upload or connect, such as pricing files, FAQ, terms, SOPs and internal knowledge base documents."
-  },
-  {
-    question: "Can the customer see the overlay?",
-    answer: "No. The overlay is private to the user's screen."
-  },
-  {
-    question: "Is this only for sales teams?",
-    answer:
-      "No. It is useful for sales, support, clinics, travel agencies, real estate, online schools, agencies and consultants."
-  },
-  {
-    question: "Does it replace my CRM or knowledge base?",
-    answer:
-      "No. It sits on top of your workflow and helps you retrieve answers during live conversations."
-  }
-];
-
-function cn(...classes: Array<string | false | null | undefined>) {
-  return classes.filter(Boolean).join(" ");
-}
-
-function IconBadge({ icon: IconComponent }: { icon: Icon }) {
-  return (
-    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.06] text-cyan-200 shadow-cyan">
-      <IconComponent className="h-5 w-5" aria-hidden="true" />
-    </div>
-  );
-}
-
-function SectionHeader({
-  eyebrow,
-  title,
-  body
-}: {
-  eyebrow?: string;
-  title: string;
-  body?: string;
-}) {
-  return (
-    <div className="mx-auto max-w-3xl text-center">
-      {eyebrow ? (
-        <p className="mb-3 text-sm font-medium text-cyan-200">{eyebrow}</p>
-      ) : null}
-      <h2 className="text-3xl font-semibold tracking-normal text-foreground md:text-4xl">
-        {title}
-      </h2>
-      {body ? (
-        <p className="mt-5 text-base leading-7 text-muted-foreground md:text-lg">
-          {body}
-        </p>
-      ) : null}
-    </div>
-  );
-}
-
-function PrimaryLink({
-  href,
-  children,
-  className
-}: {
-  href: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <a
-      href={href}
-      className={cn(
-        "inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-glow motion-safe:transition-transform motion-safe:duration-150 motion-safe:ease-out hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        className
-      )}
-    >
-      {children}
-    </a>
-  );
-}
-
-function SecondaryLink({
-  href,
-  children,
-  className
-}: {
-  href: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <a
-      href={href}
-      className={cn(
-        "inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-white/12 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-foreground motion-safe:transition-colors motion-safe:duration-150 hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        className
-      )}
-    >
-      {children}
-    </a>
-  );
-}
-
-function ProductMockup() {
-  return (
-    <div
-      className="relative mx-auto w-full max-w-2xl rounded-2xl border border-white/12 bg-slate-950/70 p-2 shadow-2xl shadow-black/40"
-      aria-label="LiveAssist AI desktop overlay example"
-    >
-      <div className="overflow-hidden rounded-xl border border-white/10 bg-[#070b18]">
-        <div className="flex h-9 items-center gap-2 border-b border-white/10 bg-white/[0.04] px-4">
-          <span className="h-3 w-3 rounded-full bg-red-400/80" />
-          <span className="h-3 w-3 rounded-full bg-yellow-300/80" />
-          <span className="h-3 w-3 rounded-full bg-emerald-400/80" />
-          <span className="ml-3 text-xs text-muted-foreground">CRM workspace</span>
-        </div>
-
-        <div className="relative min-h-[420px] bg-grid-dark bg-[size:32px_32px] p-4 sm:p-6">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,hsl(var(--primary)/0.22),transparent_32%),radial-gradient(circle_at_10%_70%,hsl(var(--accent)/0.14),transparent_28%)]" />
-          <div className="relative grid gap-4 opacity-55 blur-[1px] md:grid-cols-[1.2fr_0.8fr]">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
-              <div className="mb-4 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-cyan-300 to-indigo-400" />
-                <div>
-                  <div className="h-3 w-28 rounded-full bg-white/30" />
-                  <div className="mt-2 h-2 w-20 rounded-full bg-white/15" />
-                </div>
-              </div>
-              <div className="aspect-video rounded-xl border border-white/10 bg-slate-900/70" />
-              <div className="mt-4 grid grid-cols-3 gap-2">
-                <div className="h-16 rounded-xl bg-white/[0.06]" />
-                <div className="h-16 rounded-xl bg-white/[0.06]" />
-                <div className="h-16 rounded-xl bg-white/[0.06]" />
-              </div>
-            </div>
-            <div className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-              <div className="h-4 w-32 rounded-full bg-white/25" />
-              <div className="h-24 rounded-xl bg-white/[0.06]" />
-              <div className="h-3 w-full rounded-full bg-white/20" />
-              <div className="h-3 w-4/5 rounded-full bg-white/15" />
-              <div className="h-3 w-3/5 rounded-full bg-white/15" />
-            </div>
-          </div>
-
-          <div className="absolute left-4 right-4 top-16 mx-auto max-w-md rounded-2xl border border-cyan-200/24 bg-slate-950/88 p-4 shadow-2xl shadow-cyan-950/40 backdrop-blur-xl sm:left-auto sm:right-8 sm:top-20">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/18 text-primary">
-                  <Sparkles className="h-4 w-4" aria-hidden="true" />
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">LiveAssist AI</p>
-                  <p className="text-xs text-muted-foreground">Private overlay</p>
-                </div>
-              </div>
-              <kbd className="rounded-lg border border-white/12 bg-white/[0.06] px-2.5 py-1.5 text-xs font-semibold text-cyan-100">
-                &#8984; J
-              </kbd>
-            </div>
-            <div className="space-y-3">
-              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
-                <p className="text-xs font-medium text-muted-foreground">Question</p>
-                <p className="mt-1 text-sm text-foreground">
-                  Does the annual plan include onboarding?
-                </p>
-              </div>
-              <div className="rounded-xl border border-primary/25 bg-primary/10 p-3">
-                <p className="text-xs font-medium text-cyan-200">Answer</p>
-                <p className="mt-1 text-sm leading-6 text-foreground">
-                  Yes. Annual plans include onboarding and priority support.
-                </p>
-              </div>
-              <div className="flex flex-col gap-2 rounded-xl border border-white/10 bg-white/[0.04] p-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <FileCheck2 className="h-4 w-4 text-cyan-200" aria-hidden="true" />
-                  <span>Pricing_Terms.pdf · Page 4</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs font-medium text-cyan-100">
-                  <Clock3 className="h-3.5 w-3.5" aria-hidden="true" />
-                  Answered in 1.4s
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function WaitlistForm() {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState("");
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!email.trim() || !email.includes("@")) {
-      setError("Enter a valid work email.");
-      setSubmitted(false);
-      return;
-    }
-    setError("");
-    setSubmitted(true);
-  }
-
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className="mx-auto mt-8 max-w-xl rounded-2xl border border-white/12 bg-white/[0.05] p-3 shadow-2xl shadow-black/20 backdrop-blur"
-      noValidate
-    >
-      <label htmlFor="waitlist-email" className="sr-only">
-        Work email
-      </label>
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <input
-          id="waitlist-email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          spellCheck={false}
-          placeholder="you@company.com"
-          value={email}
-          onChange={(event) => {
-            setEmail(event.target.value);
-            if (error) setError("");
-          }}
-          aria-invalid={error ? "true" : undefined}
-          aria-describedby={error ? "waitlist-error" : submitted ? "waitlist-success" : undefined}
-          className="min-h-12 flex-1 rounded-xl border border-white/12 bg-slate-950/70 px-4 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        />
-        <button
-          type="submit"
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-glow motion-safe:transition-transform motion-safe:duration-150 motion-safe:ease-out hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-        >
-          Join waitlist
-          <ArrowRight className="h-4 w-4" aria-hidden="true" />
-        </button>
-      </div>
-      {error ? (
-        <p id="waitlist-error" className="mt-3 px-1 text-sm text-red-200">
-          {error}
-        </p>
-      ) : null}
-      {submitted ? (
-        <p id="waitlist-success" className="mt-3 px-1 text-sm text-cyan-100">
-          You are on the list. We will email you when early access opens.
-        </p>
-      ) : null}
-    </form>
-  );
-}
+type PricingPlan = {
+  name: string;
+  price: string;
+  period: string;
+  description: string;
+  highlighted?: boolean;
+  features: string[];
+};
 
 export default function HomePage() {
-  return (
-    <main className="min-h-screen overflow-hidden bg-background text-foreground">
-      <div className="fixed inset-0 -z-10 bg-grid-dark bg-[size:48px_48px]" />
-      <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_-10%,hsl(var(--primary)/0.28),transparent_34%),radial-gradient(circle_at_90%_20%,hsl(var(--accent)/0.16),transparent_28%),linear-gradient(180deg,transparent,hsl(var(--background))_75%)]" />
+  const [lang, setLang] = useState<Lang>("en");
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [scrollyStep, setScrollyStep] = useState(0);
+  const scrollyProgressRef = useRef(0);
+  const scrollyTargetRef = useRef(0);
+  const scrollyLastRawRef = useRef(-1);
 
-      <header className="sticky top-0 z-50 border-b border-white/8 bg-background/72 backdrop-blur-xl">
+  const scrollyRef = useRef<HTMLElement>(null);
+
+  const t = (key: string) => {
+    const val = (strings[lang] as Record<string, unknown>)[key];
+    return val as string;
+  };
+
+  const tPricing = (): PricingPlan[] => {
+    return (strings[lang] as Record<string, unknown>).pricing as PricingPlan[];
+  };
+
+  const tFaqs = (): [string, string][] => {
+    return (strings[lang] as Record<string, unknown>).faqs as [string, string][];
+  };
+
+  const tFeatures = (): [string, string][] => {
+    return (strings[lang] as Record<string, unknown>).features as [string, string][];
+  };
+
+  const tSteps = (): [string, string][] => {
+    return (strings[lang] as Record<string, unknown>).steps as [string, string][];
+  };
+
+  const tUseCases = (): string[] => {
+    return (strings[lang] as Record<string, unknown>).useCases as string[];
+  };
+
+  useEffect(() => {
+    const saved = localStorage.getItem("liveassist-lang") as Lang | null;
+    if (saved === "en" || saved === "ru") setLang(saved);
+
+    const handleScroll = () => setScrolled(window.scrollY > 16);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("liveassist-lang", lang);
+    document.documentElement.lang = lang;
+  }, [lang]);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    if (!scrollyRef.current) return;
+    const section = scrollyRef.current;
+    let animId: number;
+
+    if (mq.matches) {
+      const handleScroll = () => {
+        const rect = section.getBoundingClientRect();
+        const total = section.offsetHeight - window.innerHeight;
+        if (total <= 0) return;
+        const progress = Math.min(1, Math.max(0, -rect.top / total));
+        const next = Math.min(4, Math.floor(progress * 5));
+        setScrollyStep(next);
+      };
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      handleScroll();
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+
+    const handleScroll = () => {
+      const rect = section.getBoundingClientRect();
+      const total = section.offsetHeight - window.innerHeight;
+      if (total <= 0) return;
+      scrollyTargetRef.current = Math.min(1, Math.max(0, -rect.top / total));
+    };
+
+    function tick() {
+      scrollyProgressRef.current += (scrollyTargetRef.current - scrollyProgressRef.current) * 0.08;
+
+      const raw = scrollyProgressRef.current * 5;
+      const index = Math.min(4, Math.max(0, Math.floor(raw)));
+      const frac = raw - index;
+
+      let next = index;
+      if (frac < 0.03 && scrollyLastRawRef.current > index) {
+        next = scrollyLastRawRef.current;
+      } else if (frac > 0.97 && scrollyLastRawRef.current < index) {
+        next = scrollyLastRawRef.current;
+      }
+
+      if (next !== scrollyLastRawRef.current) {
+        scrollyLastRawRef.current = next;
+        setScrollyStep(next);
+      }
+
+      animId = requestAnimationFrame(tick);
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    animId = requestAnimationFrame(tick);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      cancelAnimationFrame(animId);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
+
+  function handleEmailSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!email.trim().includes("@")) {
+      setEmailError(t("emailError"));
+      setEmailSubmitted(false);
+      return;
+    }
+    setEmailError("");
+    setEmailSubmitted(true);
+  }
+
+  const featureIcons = [FileText, FileSearch, Layers, Keyboard, Mic, Shield];
+
+  return (
+    <>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-180 ease-out ${
+          scrolled || menuOpen
+            ? "border-[rgba(229,229,234,0.88)] bg-[rgba(255,255,255,0.82)] shadow-[0_1px_0_rgba(255,255,255,0.65)_inset] backdrop-blur-xl"
+            : "border-transparent bg-transparent"
+        }`}
+      >
         <nav
-          className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-6 lg:px-8"
-          aria-label="Main navigation"
+          className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 w-full h-16 px-5 mx-auto"
+          style={{ maxWidth: "min(1180px, calc(100% - 40px))" }}
+          aria-label="Main"
         >
-          <a
-            href="#top"
-            className="flex min-h-10 items-center gap-3 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          >
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-glow">
-              <Command className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <span className="text-sm font-semibold md:text-base">LiveAssist AI</span>
+          <a href="#top" className="inline-flex items-center gap-2 rounded-full text-[15px] font-[650] min-h-10">
+            {t("logo")}
           </a>
 
-          <div className="hidden items-center gap-1 md:flex">
-            {navLinks.map((link) => (
+          <div className="hidden md:flex items-center justify-center gap-1">
+            {[
+              ["navHow", "#scrolly"],
+              ["navUseCases", "#use-cases"],
+              ["navPricing", "#pricing"],
+              ["navFaq", "#faq"],
+            ].map(([key, href]) => (
               <a
-                key={link.href}
-                href={link.href}
-                className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground motion-safe:transition-colors motion-safe:duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                key={key}
+                href={href}
+                className="rounded-full px-[14px] py-3 text-[13px] font-[560] text-[#6e6e73] transition-colors duration-120 hover:text-[#5e5ce6] hover:bg-[rgba(94,92,230,0.08)]"
               >
-                {link.label}
+                {t(key)}
               </a>
             ))}
           </div>
 
-          <PrimaryLink href="#waitlist" className="min-h-10 px-4 py-2">
-            Join waitlist
-          </PrimaryLink>
+          <div className="flex items-center justify-end gap-[10px]">
+            <button
+              onClick={() => setLang(lang === "en" ? "ru" : "en")}
+              className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[#e5e5ea] bg-[rgba(255,255,255,0.72)] text-[13px] font-bold text-[#1d1d1f]"
+              aria-label="Switch language"
+            >
+              {lang === "en" ? "RU" : "EN"}
+            </button>
+            <a
+              href="#waitlist"
+              className="hidden md:inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[650] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
+            >
+              {t("joinWaitlist")}
+            </a>
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="md:hidden inline-flex min-w-[44px] min-h-[44px] flex-col items-center justify-center gap-[4px] rounded-full border border-[#e5e5ea] bg-[rgba(255,255,255,0.72)]"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+            >
+              <span
+                className="w-[17px] h-[2px] rounded-full bg-[#1d1d1f] transition-transform duration-180"
+                style={{ transform: menuOpen ? "translateY(6px) rotate(45deg)" : "" }}
+              />
+              <span
+                className="w-[17px] h-[2px] rounded-full bg-[#1d1d1f] transition-opacity duration-180"
+                style={{ opacity: menuOpen ? 0 : 1 }}
+              />
+              <span
+                className="w-[17px] h-[2px] rounded-full bg-[#1d1d1f] transition-transform duration-180"
+                style={{ transform: menuOpen ? "translateY(-6px) rotate(-45deg)" : "" }}
+              />
+            </button>
+          </div>
         </nav>
+
+        {menuOpen && (
+          <div className="md:hidden border-t border-[#e5e5ea] bg-white px-5 py-6 space-y-3">
+            {[
+              ["navHow", "#scrolly"],
+              ["navUseCases", "#use-cases"],
+              ["navPricing", "#pricing"],
+              ["navFaq", "#faq"],
+            ].map(([key, href]) => (
+              <a
+                key={key}
+                href={href}
+                onClick={() => setMenuOpen(false)}
+                className="block rounded-full px-[14px] py-3 text-[15px] font-[560] text-[#6e6e73] hover:text-[#5e5ce6]"
+              >
+                {t(key)}
+              </a>
+            ))}
+            <a
+              href="#waitlist"
+              onClick={() => setMenuOpen(false)}
+              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[650] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] w-full"
+            >
+              {t("joinWaitlist")}
+            </a>
+          </div>
+        )}
       </header>
 
-      <section id="top" className="relative px-4 pb-20 pt-16 md:px-6 md:pb-28 md:pt-24 lg:px-8">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
-          <div>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.05] px-3 py-2 text-sm text-cyan-100">
-              <Clock3 className="h-4 w-4" aria-hidden="true" />
-              Source-backed answers in 1-2 seconds
+      <main id="top" style={{ overflow: "clip" }}>
+        {/* HERO */}
+        <section
+          className="flex items-center px-5"
+          style={{
+            minHeight: "100svh",
+            padding: "132px 20px 88px",
+            background:
+              "radial-gradient(circle at 82% 22%, rgba(94,92,230,0.12), transparent 30%), linear-gradient(180deg, #ffffff 0%, #fbfbfd 78%, #f5f5f7 100%)",
+          }}
+        >
+          <div
+            className="grid items-center gap-16 w-full mx-auto"
+            style={{
+              gridTemplateColumns: "minmax(0, 1.08fr) minmax(360px, 0.72fr)",
+              maxWidth: "min(1180px, 100%)",
+            }}
+          >
+            <div>
+              <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-5">
+                {t("heroEyebrow")}
+              </p>
+              <h1
+                className="font-[760] leading-[0.96] mb-6"
+                style={{
+                  fontFamily:
+                    '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif',
+                  fontSize: "clamp(48px, 7vw, 86px)",
+                  letterSpacing: 0,
+                }}
+              >
+                {t("heroHeadline")}
+              </h1>
+              <p className="text-[21px] leading-[1.45] text-[#6e6e73] mb-8 max-w-[650px]">
+                {t("heroSub")}
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href="#waitlist"
+                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[650] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
+                >
+                  {t("heroPrimary")}
+                </a>
+                <a
+                  href="#scrolly"
+                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[650] leading-none border border-[#e5e5ea] bg-[rgba(255,255,255,0.76)] text-[#1d1d1f] transition-all duration-150 hover:border-[rgba(94,92,230,0.38)] hover:text-[#5e5ce6] hover:-translate-y-px"
+                >
+                  {t("heroSecondary")}
+                </a>
+              </div>
             </div>
-            <h1 className="max-w-4xl text-4xl font-semibold tracking-normal text-foreground md:text-6xl lg:text-7xl">
-              Never pause a customer call to search for an answer again
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground md:text-xl">
-              LiveAssist AI is a desktop overlay that gives sales and support teams
-              instant answers from company documents while they talk to customers.
-            </p>
-            <ul className="mt-8 space-y-3">
-              {heroBullets.map((bullet) => (
-                <li key={bullet} className="flex gap-3 text-sm leading-6 text-foreground md:text-base">
-                  <Check className="mt-0.5 h-5 w-5 flex-none text-cyan-200" aria-hidden="true" />
-                  <span>{bullet}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <PrimaryLink href="#waitlist">
-                Join the waitlist
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </PrimaryLink>
-              <SecondaryLink href="#how-it-works">
-                See how it works
-                <ChevronRight className="h-4 w-4" aria-hidden="true" />
-              </SecondaryLink>
+
+            <div className="relative min-h-[520px] flex items-center justify-center">
+              <div
+                className="absolute rounded-full"
+                aria-hidden="true"
+                style={{
+                  width: "min(560px, 94vw)",
+                  aspectRatio: 1,
+                  background:
+                    "radial-gradient(circle, rgba(94,92,230,0.18), transparent 62%), radial-gradient(circle at 32% 28%, rgba(33,168,154,0.16), transparent 38%)",
+                  filter: "blur(4px)",
+                }}
+              />
+              <ProductMockup copy={strings[lang].mockup} />
             </div>
           </div>
+        </section>
 
-          <ProductMockup />
-        </div>
-      </section>
-
-      <section className="border-y border-white/8 bg-white/[0.02] px-4 py-20 md:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <SectionHeader
-            title="Your team knows the answer. They just cannot find it fast enough."
-            body="During live conversations, people lose time searching in Notion, PDFs, Excel, CRM notes, or Slack. The customer waits, the conversation loses momentum, and the rep becomes less confident."
-          />
-          <div className="mt-12 grid gap-4 md:grid-cols-3">
-            {painCards.map((card) => (
-              <article
-                key={card.title}
-                className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur motion-safe:transition-transform motion-safe:duration-150 motion-safe:ease-out hover:-translate-y-1"
+        {/* SCROLLYTELLING */}
+        <section
+          ref={scrollyRef}
+          id="scrolly"
+          className="relative bg-white"
+          style={{ minHeight: "500vh" }}
+        >
+          <div
+            className="sticky top-0 flex items-center bg-white"
+            style={{ minHeight: "100svh", padding: "112px 20px" }}
+          >
+            <div className="relative w-full mx-auto" style={{ maxWidth: "min(700px, 100%)", minHeight: 320 }}>
+              {/* Step 0 — "Your rep is on a live call." */}
+              <div
+                className="absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-[400ms]"
+                style={{
+                  opacity: scrollyStep === 0 ? 1 : scrollyStep < 0 ? 1 : 0,
+                  transform: scrollyStep === 0 ? "translateY(0)" : scrollyStep > 0 ? "translateY(-24px)" : "translateY(24px)",
+                  pointerEvents: scrollyStep === 0 ? "auto" : "none",
+                  transitionTimingFunction: scrollyStep === 0 ? "cubic-bezier(0.4, 0, 0.2, 1)" : "cubic-bezier(0.4, 0, 1, 1)",
+                }}
               >
-                <IconBadge icon={card.icon} />
-                <h3 className="mt-5 text-lg font-semibold text-foreground">{card.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">{card.body}</p>
-              </article>
-            ))}
+                <div
+                  className="mb-8 inline-flex text-[#5e5ce6]"
+                  style={{
+                    transition: "transform 350ms cubic-bezier(0.4, 0, 0.2, 1), opacity 350ms cubic-bezier(0.4, 0, 0.2, 1)",
+                    transitionDelay: scrollyStep === 0 ? "100ms" : "0ms",
+                    transform: scrollyStep === 0 ? "scale(1)" : "scale(0.8)",
+                    opacity: scrollyStep === 0 ? 1 : 0,
+                  }}
+                  aria-hidden="true"
+                >
+                  <Headphones size={32} />
+                </div>
+                <p className="font-[800] text-[#1d1d1f]" style={{ fontSize: "clamp(36px, 5vw, 64px)", lineHeight: 1.05 }}>
+                  {t("scrollyStep1")}
+                </p>
+              </div>
+
+              {/* Step 1 — "The customer asks something specific." */}
+              <div
+                className="absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-[400ms]"
+                style={{
+                  opacity: scrollyStep === 1 ? 1 : 0,
+                  transform: scrollyStep === 1 ? "translateY(0)" : scrollyStep > 1 ? "translateY(-24px)" : "translateY(24px)",
+                  pointerEvents: scrollyStep === 1 ? "auto" : "none",
+                  transitionTimingFunction: scrollyStep === 1 ? "cubic-bezier(0.4, 0, 0.2, 1)" : "cubic-bezier(0.4, 0, 1, 1)",
+                }}
+              >
+                <div
+                  className="mb-8 inline-flex text-[#5e5ce6]"
+                  style={{
+                    transition: "transform 350ms cubic-bezier(0.4, 0, 0.2, 1), opacity 350ms cubic-bezier(0.4, 0, 0.2, 1)",
+                    transitionDelay: scrollyStep === 1 ? "100ms" : "0ms",
+                    transform: scrollyStep === 1 ? "scale(1)" : "scale(0.8)",
+                    opacity: scrollyStep === 1 ? 1 : 0,
+                  }}
+                  aria-hidden="true"
+                >
+                  <MessageSquareText size={32} />
+                </div>
+                <p className="font-[800] text-[#1d1d1f]" style={{ fontSize: "clamp(36px, 5vw, 64px)", lineHeight: 1.05 }}>
+                  {t("scrollyStep2")}
+                </p>
+              </div>
+
+              {/* Step 2 — "They press ⌘ J" */}
+              <div
+                className="absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-[400ms]"
+                style={{
+                  opacity: scrollyStep === 2 ? 1 : 0,
+                  transform: scrollyStep === 2 ? "translateY(0)" : scrollyStep > 2 ? "translateY(-24px)" : "translateY(24px)",
+                  pointerEvents: scrollyStep === 2 ? "auto" : "none",
+                  transitionTimingFunction: scrollyStep === 2 ? "cubic-bezier(0.4, 0, 0.2, 1)" : "cubic-bezier(0.4, 0, 1, 1)",
+                }}
+              >
+                <div
+                  className="inline-flex items-center justify-center rounded-2xl bg-[#f5f5f7] text-[#5e5ce6] font-bold mb-8"
+                  style={{
+                    minWidth: 100,
+                    minHeight: 72,
+                    fontSize: "clamp(28px, 3.5vw, 42px)",
+                    padding: "0 24px",
+                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8), 0 4px 12px rgba(0,0,0,0.06)",
+                    transition: "transform 350ms cubic-bezier(0.4, 0, 0.2, 1), opacity 350ms cubic-bezier(0.4, 0, 0.2, 1)",
+                    transitionDelay: scrollyStep === 2 ? "100ms" : "0ms",
+                    transform: scrollyStep === 2 ? "scale(1)" : "scale(0.8)",
+                    opacity: scrollyStep === 2 ? 1 : 0,
+                  }}
+                >
+                  {"\u2318J"}
+                </div>
+                <p className="font-[800] text-[#1d1d1f]" style={{ fontSize: "clamp(36px, 5vw, 64px)", lineHeight: 1.05 }}>
+                  {t("scrollyStep3")}
+                </p>
+              </div>
+
+              {/* Step 3 — "Answer in 1–2 seconds. Source included." */}
+              <div
+                className="absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-[400ms]"
+                style={{
+                  opacity: scrollyStep === 3 ? 1 : 0,
+                  transform: scrollyStep === 3 ? "translateY(0)" : scrollyStep > 3 ? "translateY(-24px)" : "translateY(24px)",
+                  pointerEvents: scrollyStep === 3 ? "auto" : "none",
+                  transitionTimingFunction: scrollyStep === 3 ? "cubic-bezier(0.4, 0, 0.2, 1)" : "cubic-bezier(0.4, 0, 1, 1)",
+                }}
+              >
+                <p className="font-[800] text-[#1d1d1f]" style={{ fontSize: "clamp(36px, 5vw, 64px)", lineHeight: 1.05 }}>
+                  {t("scrollyStep4")}
+                </p>
+              </div>
+
+              {/* Step 4 — CTA */}
+              <div
+                className="absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-[400ms]"
+                style={{
+                  opacity: scrollyStep === 4 ? 1 : 0,
+                  transform: scrollyStep === 4 ? "translateY(0)" : "translateY(24px)",
+                  pointerEvents: scrollyStep === 4 ? "auto" : "none",
+                  transitionTimingFunction: scrollyStep === 4 ? "cubic-bezier(0.4, 0, 0.2, 1)" : "cubic-bezier(0.4, 0, 1, 1)",
+                }}
+              >
+                <p className="font-[800] text-[#1d1d1f] mb-6" style={{ fontSize: "clamp(36px, 5vw, 64px)", lineHeight: 1.05 }}>
+                  {t("scrollyStep5")}
+                </p>
+                <p className="text-[21px] leading-[1.45] text-[#6e6e73] max-w-[560px] mx-auto mb-7">
+                  {t("scrollyStep5Sub")}
+                </p>
+                <a
+                  href="#waitlist"
+                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[650] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
+                >
+                  {t("heroPrimary")}
+                </a>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="how-it-works" className="px-4 py-24 md:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <SectionHeader
-            eyebrow="How it works"
-            title="One hotkey between the question and the answer"
-          />
-          <div className="mt-14 grid gap-4 md:grid-cols-4">
-            {steps.map((step, index) => (
-              <article
-                key={step.title}
-                className="relative rounded-2xl border border-white/10 bg-slate-950/60 p-6"
-              >
-                <div className="mb-6 flex items-center justify-between">
-                  <IconBadge icon={step.icon} />
-                  <span className="text-sm font-semibold text-muted-foreground">
-                    0{index + 1}
+        {/* FEATURES */}
+        <section className="px-5 py-28" id="features">
+          <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
+            <div className="max-w-3xl mb-16">
+              <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3">
+                {t("featuresEyebrow")}
+              </p>
+              <h2 className="text-[clamp(36px,4vw,56px)] font-[760] leading-[1.05] mb-5">
+                {t("featuresTitle")}
+              </h2>
+              <p className="text-[19px] leading-[1.5] text-[#6e6e73] max-w-[640px]">
+                {t("featuresSub")}
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {tFeatures().map(([title, body], i) => {
+                const IconComp = featureIcons[i];
+                return (
+                  <article key={title} className="rounded-[16px] border border-[#e5e5ea] bg-white p-7 transition-shadow duration-200 hover:shadow-[0_10px_30px_rgba(29,29,31,0.08)]">
+                    <div className="w-11 h-11 rounded-xl bg-[#f5f5f7] flex items-center justify-center text-[#5e5ce6] mb-5">
+                      <IconComp size={22} aria-hidden="true" />
+                    </div>
+                    <h3 className="text-[19px] font-[650] mb-2">{title}</h3>
+                    <p className="text-[15px] leading-[1.55] text-[#6e6e73]">{body}</p>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* HOW IT WORKS */}
+        <section className="px-5 py-28 bg-[#f5f5f7]" id="how-it-works">
+          <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
+            <div className="max-w-3xl mb-16">
+              <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3">
+                {t("howEyebrow")}
+              </p>
+              <h2 className="text-[clamp(36px,4vw,56px)] font-[760] leading-[1.05]">
+                {t("howTitle")}
+              </h2>
+            </div>
+            <div className="grid gap-0 sm:grid-cols-2 lg:grid-cols-4">
+              {tSteps().map(([title, body], i) => (
+                <article
+                  key={title}
+                  className="relative bg-white border border-[#e5e5ea] p-7 first:rounded-t-[16px] last:rounded-b-[16px] sm:first:rounded-l-[16px] sm:first:rounded-tr-none sm:last:rounded-r-[16px] sm:last:rounded-bl-none lg:rounded-none lg:first:rounded-l-[16px] lg:last:rounded-r-[16px]"
+                  style={{
+                    boxShadow: "none",
+                    marginTop: i > 0 ? -1 : 0,
+                    marginLeft: 0,
+                  }}
+                >
+                  <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#f5f5f7] text-[#5e5ce6] text-sm font-bold mb-4">
+                    {String(i + 1).padStart(2, "0")}
                   </span>
-                </div>
-                <h3 className="text-lg font-semibold text-foreground">{step.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">{step.body}</p>
-              </article>
-            ))}
+                  <h3 className="text-[17px] font-[650] mb-2">{title}</h3>
+                  <p className="text-[14px] leading-[1.5] text-[#6e6e73]">{body}</p>
+                </article>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="px-4 pb-24 md:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <SectionHeader
-            eyebrow="Features"
-            title="Built around the moment a customer asks a hard question"
-            body="LiveAssist AI stays out of the way until the user needs a fast, document-backed answer."
-          />
-          <div className="mt-14 grid auto-rows-fr gap-4 md:grid-cols-3">
-            {features.map((feature) => (
-              <article
-                key={feature.title}
-                className={cn(
-                  "rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur motion-safe:transition-colors motion-safe:duration-150 hover:bg-white/[0.07]",
-                  feature.className
-                )}
-              >
-                <IconBadge icon={feature.icon} />
-                <h3 className="mt-5 text-lg font-semibold text-foreground">{feature.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">{feature.body}</p>
-              </article>
-            ))}
+        {/* USE CASES */}
+        <section className="px-5 py-28" id="use-cases">
+          <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
+            <div className="max-w-3xl mb-16">
+              <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3">
+                {t("useEyebrow")}
+              </p>
+              <h2 className="text-[clamp(36px,4vw,56px)] font-[760] leading-[1.05]">
+                {t("useTitle")}
+              </h2>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {tUseCases().map((item, i) => (
+                <article
+                  key={item}
+                  className="flex items-center gap-4 rounded-[16px] border border-[#e5e5ea] bg-white p-5"
+                >
+                  <span className="text-2xl" aria-hidden="true">{useIcons[i]}</span>
+                  <span className="text-[15px] font-[560]">{item}</span>
+                </article>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="use-cases" className="border-y border-white/8 bg-white/[0.02] px-4 py-24 md:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <SectionHeader title="Built for anyone who answers customer questions live" />
-          <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {useCases.map((useCase) => (
-              <article
-                key={useCase.title}
-                className="flex min-h-28 items-center gap-4 rounded-2xl border border-white/10 bg-slate-950/56 p-5"
-              >
-                <IconBadge icon={useCase.icon} />
-                <h3 className="text-base font-semibold leading-6 text-foreground">
-                  {useCase.title}
-                </h3>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="pricing" className="px-4 py-24 md:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <SectionHeader eyebrow="Pricing" title="Simple pricing for daily use" />
-          <div className="mt-12 grid gap-4 lg:grid-cols-3">
-            {pricing.map((plan) => (
-              <article
-                key={plan.name}
-                className={cn(
-                  "relative rounded-2xl border bg-white/[0.04] p-6 backdrop-blur",
-                  plan.popular
-                    ? "border-primary/50 shadow-glow"
-                    : "border-white/10"
-                )}
-              >
-                {plan.popular ? (
-                  <div className="absolute right-5 top-5 rounded-full bg-primary/18 px-3 py-1 text-xs font-semibold text-cyan-100">
-                    Most popular
-                  </div>
-                ) : null}
-                <h3 className="text-xl font-semibold text-foreground">{plan.name}</h3>
-                <div className="mt-5 flex items-baseline gap-1">
-                  <span className="text-4xl font-semibold text-foreground">{plan.price}</span>
-                  {plan.period ? (
-                    <span className="text-sm text-muted-foreground">{plan.period}</span>
+        {/* PRICING */}
+        <section className="px-5 py-28 bg-[#f5f5f7]" id="pricing">
+          <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
+            <div className="max-w-3xl mb-16">
+              <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3">
+                {t("pricingEyebrow")}
+              </p>
+              <h2 className="text-[clamp(36px,4vw,56px)] font-[760] leading-[1.05]">
+                {t("pricingTitle")}
+              </h2>
+            </div>
+            <div className="grid gap-4 lg:grid-cols-3">
+              {tPricing().map((plan) => (
+                <article
+                  key={plan.name}
+                  className={`relative rounded-[16px] border bg-white p-7 ${
+                    plan.highlighted
+                      ? "border-[#5e5ce6] shadow-[0_0_0_1px_#5e5ce6,0_12px_24px_rgba(94,92,230,0.12)]"
+                      : "border-[#e5e5ea]"
+                  }`}
+                >
+                  {plan.highlighted ? (
+                    <span className="absolute -top-3 left-6 rounded-full bg-[#5e5ce6] text-white text-[11px] font-bold px-3 py-1">
+                      {t("popular")}
+                    </span>
                   ) : null}
-                </div>
-                <p className="mt-4 min-h-12 text-sm leading-6 text-muted-foreground">
-                  {plan.description}
-                </p>
-                <ul className="mt-6 space-y-3">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex gap-3 text-sm text-foreground">
-                      <Check className="mt-0.5 h-4 w-4 flex-none text-cyan-200" aria-hidden="true" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <SecondaryLink href="#waitlist" className="mt-8 w-full">
-                  {plan.name === "Custom" ? "Contact us" : "Join waitlist"}
-                </SecondaryLink>
-              </article>
-            ))}
+                  <h3 className="text-[17px] font-[650]">{plan.name}</h3>
+                  <div className="mt-4 flex items-baseline gap-1">
+                    <span className="text-[40px] font-[760] leading-none">{plan.price}</span>
+                    {plan.period ? (
+                      <span className="text-[15px] text-[#6e6e73]">{plan.period}</span>
+                    ) : null}
+                  </div>
+                  <p className="mt-4 text-[14px] leading-[1.5] text-[#6e6e73]">{plan.description}</p>
+                  <ul className="mt-6 space-y-3">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex gap-3 text-[14px]">
+                        <Check className="mt-px h-4 w-4 flex-none text-[#5e5ce6]" aria-hidden="true" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <a
+                    href="#waitlist"
+                    className={`mt-7 inline-flex w-full min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[650] leading-none transition-all duration-150 hover:-translate-y-px ${
+                      plan.highlighted
+                        ? "bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] hover:bg-[#4846c9]"
+                        : "border border-[#e5e5ea] bg-[rgba(255,255,255,0.76)] text-[#1d1d1f] hover:border-[rgba(94,92,230,0.38)] hover:text-[#5e5ce6]"
+                    }`}
+                  >
+                    {t("heroPrimary")}
+                  </a>
+                </article>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="faq" className="border-y border-white/8 bg-white/[0.02] px-4 py-24 md:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <SectionHeader eyebrow="FAQ" title="Questions teams ask before trying it" />
-          <div className="mt-12 divide-y divide-white/10 rounded-2xl border border-white/10 bg-slate-950/56">
-            {faqs.map((faq) => (
-              <details key={faq.question} className="group p-6">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-base font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
-                  {faq.question}
-                  <ChevronRight
-                    className="h-5 w-5 flex-none text-muted-foreground motion-safe:transition-transform motion-safe:duration-150 group-open:rotate-90"
-                    aria-hidden="true"
-                  />
-                </summary>
-                <p className="mt-4 max-w-3xl text-sm leading-6 text-muted-foreground">
-                  {faq.answer}
-                </p>
-              </details>
-            ))}
+        {/* FAQ */}
+        <section className="px-5 py-28" id="faq">
+          <div className="mx-auto" style={{ maxWidth: "min(720px, 100%)" }}>
+            <div className="max-w-3xl mb-16">
+              <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3">
+                {t("faqEyebrow")}
+              </p>
+              <h2 className="text-[clamp(36px,4vw,56px)] font-[760] leading-[1.05]">
+                {t("faqTitle")}
+              </h2>
+            </div>
+            <FaqAccordion items={tFaqs()} />
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="waitlist" className="px-4 py-24 md:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl rounded-2xl border border-white/12 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--primary)/0.24),transparent_42%),hsl(var(--muted)/0.45)] px-5 py-14 text-center shadow-2xl shadow-black/30 md:px-10">
-          <p className="text-sm font-medium text-cyan-200">Early access</p>
-          <h2 className="mt-3 text-3xl font-semibold text-foreground md:text-5xl">
-            Be first to try LiveAssist AI
-          </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">
-            Join the early access list and get notified when the desktop app is ready.
-          </p>
-          <WaitlistForm />
-        </div>
-      </section>
-
-      <footer className="border-t border-white/8 px-4 py-10 md:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-base font-semibold text-foreground">LiveAssist AI</p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Real-time knowledge assistance for customer-facing teams.
+        {/* CTA */}
+        <section className="px-5 py-28 bg-[#f5f5f7]" id="waitlist">
+          <div className="mx-auto text-center" style={{ maxWidth: "min(640px, 100%)" }}>
+            <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3">
+              {t("ctaLabel")}
             </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {["Privacy", "Terms", "Contact"].map((link) => (
-              <a
-                key={link}
-                href="#waitlist"
-                className="rounded-full px-3 py-2 text-sm text-muted-foreground motion-safe:transition-colors motion-safe:duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            <h2 className="text-[clamp(32px,4.5vw,52px)] font-[760] leading-[1.05] mb-7">
+              {t("ctaHeadline")}
+            </h2>
+            <form onSubmit={handleEmailSubmit} noValidate>
+              <div className="flex flex-col sm:flex-row gap-3 max-w-[480px] mx-auto">
+                <div className="flex-1">
+                  <label htmlFor="cta-email" className="sr-only">{t("emailLabel")}</label>
+                  <input
+                    id="cta-email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    spellCheck={false}
+                    placeholder={t("emailPlaceholder")}
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (emailError) setEmailError("");
+                      if (emailSubmitted) setEmailSubmitted(false);
+                    }}
+                    aria-invalid={emailError ? "true" : undefined}
+                    aria-describedby="cta-message"
+                    className="w-full min-h-[48px] rounded-full border border-[#e5e5ea] bg-white px-5 text-[15px] text-[#1d1d1f] placeholder:text-[#6e6e73] focus-visible:outline-[3px] focus-visible:outline-[rgba(94,92,230,0.42)] focus-visible:outline-offset-[3px]"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="min-h-[48px] inline-flex items-center justify-center gap-2 rounded-full px-6 text-[15px] font-[650] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
+                >
+                  {t("heroPrimary")}
+                </button>
+              </div>
+              <p
+                id="cta-message"
+                className={`mt-4 text-[14px] transition-colors ${
+                  emailError ? "text-red-500" : emailSubmitted ? "text-[#21a89a]" : "text-[#6e6e73]"
+                }`}
               >
-                {link}
-              </a>
-            ))}
+                {emailError
+                  ? t("emailError")
+                  : emailSubmitted
+                  ? t("emailSuccess")
+                  : t("ctaSub")}
+              </p>
+            </form>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-[#e5e5ea] px-5 py-10">
+        <div
+          className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mx-auto"
+          style={{ maxWidth: "min(1180px, 100%)" }}
+        >
+          <div className="flex items-center gap-3">
+            <strong className="text-[15px] font-[650]">{t("logo")}</strong>
+            <span className="text-[14px] text-[#6e6e73]">{t("footerTagline")}</span>
+          </div>
+          <div className="flex flex-wrap gap-3 text-[14px] text-[#6e6e73]">
+            <a href="#" className="hover:text-[#1d1d1f] transition-colors">{t("privacy")}</a>
+            <a href="#" className="hover:text-[#1d1d1f] transition-colors">{t("terms")}</a>
+            <a href="mailto:hello@liveassist.ai" className="hover:text-[#1d1d1f] transition-colors">
+              {t("contact")}
+            </a>
           </div>
         </div>
       </footer>
-    </main>
+    </>
+  );
+}
+
+function FaqAccordion({ items }: { items: [string, string][] }) {
+  const [openIndex, setOpenIndex] = useState<number>(0);
+
+  return (
+    <div className="space-y-3">
+      {items.map(([question, answer], i) => (
+        <article
+          key={i}
+          className="rounded-[16px] border border-[#e5e5ea] bg-white overflow-hidden"
+        >
+          <button
+            onClick={() => setOpenIndex(openIndex === i ? -1 : i)}
+            className="flex items-center justify-between gap-4 w-full p-5 text-left text-[15px] font-[650] transition-colors hover:bg-[#fafafa]"
+            aria-expanded={openIndex === i}
+            aria-controls={`faq-panel-${i}`}
+          >
+            <span>{question}</span>
+            <Plus
+              size={18}
+              className="flex-none text-[#6e6e73] transition-transform duration-200"
+              style={{ transform: openIndex === i ? "rotate(45deg)" : "rotate(0deg)" }}
+              aria-hidden="true"
+            />
+          </button>
+          <div
+            id={`faq-panel-${i}`}
+            className="transition-all duration-200 overflow-hidden"
+            style={{
+              maxHeight: openIndex === i ? 300 : 0,
+              opacity: openIndex === i ? 1 : 0,
+            }}
+          >
+            <div className="px-5 pb-5 text-[14px] leading-[1.6] text-[#6e6e73]">
+              {answer}
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
   );
 }
