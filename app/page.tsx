@@ -2,21 +2,61 @@
 
 import { useState, useEffect, useRef, FormEvent } from "react";
 import {
+  Briefcase,
+  CreditCard,
   FileText,
   FileSearch,
+  HelpCircle,
   Layers,
   Keyboard,
   Mic,
   Shield,
-  Plus,
   Check,
   MessageSquareText,
   Headphones,
 } from "lucide-react";
 import { strings, type Lang } from "../lib/strings";
+import { FaqPro, type FaqProItem } from "@/components/ui/faq-pro";
+import { NavBar } from "@/components/ui/tubelight-navbar";
+import { AnimateOnScroll } from "../components/ui/animate-on-scroll";
 import ProductMockup from "./components/ProductMockup";
 
 const useIcons = ["\uD83C\uDF93", "\u2708\uFE0F", "\u279A", "\u2699", "\u2302", "\u25A3", "\u260E", "\u25C7"];
+
+const navItems = [
+  { name: "How it works", url: "#how-it-works", icon: Layers },
+  { name: "Use cases", url: "#use-cases", icon: Briefcase },
+  { name: "Pricing", url: "#pricing", icon: CreditCard },
+  { name: "FAQ", url: "#faq", icon: HelpCircle },
+];
+
+const faqItems: FaqProItem[] = [
+  {
+    id: "listening",
+    question: "Does LiveAssist AI listen all the time?",
+    answer: "No. LiveAssist AI is hotkey-first and activates only when the rep asks for help. Nothing is recorded or processed until ⌘J is pressed.",
+  },
+  {
+    id: "sources",
+    question: "Where do answers come from?",
+    answer: "Answers come exclusively from documents you upload — PDFs, FAQs, pricing pages, SOPs, and policy files. LiveAssist never pulls from the public web.",
+  },
+  {
+    id: "customer",
+    question: "Can the customer see the overlay?",
+    answer: "No. The overlay is a private desktop layer visible only to the rep. It appears above other windows on their screen and is not shared over video or screen share by default.",
+  },
+  {
+    id: "sales-only",
+    question: "Is this only for sales teams?",
+    answer: "No. LiveAssist works for any role that answers live questions — support agents, travel agents, clinic staff, real estate reps, consultants, and more.",
+  },
+  {
+    id: "crm",
+    question: "Does it replace my CRM or knowledge base?",
+    answer: "No. LiveAssist sits on top of your existing tools. It reads your documents and surfaces answers — you keep your CRM, inbox, and call tools exactly as they are.",
+  },
+];
 
 type PricingPlan = {
   name: string;
@@ -35,6 +75,7 @@ export default function HomePage() {
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [scrollyStep, setScrollyStep] = useState(0);
+  const [activeTab, setActiveTab] = useState(navItems[0].name);
   const scrollyProgressRef = useRef(0);
   const scrollyTargetRef = useRef(0);
   const scrollyLastRawRef = useRef(-1);
@@ -48,10 +89,6 @@ export default function HomePage() {
 
   const tPricing = (): PricingPlan[] => {
     return (strings[lang] as Record<string, unknown>).pricing as PricingPlan[];
-  };
-
-  const tFaqs = (): [string, string][] => {
-    return (strings[lang] as Record<string, unknown>).faqs as [string, string][];
   };
 
   const tFeatures = (): [string, string][] => {
@@ -80,6 +117,31 @@ export default function HomePage() {
     localStorage.setItem("liveassist-lang", lang);
     document.documentElement.lang = lang;
   }, [lang]);
+
+  useEffect(() => {
+    const sectionIds = ["how-it-works", "use-cases", "pricing", "faq"];
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const match = navItems.find(
+              (item) => item.url === `#${entry.target.id}`
+            );
+            if (match) setActiveTab(match.name);
+          }
+        });
+      },
+      { threshold: 0.4 }
+    );
+
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -180,22 +242,12 @@ export default function HomePage() {
             {t("logo")}
           </a>
 
-          <div className="hidden md:flex items-center justify-center gap-1">
-            {[
-              ["navHow", "#scrolly"],
-              ["navUseCases", "#use-cases"],
-              ["navPricing", "#pricing"],
-              ["navFaq", "#faq"],
-            ].map(([key, href]) => (
-              <a
-                key={key}
-                href={href}
-                className="rounded-full px-[14px] py-3 text-[13px] font-[560] text-[#6e6e73] transition-colors duration-120 hover:text-[#5e5ce6] hover:bg-[rgba(94,92,230,0.08)]"
-              >
-                {t(key)}
-              </a>
-            ))}
-          </div>
+          <NavBar
+            items={navItems}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            className="hidden md:flex items-center justify-center"
+          />
 
           <div className="flex items-center justify-end gap-[10px]">
             <button
@@ -280,10 +332,16 @@ export default function HomePage() {
             }}
           >
             <div>
-              <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-5">
+              <AnimateOnScroll
+                as="p"
+                delay={0}
+                className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-5"
+              >
                 {t("heroEyebrow")}
-              </p>
-              <h1
+              </AnimateOnScroll>
+              <AnimateOnScroll
+                as="h1"
+                delay={0.08}
                 className="font-[760] leading-[0.96] mb-6"
                 style={{
                   fontFamily:
@@ -293,11 +351,15 @@ export default function HomePage() {
                 }}
               >
                 {t("heroHeadline")}
-              </h1>
-              <p className="text-[21px] leading-[1.45] text-[#6e6e73] mb-8 max-w-[650px]">
+              </AnimateOnScroll>
+              <AnimateOnScroll
+                as="p"
+                delay={0.16}
+                className="text-[21px] leading-[1.45] text-[#6e6e73] mb-8 max-w-[650px]"
+              >
                 {t("heroSub")}
-              </p>
-              <div className="flex flex-wrap gap-3">
+              </AnimateOnScroll>
+              <AnimateOnScroll delay={0.22} className="flex flex-wrap gap-3">
                 <a
                   href="#waitlist"
                   className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[650] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
@@ -310,10 +372,10 @@ export default function HomePage() {
                 >
                   {t("heroSecondary")}
                 </a>
-              </div>
+              </AnimateOnScroll>
             </div>
 
-            <div className="relative min-h-[520px] flex items-center justify-center">
+            <AnimateOnScroll delay={0.3} y={48} className="relative min-h-[520px] flex items-center justify-center">
               <div
                 className="absolute rounded-full"
                 aria-hidden="true"
@@ -326,7 +388,7 @@ export default function HomePage() {
                 }}
               />
               <ProductMockup copy={strings[lang].mockup} />
-            </div>
+            </AnimateOnScroll>
           </div>
         </section>
 
@@ -472,7 +534,7 @@ export default function HomePage() {
         {/* FEATURES */}
         <section className="px-5 py-28" id="features">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
-            <div className="max-w-3xl mb-16">
+            <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
               <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3">
                 {t("featuresEyebrow")}
               </p>
@@ -482,18 +544,27 @@ export default function HomePage() {
               <p className="text-[19px] leading-[1.5] text-[#6e6e73] max-w-[640px]">
                 {t("featuresSub")}
               </p>
-            </div>
+            </AnimateOnScroll>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {tFeatures().map(([title, body], i) => {
                 const IconComp = featureIcons[i];
                 return (
-                  <article key={title} className="rounded-[16px] border border-[#e5e5ea] bg-white p-7 transition-shadow duration-200 hover:shadow-[0_10px_30px_rgba(29,29,31,0.08)]">
-                    <div className="w-11 h-11 rounded-xl bg-[#f5f5f7] flex items-center justify-center text-[#5e5ce6] mb-5">
+                  <AnimateOnScroll
+                    key={title}
+                    delay={(i + 1) * 0.05}
+                    whileHover={{
+                      y: -6,
+                      boxShadow: "0 20px 40px -12px rgba(0,0,0,0.12)",
+                      transition: { type: "spring", stiffness: 300, damping: 20 },
+                    }}
+                    className="group relative rounded-[16px] border border-[#e5e5ea] bg-white p-7 cursor-default"
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-[#f5f5f7] flex items-center justify-center text-[#5e5ce6] mb-5 transition-transform duration-300 group-hover:-translate-y-[3px]">
                       <IconComp size={22} aria-hidden="true" />
                     </div>
                     <h3 className="text-[19px] font-[650] mb-2">{title}</h3>
                     <p className="text-[15px] leading-[1.55] text-[#6e6e73]">{body}</p>
-                  </article>
+                  </AnimateOnScroll>
                 );
               })}
             </div>
@@ -503,18 +574,20 @@ export default function HomePage() {
         {/* HOW IT WORKS */}
         <section className="px-5 py-28 bg-[#f5f5f7]" id="how-it-works">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
-            <div className="max-w-3xl mb-16">
+            <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
               <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3">
                 {t("howEyebrow")}
               </p>
               <h2 className="text-[clamp(36px,4vw,56px)] font-[760] leading-[1.05]">
                 {t("howTitle")}
               </h2>
-            </div>
+            </AnimateOnScroll>
             <div className="grid gap-0 sm:grid-cols-2 lg:grid-cols-4">
               {tSteps().map(([title, body], i) => (
-                <article
+                <AnimateOnScroll
+                  as="article"
                   key={title}
+                  delay={i * 0.08}
                   className="relative bg-white border border-[#e5e5ea] p-7 first:rounded-t-[16px] last:rounded-b-[16px] sm:first:rounded-l-[16px] sm:first:rounded-tr-none sm:last:rounded-r-[16px] sm:last:rounded-bl-none lg:rounded-none lg:first:rounded-l-[16px] lg:last:rounded-r-[16px]"
                   style={{
                     boxShadow: "none",
@@ -527,7 +600,7 @@ export default function HomePage() {
                   </span>
                   <h3 className="text-[17px] font-[650] mb-2">{title}</h3>
                   <p className="text-[14px] leading-[1.5] text-[#6e6e73]">{body}</p>
-                </article>
+                </AnimateOnScroll>
               ))}
             </div>
           </div>
@@ -536,23 +609,30 @@ export default function HomePage() {
         {/* USE CASES */}
         <section className="px-5 py-28" id="use-cases">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
-            <div className="max-w-3xl mb-16">
+            <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
               <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3">
                 {t("useEyebrow")}
               </p>
               <h2 className="text-[clamp(36px,4vw,56px)] font-[760] leading-[1.05]">
                 {t("useTitle")}
               </h2>
-            </div>
+            </AnimateOnScroll>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {tUseCases().map((item, i) => (
-                <article
+                <AnimateOnScroll
                   key={item}
-                  className="flex items-center gap-4 rounded-[16px] border border-[#e5e5ea] bg-white p-5"
+                  delay={(i + 1) * 0.05}
+                  whileHover={{
+                    y: -3,
+                    backgroundColor: "#fafafa",
+                    boxShadow: "0 8px 24px -8px rgba(0,0,0,0.08)",
+                    transition: { type: "spring", stiffness: 400, damping: 25 },
+                  }}
+                  className="group flex items-center gap-4 rounded-[16px] border border-[#e5e5ea] bg-white p-5 cursor-default"
                 >
-                  <span className="text-2xl" aria-hidden="true">{useIcons[i]}</span>
+                  <span className="text-2xl transition-transform duration-200 group-hover:scale-110" aria-hidden="true">{useIcons[i]}</span>
                   <span className="text-[15px] font-[560]">{item}</span>
-                </article>
+                </AnimateOnScroll>
               ))}
             </div>
           </div>
@@ -561,18 +641,21 @@ export default function HomePage() {
         {/* PRICING */}
         <section className="px-5 py-28 bg-[#f5f5f7]" id="pricing">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
-            <div className="max-w-3xl mb-16">
+            <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
               <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3">
                 {t("pricingEyebrow")}
               </p>
               <h2 className="text-[clamp(36px,4vw,56px)] font-[760] leading-[1.05]">
                 {t("pricingTitle")}
               </h2>
-            </div>
+            </AnimateOnScroll>
             <div className="grid gap-4 lg:grid-cols-3">
-              {tPricing().map((plan) => (
-                <article
+              {tPricing().map((plan, i) => (
+                <AnimateOnScroll
+                  as="article"
                   key={plan.name}
+                  delay={[0.05, 0.12, 0.2][i] ?? 0.05}
+                  y={plan.highlighted ? 40 : 32}
                   className={`relative rounded-[16px] border bg-white p-7 ${
                     plan.highlighted
                       ? "border-[#5e5ce6] shadow-[0_0_0_1px_#5e5ce6,0_12px_24px_rgba(94,92,230,0.12)]"
@@ -610,7 +693,7 @@ export default function HomePage() {
                   >
                     {t("heroPrimary")}
                   </a>
-                </article>
+                </AnimateOnScroll>
               ))}
             </div>
           </div>
@@ -619,29 +702,42 @@ export default function HomePage() {
         {/* FAQ */}
         <section className="px-5 py-28" id="faq">
           <div className="mx-auto" style={{ maxWidth: "min(720px, 100%)" }}>
-            <div className="max-w-3xl mb-16">
+            <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
               <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3">
                 {t("faqEyebrow")}
               </p>
               <h2 className="text-[clamp(36px,4vw,56px)] font-[760] leading-[1.05]">
                 {t("faqTitle")}
               </h2>
-            </div>
-            <FaqAccordion items={tFaqs()} />
+            </AnimateOnScroll>
+            <FaqPro
+              items={faqItems}
+              defaultOpenFirst
+              className="w-full max-w-3xl mx-auto"
+              searchPlaceholder="Search questions..."
+            />
           </div>
         </section>
 
         {/* CTA */}
         <section className="px-5 py-28 bg-[#f5f5f7]" id="waitlist">
           <div className="mx-auto text-center" style={{ maxWidth: "min(640px, 100%)" }}>
-            <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3">
+            <AnimateOnScroll
+              as="p"
+              delay={0}
+              className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3"
+            >
               {t("ctaLabel")}
-            </p>
-            <h2 className="text-[clamp(32px,4.5vw,52px)] font-[760] leading-[1.05] mb-7">
+            </AnimateOnScroll>
+            <AnimateOnScroll
+              as="h2"
+              delay={0.08}
+              className="text-[clamp(32px,4.5vw,52px)] font-[760] leading-[1.05] mb-7"
+            >
               {t("ctaHeadline")}
-            </h2>
+            </AnimateOnScroll>
             <form onSubmit={handleEmailSubmit} noValidate>
-              <div className="flex flex-col sm:flex-row gap-3 max-w-[480px] mx-auto">
+              <AnimateOnScroll delay={0.16} className="flex flex-col sm:flex-row gap-3 max-w-[480px] mx-auto">
                 <div className="flex-1">
                   <label htmlFor="cta-email" className="sr-only">{t("emailLabel")}</label>
                   <input
@@ -668,7 +764,7 @@ export default function HomePage() {
                 >
                   {t("heroPrimary")}
                 </button>
-              </div>
+              </AnimateOnScroll>
               <p
                 id="cta-message"
                 className={`mt-4 text-[14px] transition-colors ${
@@ -705,47 +801,5 @@ export default function HomePage() {
         </div>
       </footer>
     </>
-  );
-}
-
-function FaqAccordion({ items }: { items: [string, string][] }) {
-  const [openIndex, setOpenIndex] = useState<number>(0);
-
-  return (
-    <div className="space-y-3">
-      {items.map(([question, answer], i) => (
-        <article
-          key={i}
-          className="rounded-[16px] border border-[#e5e5ea] bg-white overflow-hidden"
-        >
-          <button
-            onClick={() => setOpenIndex(openIndex === i ? -1 : i)}
-            className="flex items-center justify-between gap-4 w-full p-5 text-left text-[15px] font-[650] transition-colors hover:bg-[#fafafa]"
-            aria-expanded={openIndex === i}
-            aria-controls={`faq-panel-${i}`}
-          >
-            <span>{question}</span>
-            <Plus
-              size={18}
-              className="flex-none text-[#6e6e73] transition-transform duration-200"
-              style={{ transform: openIndex === i ? "rotate(45deg)" : "rotate(0deg)" }}
-              aria-hidden="true"
-            />
-          </button>
-          <div
-            id={`faq-panel-${i}`}
-            className="transition-all duration-200 overflow-hidden"
-            style={{
-              maxHeight: openIndex === i ? 300 : 0,
-              opacity: openIndex === i ? 1 : 0,
-            }}
-          >
-            <div className="px-5 pb-5 text-[14px] leading-[1.6] text-[#6e6e73]">
-              {answer}
-            </div>
-          </div>
-        </article>
-      ))}
-    </div>
   );
 }
