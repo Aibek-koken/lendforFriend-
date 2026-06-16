@@ -572,6 +572,21 @@ export default function HomePage() {
           </div>
         </section>
 
+        <section className="w-full overflow-x-auto bg-white py-24 md:overflow-x-visible">
+          <div className="mx-auto max-w-6xl px-6">
+            <AnimateOnScroll delay={0} y={48} duration={0.7} className="min-w-[760px] md:min-w-0">
+              <div className="flex justify-center">
+                <ProductMockup
+                  copy={strings[lang].mockup}
+                  onboarding
+                  staticState
+                  large
+                />
+              </div>
+            </AnimateOnScroll>
+          </div>
+        </section>
+
         {/* HOW IT WORKS */}
         <section className="px-5 py-28 bg-[#f5f5f7]" id="how-it-works">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
@@ -784,7 +799,6 @@ export default function HomePage() {
       </main>
 
       <InteractiveFooter
-        lang={lang}
         copy={{
           logo: t("logo"),
           tagline: t("footerTagline"),

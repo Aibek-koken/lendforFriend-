@@ -15,6 +15,7 @@ type AnimateTag = 'div' | 'p' | 'h1' | 'h2' | 'article';
 export function AnimateOnScroll({
   children,
   delay = 0,
+  duration = 0.6,
   className,
   style,
   whileHover,
@@ -23,6 +24,7 @@ export function AnimateOnScroll({
 }: {
   children: ReactNode;
   delay?: number;
+  duration?: number;
   className?: string;
   style?: CSSProperties;
   whileHover?: TargetAndTransition;
@@ -49,7 +51,7 @@ export function AnimateOnScroll({
       animate={isInView ? 'visible' : 'hidden'}
       variants={variants}
       transition={{
-        duration: 0.6,
+        duration,
         delay,
         ease: [0.16, 1, 0.3, 1],
       }}
