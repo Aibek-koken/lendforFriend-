@@ -19,6 +19,7 @@ import { strings, type Lang } from "../lib/strings";
 import { FaqPro, type FaqProItem } from "@/components/ui/faq-pro";
 import { NavBar } from "@/components/ui/tubelight-navbar";
 import { AnimateOnScroll } from "../components/ui/animate-on-scroll";
+import { InteractiveFooter } from "../components/InteractiveFooter";
 import ProductMockup from "./components/ProductMockup";
 
 const useIcons = ["\uD83C\uDF93", "\u2708\uFE0F", "\u279A", "\u2699", "\u2302", "\u25A3", "\u260E", "\u25C7"];
@@ -782,24 +783,16 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t border-[#e5e5ea] px-5 py-10">
-        <div
-          className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mx-auto"
-          style={{ maxWidth: "min(1180px, 100%)" }}
-        >
-          <div className="flex items-center gap-3">
-            <strong className="text-[15px] font-[650]">{t("logo")}</strong>
-            <span className="text-[14px] text-[#6e6e73]">{t("footerTagline")}</span>
-          </div>
-          <div className="flex flex-wrap gap-3 text-[14px] text-[#6e6e73]">
-            <a href="#" className="hover:text-[#1d1d1f] transition-colors">{t("privacy")}</a>
-            <a href="#" className="hover:text-[#1d1d1f] transition-colors">{t("terms")}</a>
-            <a href="mailto:hello@liveassist.ai" className="hover:text-[#1d1d1f] transition-colors">
-              {t("contact")}
-            </a>
-          </div>
-        </div>
-      </footer>
+      <InteractiveFooter
+        lang={lang}
+        copy={{
+          logo: t("logo"),
+          tagline: t("footerTagline"),
+          privacy: t("privacy"),
+          terms: t("terms"),
+          contact: t("contact"),
+        }}
+      />
     </>
   );
 }
