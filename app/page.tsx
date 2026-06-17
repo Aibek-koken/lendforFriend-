@@ -24,40 +24,14 @@ import ProductMockup from "./components/ProductMockup";
 
 const useIcons = ["\uD83C\uDF93", "\u2708\uFE0F", "\u279A", "\u2699", "\u2302", "\u25A3", "\u260E", "\u25C7"];
 
-const navItems = [
-  { name: "How it works", url: "#how-it-works", icon: Layers },
-  { name: "Use cases", url: "#use-cases", icon: Briefcase },
-  { name: "Pricing", url: "#pricing", icon: CreditCard },
-  { name: "FAQ", url: "#faq", icon: HelpCircle },
-];
+const navConfig = [
+  { id: "how-it-works", labelKey: "navHow", url: "#how-it-works", icon: Layers },
+  { id: "use-cases", labelKey: "navUseCases", url: "#use-cases", icon: Briefcase },
+  { id: "pricing", labelKey: "navPricing", url: "#pricing", icon: CreditCard },
+  { id: "faq", labelKey: "navFaq", url: "#faq", icon: HelpCircle },
+] as const;
 
-const faqItems: FaqProItem[] = [
-  {
-    id: "listening",
-    question: "Does LiveAssist AI listen all the time?",
-    answer: "No. LiveAssist AI is hotkey-first and activates only when the rep asks for help. Nothing is recorded or processed until ⌘J is pressed.",
-  },
-  {
-    id: "sources",
-    question: "Where do answers come from?",
-    answer: "Answers come exclusively from documents you upload — PDFs, FAQs, pricing pages, SOPs, and policy files. LiveAssist never pulls from the public web.",
-  },
-  {
-    id: "customer",
-    question: "Can the customer see the overlay?",
-    answer: "No. The overlay is a private desktop layer visible only to the rep. It appears above other windows on their screen and is not shared over video or screen share by default.",
-  },
-  {
-    id: "sales-only",
-    question: "Is this only for sales teams?",
-    answer: "No. LiveAssist works for any role that answers live questions — support agents, travel agents, clinic staff, real estate reps, consultants, and more.",
-  },
-  {
-    id: "crm",
-    question: "Does it replace my CRM or knowledge base?",
-    answer: "No. LiveAssist sits on top of your existing tools. It reads your documents and surfaces answers — you keep your CRM, inbox, and call tools exactly as they are.",
-  },
-];
+const faqIds = ["listening", "sources", "customer", "sales-only", "crm"] as const;
 
 type PricingPlan = {
   name: string;
@@ -76,7 +50,9 @@ export default function HomePage() {
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [scrollyStep, setScrollyStep] = useState(0);
-  const [activeTab, setActiveTab] = useState(navItems[0].name);
+  const [activeTab, setActiveTab] = useState<(typeof navConfig)[number]["id"]>(
+    navConfig[0].id
+  );
   const scrollyProgressRef = useRef(0);
   const scrollyTargetRef = useRef(0);
   const scrollyLastRawRef = useRef(-1);
@@ -104,6 +80,22 @@ export default function HomePage() {
     return (strings[lang] as Record<string, unknown>).useCases as string[];
   };
 
+  const tFaqs = (): FaqProItem[] => {
+    const faqs = (strings[lang] as Record<string, unknown>).faqs as [string, string][];
+    return faqs.map(([question, answer], index) => ({
+      id: faqIds[index] ?? `faq-${index}`,
+      question,
+      answer,
+    }));
+  };
+
+  const navItems = navConfig.map((item) => ({
+    id: item.id,
+    name: t(item.labelKey),
+    url: item.url,
+    icon: item.icon,
+  }));
+
   useEffect(() => {
     const saved = localStorage.getItem("liveassist-lang") as Lang | null;
     if (saved === "en" || saved === "ru") setLang(saved);
@@ -126,10 +118,8 @@ export default function HomePage() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const match = navItems.find(
-              (item) => item.url === `#${entry.target.id}`
-            );
-            if (match) setActiveTab(match.name);
+            const match = navConfig.find((item) => item.id === entry.target.id);
+            if (match) setActiveTab(match.id);
           }
         });
       },
@@ -237,7 +227,7 @@ export default function HomePage() {
         <nav
           className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 w-full h-16 px-5 mx-auto"
           style={{ maxWidth: "min(1180px, calc(100% - 40px))" }}
-          aria-label="Main"
+          aria-label={t("navLabel")}
         >
           <a href="#top" className="inline-flex items-center gap-2 rounded-full text-[15px] font-[650] min-h-10">
             {t("logo")}
@@ -246,7 +236,9 @@ export default function HomePage() {
           <NavBar
             items={navItems}
             activeTab={activeTab}
-            setActiveTab={setActiveTab}
+            setActiveTab={(id) =>
+              setActiveTab(id as (typeof navConfig)[number]["id"])
+            }
             className="hidden md:flex items-center justify-center"
           />
 
@@ -254,7 +246,7 @@ export default function HomePage() {
             <button
               onClick={() => setLang(lang === "en" ? "ru" : "en")}
               className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[#e5e5ea] bg-[rgba(255,255,255,0.72)] text-[13px] font-bold text-[#1d1d1f]"
-              aria-label="Switch language"
+              aria-label={lang === "en" ? t("switchToRu") : t("switchToEn")}
             >
               {lang === "en" ? "RU" : "EN"}
             </button>
@@ -267,7 +259,7 @@ export default function HomePage() {
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className="md:hidden inline-flex min-w-[44px] min-h-[44px] flex-col items-center justify-center gap-[4px] rounded-full border border-[#e5e5ea] bg-[rgba(255,255,255,0.72)]"
-              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-label={menuOpen ? t("closeMenuLabel") : t("openMenuLabel")}
               aria-expanded={menuOpen}
             >
               <span
@@ -388,7 +380,7 @@ export default function HomePage() {
                   filter: "blur(4px)",
                 }}
               />
-              <ProductMockup copy={strings[lang].mockup} />
+              <ProductMockup copy={strings[lang].mockup} lang={lang} />
             </AnimateOnScroll>
           </div>
         </section>
@@ -578,6 +570,7 @@ export default function HomePage() {
               <div className="flex justify-center">
                 <ProductMockup
                   copy={strings[lang].mockup}
+                  lang={lang}
                   onboarding
                   staticState
                   large
@@ -727,10 +720,10 @@ export default function HomePage() {
               </h2>
             </AnimateOnScroll>
             <FaqPro
-              items={faqItems}
+              items={tFaqs()}
               defaultOpenFirst
               className="w-full max-w-3xl mx-auto"
-              searchPlaceholder="Search questions..."
+              searchPlaceholder={t("faqSearchPlaceholder")}
             />
           </div>
         </section>

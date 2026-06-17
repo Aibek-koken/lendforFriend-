@@ -1,17 +1,22 @@
 export const strings = {
   en: {
-    logo: "\u2318 LiveAssist AI",
+    logo: "⌘ LiveAssist AI",
+    navLabel: "Main navigation",
     navHow: "How it works",
     navUseCases: "Use cases",
     navPricing: "Pricing",
     navFaq: "FAQ",
+    switchToRu: "Switch language to Russian",
+    switchToEn: "Switch language to English",
+    openMenuLabel: "Open menu",
+    closeMenuLabel: "Close menu",
     joinWaitlist: "Join waitlist",
     heroEyebrow: "Private desktop overlay",
     heroHeadline:
       "Never pause a customer call to search for an answer again",
     heroSub:
-      "LiveAssist AI gives your team instant, source-backed answers from your own documents \u2014 without leaving the call.",
-    heroPrimary: "Join the waitlist \u2192",
+      "LiveAssist AI gives your team instant, source-backed answers from your own documents — without leaving the call.",
+    heroPrimary: "Join the waitlist →",
     heroSecondary: "See how it works",
     mockup: {
       ariaLabel: "LiveAssist AI overlay demo",
@@ -23,44 +28,41 @@ export const strings = {
       confidenceLabel: "AI confidence",
       confidenceValue: "94% confident",
       sourceFile: "Pricing_Terms.pdf",
-      sourceMeta: "Page 4 of 12 \u00b7 Updated Jan 2025",
-      openFile: "Open \u2192",
+      sourceMeta: "Page 4 of 12 · Updated Jan 2025",
+      openFile: "Open →",
       answeredIn: "Answered in 1.4s",
       openingFile: "Opening file..."
     },
     scrollyStep1: "Your rep is on a live call.",
     scrollyStep2: "The customer asks something specific.",
-    scrollyKey: "\u2318 J",
-    scrollyStep3: "They press \u2318J",
-    scrollyStep4: "Answer in 1\u20132 seconds. Source included.",
+    scrollyKey: "⌘ J",
+    scrollyStep3: "They press ⌘J",
+    scrollyStep4: "Answer in 1–2 seconds. Source included.",
     scrollyStep5: "Stay in the call. Keep the answer.",
     scrollyStep5Sub:
       "Give every rep a private assistant trained on your company docs.",
     featuresEyebrow: "Features",
-    featuresTitle:
-      "Designed for the exact second a rep needs help",
+    featuresTitle: "Designed for the exact second a rep needs help",
     featuresSub:
       "Fast retrieval, cited answers, and a private overlay that stays out of the way until someone asks.",
     howEyebrow: "How it works",
-    howTitle:
-      "Four steps from document chaos to live answers",
+    howTitle: "Four steps from document chaos to live answers",
     useEyebrow: "Use cases",
-    useTitle:
-      "For teams that answer high-stakes questions in real time",
+    useTitle: "For teams that answer high-stakes questions in real time",
     pricingEyebrow: "Pricing",
     pricingTitle: "Simple plans for individuals and teams",
     popular: "Most popular",
     faqEyebrow: "FAQ",
     faqTitle: "Clear answers before early access",
+    faqSearchPlaceholder: "Search questions...",
     ctaLabel: "Early access",
     ctaHeadline: "Be first to try LiveAssist AI",
     emailLabel: "Email",
     emailPlaceholder: "you@company.com",
-    ctaSub:
-      "No spam. We\u2019ll email you when it\u2019s ready.",
+    ctaSub: "No spam. We’ll email you when it’s ready.",
     emailError: "Enter a valid email address.",
     emailSuccess:
-      "You\u2019re on the waitlist. We\u2019ll email you when early access opens.",
+      "You’re on the waitlist. We’ll email you when early access opens.",
     footerTagline: "Instant answers from company docs.",
     privacy: "Privacy",
     terms: "Terms",
@@ -80,7 +82,7 @@ export const strings = {
       ],
       [
         "Hotkey-first workflow",
-        "Press \u2318J, ask, answer, and return to the conversation without tab switching."
+        "Press ⌘J, ask, answer, and return to the conversation without tab switching."
       ],
       [
         "Voice or text input",
@@ -149,195 +151,198 @@ export const strings = {
     faqs: [
       [
         "Does LiveAssist AI listen all the time?",
-        "No. LiveAssist AI is hotkey-first and activates only when the rep asks for help."
+        "No. LiveAssist AI is hotkey-first and activates only when the rep asks for help. Nothing is recorded or processed until ⌘J is pressed."
       ],
       [
         "Where do answers come from?",
-        "Answers come from your uploaded company documents, such as PDFs, FAQs, pricing terms, SOPs, and knowledge-base pages."
+        "Answers come exclusively from documents you upload — PDFs, FAQs, pricing pages, SOPs, and policy files. LiveAssist never pulls from the public web."
       ],
       [
         "Can the customer see the overlay?",
-        "No. The overlay is private to the rep\u2019s desktop and does not appear in the customer\u2019s call view."
+        "No. The overlay is a private desktop layer visible only to the rep. It appears above other windows on their screen and is not shared over video or screen share by default."
       ],
       [
         "Is this only for sales teams?",
-        "No. It also fits support, clinics, online schools, travel agencies, real estate teams, consultants, and any team handling live questions."
+        "No. LiveAssist works for any role that answers live questions — support agents, travel agents, clinic staff, real estate reps, consultants, and more."
       ],
       [
         "Does it replace my CRM or knowledge base?",
-        "No. It sits above the tools you already use and retrieves the right answer when a live conversation needs it."
+        "No. LiveAssist sits on top of your existing tools. It reads your documents and surfaces answers — you keep your CRM, inbox, and call tools exactly as they are."
       ]
     ]
   },
   ru: {
-    logo: "\u2318 LiveAssist AI",
-    navHow: "\u041A\u0430\u043A \u0440\u0430\u0431\u043E\u0442\u0430\u0435\u0442",
-    navUseCases: "\u0421\u0446\u0435\u043D\u0430\u0440\u0438\u0438",
-    navPricing: "\u0422\u0430\u0440\u0438\u0444\u044B",
-    navFaq: "FAQ",
-    joinWaitlist: "\u0412 \u043B\u0438\u0441\u0442 \u043E\u0436\u0438\u0434\u0430\u043D\u0438\u044F",
-    heroEyebrow: "\u041F\u0440\u0438\u0432\u0430\u0442\u043D\u044B\u0439 desktop overlay",
+    logo: "⌘ LiveAssist AI",
+    navLabel: "Основная навигация",
+    navHow: "Как работает",
+    navUseCases: "Сценарии",
+    navPricing: "Тарифы",
+    navFaq: "Вопросы",
+    switchToRu: "Переключить язык на русский",
+    switchToEn: "Переключить язык на английский",
+    openMenuLabel: "Открыть меню",
+    closeMenuLabel: "Закрыть меню",
+    joinWaitlist: "В лист ожидания",
+    heroEyebrow: "Приватный оверлей на рабочем столе",
     heroHeadline:
-      "\u041D\u0438\u043A\u043E\u0433\u0434\u0430 \u0431\u043E\u043B\u044C\u0448\u0435 \u043D\u0435 \u043F\u0440\u0435\u0440\u044B\u0432\u0430\u0439 \u0437\u0432\u043E\u043D\u043E\u043A, \u0447\u0442\u043E\u0431\u044B \u043D\u0430\u0439\u0442\u0438 \u043E\u0442\u0432\u0435\u0442",
+      "Больше не ставьте звонок на паузу, чтобы найти ответ",
     heroSub:
-      "LiveAssist AI \u043C\u0433\u043D\u043E\u0432\u0435\u043D\u043D\u043E \u043D\u0430\u0445\u043E\u0434\u0438\u0442 \u043E\u0442\u0432\u0435\u0442\u044B \u0438\u0437 \u0432\u0430\u0448\u0438\u0445 \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u043E\u0432 \u043F\u0440\u044F\u043C\u043E \u0432\u043E \u0432\u0440\u0435\u043C\u044F \u0437\u0432\u043E\u043D\u043A\u0430 \u2014 \u0431\u0435\u0437 \u043F\u0435\u0440\u0435\u043A\u043B\u044E\u0447\u0435\u043D\u0438\u044F \u0432\u043A\u043B\u0430\u0434\u043E\u043A.",
-    heroPrimary: "\u0412 \u043B\u0438\u0441\u0442 \u043E\u0436\u0438\u0434\u0430\u043D\u0438\u044F \u2192",
-    heroSecondary: "\u041F\u043E\u0441\u043C\u043E\u0442\u0440\u0435\u0442\u044C \u043A\u0430\u043A \u0440\u0430\u0431\u043E\u0442\u0430\u0435\u0442",
+      "LiveAssist AI мгновенно находит ответы в документах вашей компании прямо во время разговора — без переключения вкладок и без выхода из звонка.",
+    heroPrimary: "В лист ожидания →",
+    heroSecondary: "Посмотреть как работает",
     mockup: {
-      ariaLabel: "\u0414\u0435\u043C\u043E overlay LiveAssist AI",
-      privateOverlay: "\u041F\u0440\u0438\u0432\u0430\u0442\u043D\u044B\u0439 overlay",
-      questionLabel: "\u0412\u043E\u043F\u0440\u043E\u0441",
-      question: "\u0412 \u0433\u043E\u0434\u043E\u0432\u043E\u0439 \u0442\u0430\u0440\u0438\u0444 \u0432\u0445\u043E\u0434\u0438\u0442 \u043E\u043D\u0431\u043E\u0440\u0434\u0438\u043D\u0433?",
-      answerLabel: "\u041E\u0442\u0432\u0435\u0442",
-      answer: "\u0414\u0430. \u0413\u043E\u0434\u043E\u0432\u044B\u0435 \u0442\u0430\u0440\u0438\u0444\u044B \u0432\u043A\u043B\u044E\u0447\u0430\u044E\u0442 \u043E\u043D\u0431\u043E\u0440\u0434\u0438\u043D\u0433 \u0438 \u043F\u0440\u0438\u043E\u0440\u0438\u0442\u0435\u0442\u043D\u0443\u044E \u043F\u043E\u0434\u0434\u0435\u0440\u0436\u043A\u0443.",
-      confidenceLabel: "\u0423\u0432\u0435\u0440\u0435\u043D\u043D\u043E\u0441\u0442\u044C AI",
-      confidenceValue: "94% \u0443\u0432\u0435\u0440\u0435\u043D",
+      ariaLabel: "Демо оверлея LiveAssist AI",
+      privateOverlay: "Приватный оверлей",
+      questionLabel: "Вопрос",
+      question: "В годовой тариф входит онбординг?",
+      answerLabel: "Ответ",
+      answer: "Да. В годовые тарифы входят онбординг и приоритетная поддержка.",
+      confidenceLabel: "Уверенность AI",
+      confidenceValue: "94% уверенности",
       sourceFile: "Pricing_Terms.pdf",
-      sourceMeta: "\u0421\u0442\u0440. 4 \u0438\u0437 12 \u00b7 \u041E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u043E \u0432 \u044F\u043D\u0432\u0430\u0440\u0435 2025",
-      openFile: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u2192",
-      answeredIn: "\u041E\u0442\u0432\u0435\u0442 \u0437\u0430 1,4 \u0441",
-      openingFile: "\u041E\u0442\u043A\u0440\u044B\u0432\u0430\u0435\u043C \u0444\u0430\u0439\u043B..."
+      sourceMeta: "Стр. 4 из 12 · Обновлено в январе 2025",
+      openFile: "Открыть →",
+      answeredIn: "Ответ за 1,4 с",
+      openingFile: "Открываем файл..."
     },
-    scrollyStep1: "\u0412\u0430\u0448 \u043C\u0435\u043D\u0435\u0434\u0436\u0435\u0440 \u043D\u0430 \u0436\u0438\u0432\u043E\u043C \u0437\u0432\u043E\u043D\u043A\u0435.",
-    scrollyStep2: "\u041A\u043B\u0438\u0435\u043D\u0442 \u0437\u0430\u0434\u0430\u0435\u0442 \u043A\u043E\u043D\u043A\u0440\u0435\u0442\u043D\u044B\u0439 \u0432\u043E\u043F\u0440\u043E\u0441.",
-    scrollyKey: "\u2318 J",
-    scrollyStep3: "\u041C\u0435\u043D\u0435\u0434\u0436\u0435\u0440 \u043D\u0430\u0436\u0438\u043C\u0430\u0435\u0442 \u2318J",
-    scrollyStep4: "\u041E\u0442\u0432\u0435\u0442 \u0437\u0430 1\u20132 \u0441\u0435\u043A\u0443\u043D\u0434\u044B. \u0418\u0441\u0442\u043E\u0447\u043D\u0438\u043A \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D.",
-    scrollyStep5: "\u041E\u0441\u0442\u0430\u0432\u0430\u0439\u0442\u0435\u0441\u044C \u0432 \u0437\u0432\u043E\u043D\u043A\u0435. \u0414\u0435\u0440\u0436\u0438\u0442\u0435 \u043E\u0442\u0432\u0435\u0442 \u043F\u043E\u0434 \u0440\u0443\u043A\u043E\u0439.",
+    scrollyStep1: "Ваш менеджер уже на живом звонке.",
+    scrollyStep2: "Клиент задает конкретный вопрос.",
+    scrollyKey: "⌘ J",
+    scrollyStep3: "Менеджер нажимает ⌘J",
+    scrollyStep4: "Ответ за 1–2 секунды. Источник приложен.",
+    scrollyStep5: "Оставайтесь в разговоре. Держите ответ под рукой.",
     scrollyStep5Sub:
-      "\u0414\u0430\u0439\u0442\u0435 \u043A\u0430\u0436\u0434\u043E\u043C\u0443 \u043C\u0435\u043D\u0435\u0434\u0436\u0435\u0440\u0443 \u043F\u0440\u0438\u0432\u0430\u0442\u043D\u043E\u0433\u043E \u0430\u0441\u0441\u0438\u0441\u0442\u0435\u043D\u0442\u0430, \u043E\u0431\u0443\u0447\u0435\u043D\u043D\u043E\u0433\u043E \u043D\u0430 \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u0430\u0445 \u043A\u043E\u043C\u043F\u0430\u043D\u0438\u0438.",
-    featuresEyebrow: "\u0412\u043E\u0437\u043C\u043E\u0436\u043D\u043E\u0441\u0442\u0438",
+      "Дайте каждому менеджеру приватного ассистента, обученного на документах компании.",
+    featuresEyebrow: "Возможности",
     featuresTitle:
-      "\u0421\u043E\u0437\u0434\u0430\u043D \u0434\u043B\u044F \u043C\u043E\u043C\u0435\u043D\u0442\u0430, \u043A\u043E\u0433\u0434\u0430 \u043C\u0435\u043D\u0435\u0434\u0436\u0435\u0440\u0443 \u043D\u0443\u0436\u0435\u043D \u0442\u043E\u0447\u043D\u044B\u0439 \u043E\u0442\u0432\u0435\u0442",
+      "Создан для той самой секунды, когда менеджеру нужен точный ответ",
     featuresSub:
-      "\u0411\u044B\u0441\u0442\u0440\u044B\u0439 \u043F\u043E\u0438\u0441\u043A, \u043E\u0442\u0432\u0435\u0442\u044B \u0441 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0430\u043C\u0438 \u0438 \u043F\u0440\u0438\u0432\u0430\u0442\u043D\u044B\u0439 overlay, \u043A\u043E\u0442\u043E\u0440\u044B\u0439 \u043D\u0435 \u043C\u0435\u0448\u0430\u0435\u0442 \u0434\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0430.",
-    howEyebrow: "\u041A\u0430\u043A \u0440\u0430\u0431\u043E\u0442\u0430\u0435\u0442",
+      "Быстрый поиск, ответы с источниками и приватный оверлей, который не мешает, пока помощь не понадобится.",
+    howEyebrow: "Как работает",
     howTitle:
-      "\u0427\u0435\u0442\u044B\u0440\u0435 \u0448\u0430\u0433\u0430 \u043E\u0442 \u0445\u0430\u043E\u0441\u0430 \u0432 \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u0430\u0445 \u043A \u043E\u0442\u0432\u0435\u0442\u0430\u043C \u043D\u0430 \u0437\u0432\u043E\u043D\u043A\u0435",
-    useEyebrow: "\u0421\u0446\u0435\u043D\u0430\u0440\u0438\u0438",
+      "Четыре шага от хаоса в документах к точным ответам в звонке",
+    useEyebrow: "Сценарии",
     useTitle:
-      "\u0414\u043B\u044F \u043A\u043E\u043C\u0430\u043D\u0434, \u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u043E\u0442\u0432\u0435\u0447\u0430\u044E\u0442 \u043D\u0430 \u0432\u0430\u0436\u043D\u044B\u0435 \u0432\u043E\u043F\u0440\u043E\u0441\u044B \u0432 \u0440\u0435\u0430\u043B\u044C\u043D\u043E\u043C \u0432\u0440\u0435\u043C\u0435\u043D\u0438",
-    pricingEyebrow: "\u0422\u0430\u0440\u0438\u0444\u044B",
-    pricingTitle: "\u041F\u0440\u043E\u0441\u0442\u044B\u0435 \u043F\u043B\u0430\u043D\u044B \u0434\u043B\u044F \u0441\u043F\u0435\u0446\u0438\u0430\u043B\u0438\u0441\u0442\u043E\u0432 \u0438 \u043A\u043E\u043C\u0430\u043D\u0434",
-    popular: "\u041F\u043E\u043F\u0443\u043B\u044F\u0440\u043D\u044B\u0439",
-    faqEyebrow: "FAQ",
-    faqTitle: "\u041A\u043E\u0440\u043E\u0442\u043A\u043E \u043F\u0435\u0440\u0435\u0434 \u0440\u0430\u043D\u043D\u0438\u043C \u0434\u043E\u0441\u0442\u0443\u043F\u043E\u043C",
-    ctaLabel: "\u0420\u0430\u043D\u043D\u0438\u0439 \u0434\u043E\u0441\u0442\u0443\u043F",
-    ctaHeadline:
-      "\u041F\u043E\u043F\u0440\u043E\u0431\u0443\u0439\u0442\u0435 LiveAssist AI \u043E\u0434\u043D\u0438\u043C\u0438 \u0438\u0437 \u043F\u0435\u0440\u0432\u044B\u0445",
+      "Для команд, которые отвечают на важные вопросы в реальном времени",
+    pricingEyebrow: "Тарифы",
+    pricingTitle: "Простые планы для специалистов и команд",
+    popular: "Популярный выбор",
+    faqEyebrow: "Вопросы",
+    faqTitle: "Коротко перед ранним доступом",
+    faqSearchPlaceholder: "Искать вопросы...",
+    ctaLabel: "Ранний доступ",
+    ctaHeadline: "Попробуйте LiveAssist AI одними из первых",
     emailLabel: "Email",
     emailPlaceholder: "you@company.com",
-    ctaSub:
-      "\u0411\u0435\u0437 \u0441\u043F\u0430\u043C\u0430. \u041D\u0430\u043F\u0438\u0448\u0435\u043C, \u043A\u043E\u0433\u0434\u0430 \u043F\u0440\u043E\u0434\u0443\u043A\u0442 \u0431\u0443\u0434\u0435\u0442 \u0433\u043E\u0442\u043E\u0432.",
-    emailError: "\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u044B\u0439 email.",
+    ctaSub: "Без спама. Напишем, когда продукт будет готов.",
+    emailError: "Введите корректный email.",
     emailSuccess:
-      "\u0412\u044B \u0432 \u043B\u0438\u0441\u0442\u0435 \u043E\u0436\u0438\u0434\u0430\u043D\u0438\u044F. \u041D\u0430\u043F\u0438\u0448\u0435\u043C, \u043A\u043E\u0433\u0434\u0430 \u043E\u0442\u043A\u0440\u043E\u0435\u043C \u0440\u0430\u043D\u043D\u0438\u0439 \u0434\u043E\u0441\u0442\u0443\u043F.",
-    footerTagline:
-      "\u041C\u0433\u043D\u043E\u0432\u0435\u043D\u043D\u044B\u0435 \u043E\u0442\u0432\u0435\u0442\u044B \u0438\u0437 \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u043E\u0432 \u043A\u043E\u043C\u043F\u0430\u043D\u0438\u0438.",
-    privacy: "\u041A\u043E\u043D\u0444\u0438\u0434\u0435\u043D\u0446\u0438\u0430\u043B\u044C\u043D\u043E\u0441\u0442\u044C",
-    terms: "\u0423\u0441\u043B\u043E\u0432\u0438\u044F",
-    contact: "\u041A\u043E\u043D\u0442\u0430\u043A\u0442\u044B",
+      "Вы в листе ожидания. Напишем, когда откроем ранний доступ.",
+    footerTagline: "Мгновенные ответы из документов компании.",
+    privacy: "Конфиденциальность",
+    terms: "Условия",
+    contact: "Контакты",
     features: [
       [
-        "\u041C\u0433\u043D\u043E\u0432\u0435\u043D\u043D\u044B\u0435 \u043E\u0442\u0432\u0435\u0442\u044B \u0438\u0437 \u0432\u0430\u0448\u0438\u0445 \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u043E\u0432",
-        "PDF, FAQ, SOP \u0438 \u043F\u0440\u0430\u0439\u0441\u0438\u043D\u0433 \u0441\u0442\u0430\u043D\u043E\u0432\u044F\u0442\u0441\u044F \u0434\u043E\u0441\u0442\u0443\u043F\u043D\u044B \u043F\u0440\u044F\u043C\u043E \u0432\u043E \u0432\u0440\u0435\u043C\u044F \u0437\u0432\u043E\u043D\u043A\u0430."
+        "Мгновенные ответы из ваших документов",
+        "PDF, FAQ, SOP и страницы с тарифами становятся доступны прямо во время разговора."
       ],
       [
-        "\u0418\u0441\u0442\u043E\u0447\u043D\u0438\u043A \u0443 \u043A\u0430\u0436\u0434\u043E\u0433\u043E \u043E\u0442\u0432\u0435\u0442\u0430",
-        "\u041A\u0430\u0436\u0434\u044B\u0439 \u043E\u0442\u0432\u0435\u0442 \u043F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0435\u0442 \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442 \u0438 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443, \u0447\u0442\u043E\u0431\u044B \u043C\u0435\u043D\u0435\u0434\u0436\u0435\u0440 \u043C\u043E\u0433 \u0434\u043E\u0432\u0435\u0440\u044F\u0442\u044C \u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u0443."
+        "Источник у каждого ответа",
+        "Каждый ответ показывает, откуда он взят, чтобы менеджер мог быстро ему доверять и проверять факты."
       ],
       [
-        "\u041F\u043B\u0430\u0432\u0430\u044E\u0449\u0438\u0439 overlay \u043F\u043E\u0432\u0435\u0440\u0445 \u043B\u044E\u0431\u043E\u0433\u043E \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F",
-        "\u0420\u0430\u0431\u043E\u0442\u0430\u0435\u0442 \u043F\u043E\u0432\u0435\u0440\u0445 \u0437\u0432\u043E\u043D\u043A\u043E\u0432, CRM, \u043F\u043E\u0447\u0442\u044B, \u0447\u0430\u0442\u043E\u0432, \u0431\u0440\u0430\u0443\u0437\u0435\u0440\u0430 \u0438 desktop-\u043F\u0440\u043E\u0446\u0435\u0441\u0441\u043E\u0432."
+        "Плавающий оверлей поверх любого приложения",
+        "Работает поверх звонков, CRM, почты, чатов, браузера и других рабочих инструментов."
       ],
       [
-        "\u0421\u043D\u0430\u0447\u0430\u043B\u0430 hotkey",
-        "\u041D\u0430\u0436\u043C\u0438\u0442\u0435 \u2318J, \u0437\u0430\u0434\u0430\u0439\u0442\u0435 \u0432\u043E\u043F\u0440\u043E\u0441, \u043F\u043E\u043B\u0443\u0447\u0438\u0442\u0435 \u043E\u0442\u0432\u0435\u0442 \u0438 \u0432\u0435\u0440\u043D\u0438\u0442\u0435\u0441\u044C \u043A \u0440\u0430\u0437\u0433\u043E\u0432\u043E\u0440\u0443 \u0431\u0435\u0437 \u0432\u043A\u043B\u0430\u0434\u043E\u043A."
+        "Работа через горячую клавишу",
+        "Нажмите ⌘J, задайте вопрос, получите ответ и сразу вернитесь к разговору без переключения вкладок."
       ],
       [
-        "\u0413\u043E\u043B\u043E\u0441\u043E\u0432\u043E\u0439 \u0438\u043B\u0438 \u0442\u0435\u043A\u0441\u0442\u043E\u0432\u044B\u0439 \u0432\u0432\u043E\u0434",
-        "\u0417\u0430\u0434\u0430\u0432\u0430\u0439\u0442\u0435 \u0432\u043E\u043F\u0440\u043E\u0441 \u0442\u0435\u043A\u0441\u0442\u043E\u043C \u0438\u043B\u0438 \u0433\u043E\u043B\u043E\u0441\u043E\u043C, \u043A\u043E\u0433\u0434\u0430 \u0444\u043E\u0440\u043C\u0430\u0442 \u0440\u0430\u0437\u0433\u043E\u0432\u043E\u0440\u0430 \u044D\u0442\u043E \u043F\u043E\u0437\u0432\u043E\u043B\u044F\u0435\u0442."
+        "Голосовой или текстовый ввод",
+        "Задавайте вопрос текстом или голосом, когда формат разговора это позволяет."
       ],
       [
-        "\u0411\u0435\u0437 \u043F\u043E\u0441\u0442\u043E\u044F\u043D\u043D\u043E\u0433\u043E \u043F\u0440\u043E\u0441\u043B\u0443\u0448\u0438\u0432\u0430\u043D\u0438\u044F",
-        "LiveAssist \u0432\u043A\u043B\u044E\u0447\u0430\u0435\u0442\u0441\u044F \u0442\u043E\u043B\u044C\u043A\u043E \u043F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443 \u0438 \u043E\u0441\u0442\u0430\u0435\u0442\u0441\u044F \u043F\u0440\u0438\u0432\u0430\u0442\u043D\u044B\u043C \u0434\u043E \u043D\u0430\u0436\u0430\u0442\u0438\u044F hotkey."
+        "Без постоянного прослушивания",
+        "LiveAssist включается только по запросу и остается приватным, пока менеджер сам не позовет помощь."
       ]
     ],
     steps: [
-      ["\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u0435 \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B", "\u0414\u043E\u0431\u0430\u0432\u044C\u0442\u0435 PDF, FAQ, SOP, \u0443\u0441\u043B\u043E\u0432\u0438\u044F \u0442\u0430\u0440\u0438\u0444\u043E\u0432 \u0438 \u0432\u043D\u0443\u0442\u0440\u0435\u043D\u043D\u0438\u0435 \u043F\u043E\u043B\u0438\u0442\u0438\u043A\u0438."],
-      ["\u041D\u0430\u0447\u043D\u0438\u0442\u0435 \u0437\u0432\u043E\u043D\u043E\u043A \u0441 \u043A\u043B\u0438\u0435\u043D\u0442\u043E\u043C", "\u041F\u0440\u043E\u0434\u043E\u043B\u0436\u0430\u0439\u0442\u0435 \u0440\u0430\u0431\u043E\u0442\u0430\u0442\u044C \u0432 \u043F\u0440\u0438\u0432\u044B\u0447\u043D\u043E\u043C call, CRM \u0438\u043B\u0438 support-\u0438\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u0435."],
-      ["\u041D\u0430\u0436\u043C\u0438\u0442\u0435 hotkey", "\u041E\u0442\u043A\u0440\u043E\u0439\u0442\u0435 \u043F\u0440\u0438\u0432\u0430\u0442\u043D\u044B\u0439 overlay \u0432 \u043C\u043E\u043C\u0435\u043D\u0442, \u043A\u043E\u0433\u0434\u0430 \u043F\u043E\u044F\u0432\u0438\u043B\u0441\u044F \u0432\u043E\u043F\u0440\u043E\u0441."],
-      ["\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u0435 \u043E\u0442\u0432\u0435\u0442 \u0441 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u043E\u043C", "\u041F\u0440\u043E\u0447\u0438\u0442\u0430\u0439\u0442\u0435 \u043A\u043E\u0440\u043E\u0442\u043A\u0438\u0439 \u043E\u0442\u0432\u0435\u0442 \u0438 \u0442\u043E\u0447\u043D\u044B\u0439 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A \u043F\u043E\u0434 \u043D\u0438\u043C."]
+      ["Загрузите документы", "Добавьте PDF, FAQ, SOP, условия тарифов и внутренние политики."],
+      ["Начните звонок с клиентом", "Продолжайте работать в привычном инструменте для звонков, CRM или службе поддержки."],
+      ["Нажмите горячую клавишу", "Откройте приватный оверлей в тот момент, когда появился вопрос."],
+      ["Получите ответ с источником", "Прочитайте короткий ответ и точный источник под ним."]
     ],
     useCases: [
-      "\u041C\u0435\u043D\u0435\u0434\u0436\u0435\u0440\u044B \u043E\u043D\u043B\u0430\u0439\u043D-\u0448\u043A\u043E\u043B",
-      "\u0422\u0443\u0440\u0438\u0441\u0442\u0438\u0447\u0435\u0441\u043A\u0438\u0435 \u0430\u0433\u0435\u043D\u0442\u044B",
-      "\u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u044B \u043A\u043B\u0438\u043D\u0438\u043A",
-      "\u041C\u0435\u043D\u0435\u0434\u0436\u0435\u0440\u044B \u0430\u0432\u0442\u043E\u0441\u0435\u0440\u0432\u0438\u0441\u043E\u0432",
-      "\u0420\u0438\u0435\u043B\u0442\u043E\u0440\u044B",
-      "B2B sales \u043A\u043E\u043C\u0430\u043D\u0434\u044B",
-      "Support \u0430\u0433\u0435\u043D\u0442\u044B",
-      "\u0424\u0440\u0438\u043B\u0430\u043D\u0441\u0435\u0440\u044B \u0438 \u043A\u043E\u043D\u0441\u0443\u043B\u044C\u0442\u0430\u043D\u0442\u044B"
+      "Менеджеры онлайн-школ",
+      "Туристические агенты",
+      "Администраторы клиник",
+      "Менеджеры автосервисов",
+      "Риелторы",
+      "B2B-команды продаж",
+      "Сотрудники поддержки",
+      "Фрилансеры и консультанты"
     ],
     pricing: [
       {
-        name: "Solo",
+        name: "Соло",
         price: "$19",
-        period: "/\u043C\u0435\u0441",
-        description: "\u0414\u043B\u044F \u043E\u0434\u043D\u043E\u0433\u043E \u043C\u0435\u043D\u0435\u0434\u0436\u0435\u0440\u0430, \u043A\u043E\u043D\u0441\u0443\u043B\u044C\u0442\u0430\u043D\u0442\u0430 \u0438\u043B\u0438 \u043E\u043F\u0435\u0440\u0430\u0442\u043E\u0440\u0430.",
+        period: "/мес",
+        description: "Для одного менеджера, консультанта или оператора.",
         features: [
-          "\u041B\u0438\u0447\u043D\u0430\u044F \u0431\u0438\u0431\u043B\u0438\u043E\u0442\u0435\u043A\u0430 \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u043E\u0432",
-          "Desktop overlay",
-          "\u041E\u0442\u0432\u0435\u0442\u044B \u043F\u043E hotkey",
-          "\u0418\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0438 \u0443 \u043E\u0442\u0432\u0435\u0442\u043E\u0432"
+          "Личная библиотека документов",
+          "Оверлей на рабочем столе",
+          "Ответы по горячей клавише",
+          "Источники у ответов"
         ]
       },
       {
-        name: "Team",
+        name: "Команда",
         price: "$99",
-        period: "/\u043C\u0435\u0441",
-        description: "\u0414\u043B\u044F \u043D\u0435\u0431\u043E\u043B\u044C\u0448\u0438\u0445 customer-facing \u043A\u043E\u043C\u0430\u043D\u0434.",
+        period: "/мес",
+        description: "Для небольших команд, которые общаются с клиентами.",
         highlighted: true,
         features: [
-          "\u0414\u043E 5 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u0435\u0439",
-          "\u041E\u0431\u0449\u0430\u044F \u0431\u0430\u0437\u0430 \u0437\u043D\u0430\u043D\u0438\u0439",
-          "\u0410\u0434\u043C\u0438\u043D-\u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438",
-          "\u041F\u0440\u0438\u043E\u0440\u0438\u0442\u0435\u0442\u043D\u044B\u0439 \u043E\u043D\u0431\u043E\u0440\u0434\u0438\u043D\u0433"
+          "До 5 пользователей",
+          "Общая база знаний компании",
+          "Админ-настройки",
+          "Приоритетный онбординг"
         ]
       },
       {
-        name: "Custom",
-        price: "\u0421\u0432\u044F\u0437\u0430\u0442\u044C\u0441\u044F",
+        name: "Индивидуально",
+        price: "Связаться",
         period: "",
-        description: "\u0414\u043B\u044F \u0431\u043E\u043B\u044C\u0448\u0438\u0445 \u043A\u043E\u043C\u0430\u043D\u0434 \u0438 \u0441\u043B\u043E\u0436\u043D\u044B\u0445 \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u043E\u0432.",
+        description: "Для больших команд и сложных наборов документов.",
         features: [
-          "\u0418\u043D\u0434\u0438\u0432\u0438\u0434\u0443\u0430\u043B\u044C\u043D\u044B\u0439 \u043E\u043D\u0431\u043E\u0440\u0434\u0438\u043D\u0433",
-          "\u0420\u0430\u0441\u0448\u0438\u0440\u0435\u043D\u043D\u044B\u0435 \u043F\u0440\u0430\u0432\u0430",
-          "\u0411\u043E\u043B\u044C\u0448\u043E\u0439 \u043E\u0431\u044A\u0435\u043C \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u043E\u0432",
-          "\u041F\u043E\u0434\u0434\u0435\u0440\u0436\u043A\u0430 \u0432\u043D\u0435\u0434\u0440\u0435\u043D\u0438\u044F"
+          "Индивидуальный онбординг",
+          "Расширенные права доступа",
+          "Большой объем документов",
+          "Поддержка внедрения"
         ]
       }
     ],
     faqs: [
       [
-        "LiveAssist AI \u0441\u043B\u0443\u0448\u0430\u0435\u0442 \u0432\u0441\u0435 \u0432\u0440\u0435\u043C\u044F?",
-        "\u041D\u0435\u0442. LiveAssist AI \u0440\u0430\u0431\u043E\u0442\u0430\u0435\u0442 \u0447\u0435\u0440\u0435\u0437 hotkey \u0438 \u0432\u043A\u043B\u044E\u0447\u0430\u0435\u0442\u0441\u044F \u0442\u043E\u043B\u044C\u043A\u043E \u043A\u043E\u0433\u0434\u0430 \u043C\u0435\u043D\u0435\u0434\u0436\u0435\u0440 \u043F\u0440\u043E\u0441\u0438\u0442 \u043F\u043E\u043C\u043E\u0449\u044C."
+        "LiveAssist AI слушает всё время?",
+        "Нет. LiveAssist AI работает через горячую клавишу и включается только тогда, когда менеджер сам просит помощь. До нажатия ⌘J ничего не записывается и не обрабатывается."
       ],
       [
-        "\u041E\u0442\u043A\u0443\u0434\u0430 \u0431\u0435\u0440\u0443\u0442\u0441\u044F \u043E\u0442\u0432\u0435\u0442\u044B?",
-        "\u041E\u0442\u0432\u0435\u0442\u044B \u0431\u0435\u0440\u0443\u0442\u0441\u044F \u0438\u0437 \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043D\u043D\u044B\u0445 \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u043E\u0432 \u043A\u043E\u043C\u043F\u0430\u043D\u0438\u0438: PDF, FAQ, \u0443\u0441\u043B\u043E\u0432\u0438\u0439 \u0442\u0430\u0440\u0438\u0444\u043E\u0432, SOP \u0438 \u0441\u0442\u0440\u0430\u043D\u0438\u0446 \u0431\u0430\u0437\u044B \u0437\u043D\u0430\u043D\u0438\u0439."
+        "Откуда берутся ответы?",
+        "Ответы берутся только из загруженных документов компании: PDF, FAQ, страниц с тарифами, SOP и материалов базы знаний. LiveAssist не тянет ответы из открытого интернета."
       ],
       [
-        "\u041A\u043B\u0438\u0435\u043D\u0442 \u0432\u0438\u0434\u0438\u0442 overlay?",
-        "\u041D\u0435\u0442. Overlay \u0432\u0438\u0434\u0438\u0442 \u0442\u043E\u043B\u044C\u043A\u043E \u043C\u0435\u043D\u0435\u0434\u0436\u0435\u0440 \u043D\u0430 \u0441\u0432\u043E\u0435\u043C \u043A\u043E\u043C\u043F\u044C\u044E\u0442\u0435\u0440\u0435, \u043A\u043B\u0438\u0435\u043D\u0442 \u043D\u0435 \u0432\u0438\u0434\u0438\u0442 \u0435\u0433\u043E \u0432 \u0437\u0432\u043E\u043D\u043A\u0435."
+        "Клиент видит оверлей?",
+        "Нет. Оверлей видит только менеджер на своем экране. По умолчанию он не показывается клиенту в звонке и не попадает в демонстрацию экрана."
       ],
       [
-        "\u042D\u0442\u043E \u0442\u043E\u043B\u044C\u043A\u043E \u0434\u043B\u044F sales-\u043A\u043E\u043C\u0430\u043D\u0434?",
-        "\u041D\u0435\u0442. \u041F\u0440\u043E\u0434\u0443\u043A\u0442 \u043F\u043E\u0434\u0445\u043E\u0434\u0438\u0442 support-\u043A\u043E\u043C\u0430\u043D\u0434\u0430\u043C, \u043A\u043B\u0438\u043D\u0438\u043A\u0430\u043C, \u043E\u043D\u043B\u0430\u0439\u043D-\u0448\u043A\u043E\u043B\u0430\u043C, \u0430\u0433\u0435\u043D\u0442\u0441\u0442\u0432\u0430\u043C, \u0440\u0438\u0435\u043B\u0442\u043E\u0440\u0430\u043C, \u043A\u043E\u043D\u0441\u0443\u043B\u044C\u0442\u0430\u043D\u0442\u0430\u043C \u0438 \u0432\u0441\u0435\u043C, \u043A\u0442\u043E \u043E\u0442\u0432\u0435\u0447\u0430\u0435\u0442 \u043A\u043B\u0438\u0435\u043D\u0442\u0430\u043C \u0432\u0436\u0438\u0432\u0443\u044E."
+        "Это только для отделов продаж?",
+        "Нет. LiveAssist подходит службе поддержки, клиникам, онлайн-школам, турагентствам, риелторам, консультантам и любым командам, которые отвечают на живые вопросы клиентов."
       ],
       [
-        "\u042D\u0442\u043E \u0437\u0430\u043C\u0435\u043D\u044F\u0435\u0442 CRM \u0438\u043B\u0438 \u0431\u0430\u0437\u0443 \u0437\u043D\u0430\u043D\u0438\u0439?",
-        "\u041D\u0435\u0442. \u041E\u043D \u0440\u0430\u0431\u043E\u0442\u0430\u0435\u0442 \u043F\u043E\u0432\u0435\u0440\u0445 \u0432\u0430\u0448\u0438\u0445 \u0442\u0435\u043A\u0443\u0449\u0438\u0445 \u0438\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u043E\u0432 \u0438 \u0434\u043E\u0441\u0442\u0430\u0435\u0442 \u043D\u0443\u0436\u043D\u044B\u0439 \u043E\u0442\u0432\u0435\u0442 \u0432 \u043C\u043E\u043C\u0435\u043D\u0442 \u0440\u0430\u0437\u0433\u043E\u0432\u043E\u0440\u0430."
+        "Он заменяет CRM или базу знаний?",
+        "Нет. LiveAssist работает поверх ваших текущих инструментов. Он читает документы и подсказывает ответ в нужный момент, а CRM, почта и звонки остаются как есть."
       ]
     ]
   }

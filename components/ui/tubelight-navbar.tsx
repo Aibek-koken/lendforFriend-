@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import type { LucideIcon } from 'lucide-react';
 
 export type TubelightNavItem = {
+  id: string;
   name: string;
   url: string;
   icon: LucideIcon;
@@ -17,7 +18,7 @@ export function NavBar({
 }: {
   items: TubelightNavItem[];
   activeTab: string;
-  setActiveTab: (name: string) => void;
+  setActiveTab: (id: string) => void;
   className?: string;
 }) {
   return (
@@ -25,13 +26,13 @@ export function NavBar({
       <div className="inline-flex items-center justify-center gap-1 rounded-full border border-[#e5e5ea] bg-[rgba(255,255,255,0.72)] p-1 shadow-[0_1px_0_rgba(255,255,255,0.8)_inset] backdrop-blur-xl">
         {items.map((item) => {
           const Icon = item.icon;
-          const isActive = activeTab === item.name;
+          const isActive = activeTab === item.id;
 
           return (
             <a
-              key={item.name}
+              key={item.id}
               href={item.url}
-              onClick={() => setActiveTab(item.name)}
+              onClick={() => setActiveTab(item.id)}
               className={`relative isolate inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-[14px] text-[13px] font-[560] transition-colors duration-150 ${
                 isActive ? 'text-[#5e5ce6]' : 'text-[#6e6e73] hover:text-[#5e5ce6]'
               }`}

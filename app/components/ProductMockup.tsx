@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useRef, useEffect, useCallback } from "react";
 import type { CSSProperties } from "react";
+import type { Lang } from "@/lib/strings";
 
 type ProductMockupCopy = {
   ariaLabel: string;
@@ -33,6 +34,7 @@ type OnboardingHint = {
 
 type ProductMockupProps = {
   copy: ProductMockupCopy;
+  lang: Lang;
   onboarding?: boolean;
   staticState?: boolean;
   large?: boolean;
@@ -40,6 +42,7 @@ type ProductMockupProps = {
 
 export default function ProductMockup({
   copy,
+  lang,
   onboarding = false,
   staticState = false,
   large = false,
@@ -69,7 +72,7 @@ export default function ProductMockup({
   const outerPadding = large ? "28px 32px" : "20px 24px";
   const fileAccent = onboarding ? "#1F9D63" : "#5E5CE6";
   const sourceButtonBg = onboarding ? "#1D1D1F" : "#5E5CE6";
-  const isRussian = copy.questionLabel === "Вопрос";
+  const isRussian = lang === "ru";
   const hints: OnboardingHint[] = isRussian
     ? [
         {
