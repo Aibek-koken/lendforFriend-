@@ -38,6 +38,12 @@ type ProductMockupProps = {
   onboarding?: boolean;
   staticState?: boolean;
   large?: boolean;
+  /** Если передан — активирует тултип по id через скролл, игнорируя hover */
+  scrollActiveHintId?: string | null;
+  /** Колбэк когда анимация завершилась (для hero-scroll интеграции) */
+  onAnimationComplete?: () => void;
+  /** Мгновенно пропустить анимацию и перейти в финальное состояние */
+  skipAnimation?: boolean;
 };
 
 export default function ProductMockup({
@@ -46,6 +52,9 @@ export default function ProductMockup({
   onboarding = false,
   staticState = false,
   large = false,
+  scrollActiveHintId,
+  onAnimationComplete,
+  skipAnimation = false,
 }: ProductMockupProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLSpanElement>(null);
@@ -62,7 +71,7 @@ export default function ProductMockup({
 
   const [typedText, setTypedText] = useState("");
   const [isDemoReady, setIsDemoReady] = useState(false);
-  const [activeHint, setActiveHint] = useState<OnboardingHint | null>(null);
+  const [hoverHint, setHoverHint] = useState<OnboardingHint | null>(null);
   const reduceMotionRef = useRef(false);
 
   const charDelay = 42;
@@ -73,6 +82,7 @@ export default function ProductMockup({
   const fileAccent = onboarding ? "#1F9D63" : "#5E5CE6";
   const sourceButtonBg = onboarding ? "#1D1D1F" : "#5E5CE6";
   const isRussian = lang === "ru";
+
   const hints: OnboardingHint[] = isRussian
     ? [
         {
@@ -191,6 +201,11 @@ export default function ProductMockup({
         },
       ];
 
+  // Активный hint: scroll-driven имеет приоритет над hover
+  const activeHint = scrollActiveHintId != null
+    ? (hints.find((h) => h.id === scrollActiveHintId) ?? null)
+    : hoverHint;
+
   function safeTimeout(fn: () => void, delay: number) {
     const id = setTimeout(fn, delay);
     timeoutsRef.current.push(id);
@@ -210,7 +225,7 @@ export default function ProductMockup({
     if (!card) return;
 
     setIsDemoReady(false);
-    setActiveHint(null);
+    setHoverHint(null);
 
     card.style.transition = "none";
     card.style.width = `${baseWidth}px`;
@@ -418,8 +433,10 @@ export default function ProductMockup({
       hasPlayedRef.current = true;
       setIsDemoReady(true);
       if (floatRef.current) floatRef.current.style.animationPlayState = "paused";
+      // Уведомляем родителя что анимация завершена
+      onAnimationComplete?.();
     }, 4200);
-  }, [copy.question, expandedMaxHeight, expandedWidth, resetDOM]);
+  }, [copy.question, expandedMaxHeight, expandedWidth, resetDOM, onAnimationComplete]);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -478,6 +495,15 @@ export default function ProductMockup({
     };
   }, [resetDOM, runSequence, showFinalState, staticState]);
 
+  // Мгновенный пропуск анимации (когда пользователь скроллит до её завершения)
+  useEffect(() => {
+    if (!skipAnimation) return;
+    if (hasPlayedRef.current) return;
+    stopAnimation();
+    showFinalState();
+    onAnimationComplete?.();
+  }, [skipAnimation, showFinalState, onAnimationComplete]);
+
   function handleOpen() {
     const toast = toastRef.current;
     if (!toast) return;
@@ -502,6 +528,7 @@ export default function ProductMockup({
       style={{
         animation: staticState ? "none" : "hero-card-float 4s ease-in-out infinite",
         animationPlayState: "paused",
+        overflow: staticState ? "visible" : undefined,
       }}
     >
       <div
@@ -512,13 +539,14 @@ export default function ProductMockup({
           width: baseWidth,
           opacity: 0,
           transform: "scale(0.95)",
-          overflow: "hidden",
+          overflow: staticState ? "visible" : "hidden",
           boxShadow:
             "0 32px 80px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06)",
           padding: outerPadding,
         }}
         aria-label={copy.ariaLabel}
       >
+        {/* Header */}
         <div
           className="flex items-center justify-between pb-4 mb-4"
           style={{ borderBottom: "1px solid #F0F0F0" }}
@@ -540,6 +568,7 @@ export default function ProductMockup({
           />
         </div>
 
+        {/* Question */}
         <div className={large ? "mb-5" : "mb-3"}>
           <p
             className={large ? "text-[12px] uppercase mb-[8px]" : "text-[10px] uppercase mb-[6px]"}
@@ -568,6 +597,7 @@ export default function ProductMockup({
           </div>
         </div>
 
+        {/* Loader */}
         <div
           data-loader
           className="flex gap-[5px] items-center py-2"
@@ -587,6 +617,7 @@ export default function ProductMockup({
           ))}
         </div>
 
+        {/* Answer */}
         <div
           ref={answerBlockRef}
           className={large ? "mb-5" : "mb-3"}
@@ -616,6 +647,7 @@ export default function ProductMockup({
           </div>
         </div>
 
+        {/* Confidence */}
         <div
           ref={confidenceRef}
           className={large ? "mb-5" : "mb-3"}
@@ -653,6 +685,7 @@ export default function ProductMockup({
           </p>
         </div>
 
+        {/* Citation / Source */}
         <div
           ref={citationRef}
           style={{
@@ -683,24 +716,9 @@ export default function ProductMockup({
                     stroke={fileAccent}
                     strokeWidth="1.2"
                   />
-                  <path
-                    d="M4 4.5H12"
-                    stroke={fileAccent}
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M4 7H12"
-                    stroke={fileAccent}
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M4 9.5H8"
-                    stroke={fileAccent}
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
+                  <path d="M4 4.5H12" stroke={fileAccent} strokeWidth="1.2" strokeLinecap="round" />
+                  <path d="M4 7H12" stroke={fileAccent} strokeWidth="1.2" strokeLinecap="round" />
+                  <path d="M4 9.5H8" stroke={fileAccent} strokeWidth="1.2" strokeLinecap="round" />
                 </svg>
                 <div className="min-w-0">
                   <p
@@ -732,19 +750,22 @@ export default function ProductMockup({
           </div>
         </div>
 
+        {/* Onboarding hint zones + tooltip */}
         {onboarding && isDemoReady ? (
           <>
             {hints.map((hint) => {
               const isActive = activeHint?.id === hint.id;
+              // В scroll-режиме hover-зоны визуально подсвечиваются, но не меняют activeHint
+              const isScrollMode = scrollActiveHintId != null;
 
               return (
                 <button
                   key={hint.id}
                   type="button"
-                  onPointerEnter={() => setActiveHint(hint)}
-                  onPointerLeave={() => setActiveHint(null)}
-                  onFocus={() => setActiveHint(hint)}
-                  onBlur={() => setActiveHint(null)}
+                  onPointerEnter={() => { if (!isScrollMode) setHoverHint(hint); }}
+                  onPointerLeave={() => { if (!isScrollMode) setHoverHint(null); }}
+                  onFocus={() => { if (!isScrollMode) setHoverHint(hint); }}
+                  onBlur={() => { if (!isScrollMode) setHoverHint(null); }}
                   className={`absolute z-20 rounded-[14px] border bg-transparent text-left transition-[border-color,box-shadow,background-color] duration-200 ease-out focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[rgba(31,157,99,0.28)] ${
                     isActive
                       ? "border-[rgba(31,157,99,0.22)] bg-[rgba(31,157,99,0.03)] shadow-[0_0_0_4px_rgba(15,23,42,0.04)]"
@@ -802,6 +823,7 @@ export default function ProductMockup({
           </>
         ) : null}
 
+        {/* Toast */}
         <div
           ref={toastRef}
           className="text-[12px] text-center py-2 rounded-lg mt-2"

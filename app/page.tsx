@@ -32,6 +32,7 @@ const navConfig = [
 ] as const;
 
 const faqIds = ["listening", "sources", "customer", "sales-only", "crm"] as const;
+const HINT_IDS = ["question", "answer", "confidence", "source"] as const;
 
 type PricingPlan = {
   name: string;
@@ -58,6 +59,18 @@ export default function HomePage() {
   const scrollyLastRawRef = useRef(-1);
 
   const scrollyRef = useRef<HTMLElement>(null);
+  // Hero scroll refs
+  const heroRef = useRef<HTMLElement>(null);
+  const heroProgressRef = useRef(0);
+  const heroTargetRef = useRef(0);
+
+  // Hero scroll state
+  const [heroPhase, setHeroPhase] = useState<"hero" | "transition" | "hints">("hero");
+  const [heroScrollProgress, setHeroScrollProgress] = useState(0);
+  const [activeScrollHint, setActiveScrollHint] = useState<string | null>(null);
+  const [animComplete, setAnimComplete] = useState(false);
+  const [skipAnim, setSkipAnim] = useState(false);
+  const scrollLockedRef = useRef(false);
 
   const t = (key: string) => {
     const val = (strings[lang] as Record<string, unknown>)[key];
@@ -194,6 +207,77 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
+    if (animComplete) {
+      document.body.style.overflow = "";
+      scrollLockedRef.current = false;
+      return;
+    }
+
+    document.body.style.overflow = "hidden";
+    scrollLockedRef.current = true;
+
+    const trigger = () => {
+      if (scrollLockedRef.current) {
+        setSkipAnim(true);
+      }
+    };
+
+    window.addEventListener("wheel", trigger, { passive: true });
+    window.addEventListener("touchmove", trigger, { passive: true });
+
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("wheel", trigger);
+      window.removeEventListener("touchmove", trigger);
+    };
+  }, [animComplete]);
+
+  // Hero scroll-driven animation
+  useEffect(() => {
+    if (!animComplete) return;
+    const section = heroRef.current;
+    if (!section) return;
+    let rafId: number;
+
+    const onScroll = () => {
+      const rect = section.getBoundingClientRect();
+      const total = section.offsetHeight - window.innerHeight;
+      if (total <= 0) return;
+      heroTargetRef.current = Math.min(1, Math.max(0, -rect.top / total));
+    };
+
+    const tick = () => {
+      heroProgressRef.current +=
+        (heroTargetRef.current - heroProgressRef.current) * 0.1;
+      const p = heroProgressRef.current;
+      setHeroScrollProgress(p);
+
+      if (p < 0.05) {
+        setHeroPhase("hero");
+        setActiveScrollHint(null);
+      } else if (p < 0.25) {
+        setHeroPhase("transition");
+        setActiveScrollHint(null);
+      } else {
+        setHeroPhase("hints");
+        const hintsP = (p - 0.25) / 0.75;
+        const idx = Math.min(3, Math.floor(hintsP * 4));
+        setActiveScrollHint(HINT_IDS[idx]);
+      }
+
+      rafId = requestAnimationFrame(tick);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    rafId = requestAnimationFrame(tick);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(rafId);
+    };
+  }, [animComplete]);
+
+  useEffect(() => {
     if (menuOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -307,81 +391,232 @@ export default function HomePage() {
       </header>
 
       <main id="top" style={{ overflow: "clip" }}>
-        {/* HERO */}
+        {/* HERO + ONBOARDING — объединённая sticky-секция */}
         <section
-          className="flex items-center px-5"
-          style={{
-            minHeight: "100svh",
-            padding: "132px 20px 88px",
-            background:
-              "radial-gradient(circle at 82% 22%, rgba(94,92,230,0.12), transparent 30%), linear-gradient(180deg, #ffffff 0%, #fbfbfd 78%, #f5f5f7 100%)",
-          }}
+          ref={heroRef}
+          id="hero"
+          className="relative"
+          style={{ minHeight: animComplete ? "300vh" : "100svh" }}
         >
           <div
-            className="grid items-center gap-16 w-full mx-auto"
+            className="sticky top-0 flex items-center overflow-hidden"
             style={{
-              gridTemplateColumns: "minmax(0, 1.08fr) minmax(360px, 0.72fr)",
-              maxWidth: "min(1180px, 100%)",
+              minHeight: "100svh",
+              padding: "132px 20px 88px",
+              background:
+                "radial-gradient(circle at 82% 22%, rgba(94,92,230,0.12), transparent 30%), linear-gradient(180deg, #ffffff 0%, #fbfbfd 78%, #f5f5f7 100%)",
             }}
           >
-            <div>
-              <AnimateOnScroll
-                as="p"
-                delay={0}
-                className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-5"
-              >
-                {t("heroEyebrow")}
-              </AnimateOnScroll>
-              <AnimateOnScroll
-                as="h1"
-                delay={0.08}
-                className="font-[760] leading-[0.96] mb-6"
-                style={{
-                  fontFamily:
-                    '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif',
-                  fontSize: "clamp(48px, 7vw, 86px)",
-                  letterSpacing: 0,
-                }}
-              >
-                {t("heroHeadline")}
-              </AnimateOnScroll>
-              <AnimateOnScroll
-                as="p"
-                delay={0.16}
-                className="text-[21px] leading-[1.45] text-[#6e6e73] mb-8 max-w-[650px]"
-              >
-                {t("heroSub")}
-              </AnimateOnScroll>
-              <AnimateOnScroll delay={0.22} className="flex flex-wrap gap-3">
-                <a
-                  href="#waitlist"
-                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[650] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
-                >
-                  {t("heroPrimary")}
-                </a>
-                <a
-                  href="#scrolly"
-                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[650] leading-none border border-[#e5e5ea] bg-[rgba(255,255,255,0.76)] text-[#1d1d1f] transition-all duration-150 hover:border-[rgba(94,92,230,0.38)] hover:text-[#5e5ce6] hover:-translate-y-px"
-                >
-                  {t("heroSecondary")}
-                </a>
-              </AnimateOnScroll>
-            </div>
-
-            <AnimateOnScroll delay={0.3} y={48} className="relative min-h-[520px] flex items-center justify-center">
+            <div
+              className="w-full mx-auto relative"
+              style={{ maxWidth: "min(1180px, 100%)", minHeight: "100%" }}
+            >
+              {/* ── Текст Hero (уходит при скролле) ── */}
               <div
-                className="absolute rounded-full"
-                aria-hidden="true"
+                className="absolute left-0 top-1/2"
                 style={{
-                  width: "min(560px, 94vw)",
-                  aspectRatio: 1,
-                  background:
-                    "radial-gradient(circle, rgba(94,92,230,0.18), transparent 62%), radial-gradient(circle at 32% 28%, rgba(33,168,154,0.16), transparent 38%)",
-                  filter: "blur(4px)",
+                  width: "46%",
+                  transform: "translateY(-50%)",
+                  opacity: Math.max(0, 1 - heroScrollProgress * 8),
+                  pointerEvents: heroPhase === "hero" ? "auto" : "none",
                 }}
-              />
-              <ProductMockup copy={strings[lang].mockup} lang={lang} />
-            </AnimateOnScroll>
+              >
+                <AnimateOnScroll
+                  as="p"
+                  delay={0}
+                  className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-5"
+                >
+                  {t("heroEyebrow")}
+                </AnimateOnScroll>
+                <AnimateOnScroll
+                  as="h1"
+                  delay={0.08}
+                  className="font-[760] leading-[0.96] mb-6"
+                  style={{
+                    fontFamily:
+                      '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif',
+                    fontSize: "clamp(48px, 7vw, 86px)",
+                    letterSpacing: 0,
+                  }}
+                >
+                  {t("heroHeadline")}
+                </AnimateOnScroll>
+                <AnimateOnScroll
+                  as="p"
+                  delay={0.16}
+                  className="text-[21px] leading-[1.45] text-[#6e6e73] mb-8 max-w-[520px]"
+                >
+                  {t("heroSub")}
+                </AnimateOnScroll>
+                <AnimateOnScroll delay={0.22} className="flex flex-wrap gap-3">
+                  <a
+                    href="#waitlist"
+                    className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[650] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
+                  >
+                    {t("heroPrimary")}
+                  </a>
+                  <a
+                    href="#scrolly"
+                    className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[650] leading-none border border-[#e5e5ea] bg-[rgba(255,255,255,0.76)] text-[#1d1d1f] transition-all duration-150 hover:border-[rgba(94,92,230,0.38)] hover:text-[#5e5ce6] hover:-translate-y-px"
+                  >
+                    {t("heroSecondary")}
+                  </a>
+                </AnimateOnScroll>
+              </div>
+
+              {/* ── Текст Onboarding (появляется в hints-фазе слева) ── */}
+              {animComplete && (
+                <div
+                  className="absolute left-0 top-1/2"
+                  style={{
+                    width: "38%",
+                    transform: "translateY(-50%)",
+                  opacity:
+                    heroPhase === "hints"
+                      ? Math.min(1, (heroScrollProgress - 0.25) / 0.06)
+                      : 0,
+                    pointerEvents: "none",
+                    zIndex: 10,
+                  }}
+                >
+                  <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-5">
+                    {lang === "ru" ? "Разберём по частям" : "Let's break it down"}
+                  </p>
+
+                  {activeScrollHint &&
+                    (() => {
+                      const texts: Record<string, { title: string; body: string }> =
+                        lang === "ru"
+                          ? {
+                              question: {
+                                title: "Вопрос клиента",
+                                body: "Менеджер нажимает хоткей прямо во время звонка и вбивает вопрос. Клиент ничего не замечает.",
+                              },
+                              answer: {
+                                title: "Готовый ответ",
+                                body: "AI ищет по документам компании и выдаёт конкретную фразу — её можно сразу сказать клиенту.",
+                              },
+                              confidence: {
+                                title: "Уверенность AI",
+                                body: "Видишь 94% — смело говоришь. Низкий процент — лучше уточнить перед ответом.",
+                              },
+                              source: {
+                                title: "Источник ответа",
+                                body: "Конкретный файл и страница. Можно открыть и показать клиенту прямо на звонке.",
+                              },
+                            }
+                          : {
+                              question: {
+                                title: "Customer question",
+                                body: "The rep presses a hotkey mid-call and types the question — the customer never notices.",
+                              },
+                              answer: {
+                                title: "Ready-to-say answer",
+                                body: "AI searches your company docs and returns a phrase the rep can say immediately.",
+                              },
+                              confidence: {
+                                title: "AI confidence",
+                                body: "94% means go ahead. Low score — double-check before saying it out loud.",
+                              },
+                              source: {
+                                title: "Source document",
+                                body: "Exact file and page. Open it and show the customer right on the call.",
+                              },
+                            };
+                      const c = texts[activeScrollHint];
+                      return c ? (
+                        <div>
+                          <h2
+                            className="font-[760] leading-[1.05] mb-4"
+                            style={{
+                              fontFamily:
+                                '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+                              fontSize: "clamp(32px, 4vw, 52px)",
+                              color: "#1d1d1f",
+                            }}
+                          >
+                            {c.title}
+                          </h2>
+                          <p className="text-[19px] leading-[1.5] text-[#6e6e73]">
+                            {c.body}
+                          </p>
+                        </div>
+                      ) : null;
+                    })()}
+
+                  {/* Прогресс-пилюли */}
+                  <div className="flex gap-2 mt-8">
+                    {(["question", "answer", "confidence", "source"] as const).map(
+                      (id) => (
+                        <div
+                          key={id}
+                          className="rounded-full transition-all duration-300 ease-out"
+                          style={{
+                            width: activeScrollHint === id ? 20 : 6,
+                            height: 6,
+                            backgroundColor:
+                              activeScrollHint === id ? "#5e5ce6" : "#d1d1d6",
+                          }}
+                        />
+                      )
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* ── ProductMockup: едет из правой колонки в центр ── */}
+              <div
+                className="absolute top-1/2"
+                style={{
+                  left: (() => {
+                    if (!animComplete) return "auto";
+                    if (heroPhase === "hero") return "auto";
+                    return "auto";
+                  })(),
+                  right: (() => {
+                    if (!animComplete || heroPhase === "hero") return 0;
+                    return 0;
+                  })(),
+                  transform: (() => {
+                    if (!animComplete || heroPhase === "hero") {
+                      return "translateY(-50%)";
+                    }
+                    const p = Math.min(1, Math.max(0, (heroScrollProgress - 0.05) / 0.2));
+                    const xMove = -p * 180;
+                    return `translateY(-50%) translateX(${xMove}px)`;
+                  })(),
+                  transition: "none",
+                }}
+              >
+                {/* Glow */}
+                <div
+                  className="absolute rounded-full pointer-events-none"
+                  aria-hidden="true"
+                  style={{
+                    width: "min(560px, 94vw)",
+                    aspectRatio: 1,
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    background:
+                      "radial-gradient(circle, rgba(94,92,230,0.18), transparent 62%), radial-gradient(circle at 32% 28%, rgba(33,168,154,0.16), transparent 38%)",
+                    filter: "blur(4px)",
+                    opacity: heroPhase === "hints" ? 0 : 1,
+                  }}
+                />
+
+                <ProductMockup
+                  copy={strings[lang].mockup}
+                  lang={lang}
+                  onboarding={animComplete}
+                  staticState={animComplete}
+                  large={heroPhase === "hints"}
+                  scrollActiveHintId={heroPhase === "hints" ? activeScrollHint : null}
+                  onAnimationComplete={() => setAnimComplete(true)}
+                  skipAnimation={skipAnim}
+                />
+              </div>
+            </div>
           </div>
         </section>
 
@@ -561,22 +796,6 @@ export default function HomePage() {
                 );
               })}
             </div>
-          </div>
-        </section>
-
-        <section className="w-full overflow-x-auto bg-white py-24 md:overflow-x-visible">
-          <div className="mx-auto max-w-6xl px-6">
-            <AnimateOnScroll delay={0} y={48} duration={0.7} className="min-w-[760px] md:min-w-0">
-              <div className="flex justify-center">
-                <ProductMockup
-                  copy={strings[lang].mockup}
-                  lang={lang}
-                  onboarding
-                  staticState
-                  large
-                />
-              </div>
-            </AnimateOnScroll>
           </div>
         </section>
 
