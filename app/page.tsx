@@ -79,7 +79,6 @@ export default function HomePage() {
    * scroll   hint focus advances across question → answer → confidence → source
    * ───────────────────────────────────────────────────────── */
   const [lang, setLang] = useState<Lang>("en");
-  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [emailSubmitted, setEmailSubmitted] = useState(false);
@@ -176,11 +175,6 @@ export default function HomePage() {
   useEffect(() => {
     const saved = localStorage.getItem("liveassist-lang") as Lang | null;
     if (saved === "en" || saved === "ru") setLang(saved);
-
-    const handleScroll = () => setScrolled(window.scrollY > 16);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -368,21 +362,15 @@ export default function HomePage() {
 
   return (
     <>
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-180 ease-out ${
-          scrolled || menuOpen
-            ? "border-[rgba(229,229,234,0.88)] bg-[rgba(255,255,255,0.82)] shadow-[0_1px_0_rgba(255,255,255,0.65)_inset] backdrop-blur-xl"
-            : "border-transparent bg-transparent"
-        }`}
-      >
+      <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-180 ease-out">
         <nav
-          className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 w-full h-16 px-5 mx-auto"
+          className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 w-full px-5 pt-7 pb-3 mx-auto"
           style={{ maxWidth: "min(1180px, calc(100% - 40px))" }}
           aria-label={t("navLabel")}
         >
-          <a href="#top" className="inline-flex items-center gap-2 rounded-full text-[15px] font-[650] min-h-10">
+          <span className="inline-flex min-h-10 select-none items-center gap-2 text-[15px] font-[650] text-[#1d1d1f]">
             {t("logo")}
-          </a>
+          </span>
 
           <NavBar
             items={navItems}
@@ -396,20 +384,20 @@ export default function HomePage() {
           <div className="flex items-center justify-end gap-[10px]">
             <button
               onClick={() => setLang(lang === "en" ? "ru" : "en")}
-              className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[#e5e5ea] bg-[rgba(255,255,255,0.72)] text-[13px] font-bold text-[#1d1d1f]"
+              className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(244,246,255,0.92)_100%)] px-3 text-[13px] font-bold text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] transition-all duration-150 hover:border-[rgba(99,91,255,0.22)] hover:bg-[linear-gradient(180deg,rgba(255,255,255,1)_0%,rgba(238,242,255,0.96)_100%)]"
               aria-label={lang === "en" ? t("switchToRu") : t("switchToEn")}
             >
               {lang === "en" ? "RU" : "EN"}
             </button>
             <a
               href="#waitlist"
-              className="hidden md:inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[650] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
+              className="hidden md:inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-[rgba(72,70,201,0.34)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-5 text-[15px] font-[650] leading-none text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] transition-all duration-150 hover:border-[rgba(72,70,201,0.42)] hover:bg-[linear-gradient(180deg,rgba(103,96,247,1)_0%,rgba(72,70,201,1)_100%)] hover:-translate-y-px"
             >
               {t("joinWaitlist")}
             </a>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden inline-flex min-w-[44px] min-h-[44px] flex-col items-center justify-center gap-[4px] rounded-full border border-[#e5e5ea] bg-[rgba(255,255,255,0.72)]"
+              className="md:hidden inline-flex min-w-[44px] min-h-[44px] flex-col items-center justify-center gap-[4px] rounded-full border border-[rgba(29,29,31,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(244,246,255,0.92)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] transition-all duration-150 hover:border-[rgba(99,91,255,0.22)] hover:bg-[linear-gradient(180deg,rgba(255,255,255,1)_0%,rgba(238,242,255,0.96)_100%)]"
               aria-label={menuOpen ? t("closeMenuLabel") : t("openMenuLabel")}
               aria-expanded={menuOpen}
             >
