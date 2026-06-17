@@ -33,6 +33,7 @@ const navConfig = [
 
 const faqIds = ["listening", "sources", "customer", "sales-only", "crm"] as const;
 const HINT_IDS = ["question", "answer", "confidence", "source"] as const;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const HERO_MORPH = {
   heroFadeEnd: 0.16,
   cardMoveStart: 0.04,
@@ -81,8 +82,8 @@ export default function HomePage() {
   const [lang, setLang] = useState<Lang>("en");
   const [menuOpen, setMenuOpen] = useState(false);
   const [email, setEmail] = useState("");
-  const [emailSubmitted, setEmailSubmitted] = useState(false);
-  const [emailError, setEmailError] = useState("");
+  const [emailStatus, setEmailStatus] = useState<"idle" | "submitting" | "success">("idle");
+  const [emailError, setEmailError] = useState<"" | "invalid" | "server" | "unavailable">("");
   const [scrollyStep, setScrollyStep] = useState(0);
   const [activeTab, setActiveTab] = useState<(typeof navConfig)[number]["id"]>(
     navConfig[0].id
@@ -347,15 +348,51 @@ export default function HomePage() {
     return () => { document.body.style.overflow = ""; };
   }, [menuOpen]);
 
-  function handleEmailSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleEmailSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!email.trim().includes("@")) {
-      setEmailError(t("emailError"));
-      setEmailSubmitted(false);
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!EMAIL_REGEX.test(normalizedEmail)) {
+      setEmailError("invalid");
+      setEmailStatus("idle");
       return;
     }
-    setEmailError("");
-    setEmailSubmitted(true);
+
+    try {
+      setEmailError("");
+      setEmailStatus("submitting");
+
+      const response = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: normalizedEmail,
+          lang,
+        }),
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as
+          | { errorCode?: string }
+          | null;
+
+        setEmailError(
+          payload?.errorCode === "waitlist_not_configured" ? "unavailable" : "server"
+        );
+        setEmailStatus("idle");
+        return;
+      }
+
+      setEmail("");
+      setEmailError("");
+      setEmailStatus("success");
+    } catch {
+      setEmailError("server");
+      setEmailStatus("idle");
+    }
   }
 
   const featureIcons = [FileText, FileSearch, Layers, Keyboard, Mic, Shield];
@@ -1027,8 +1064,9 @@ export default function HomePage() {
                     onChange={(e) => {
                       setEmail(e.target.value);
                       if (emailError) setEmailError("");
-                      if (emailSubmitted) setEmailSubmitted(false);
+                      if (emailStatus === "success") setEmailStatus("idle");
                     }}
+                    disabled={emailStatus === "submitting"}
                     aria-invalid={emailError ? "true" : undefined}
                     aria-describedby="cta-message"
                     className="w-full min-h-[48px] rounded-full border border-[#e5e5ea] bg-white px-5 text-[15px] text-[#1d1d1f] placeholder:text-[#6e6e73] focus-visible:outline-[3px] focus-visible:outline-[rgba(94,92,230,0.42)] focus-visible:outline-offset-[3px]"
@@ -1036,21 +1074,31 @@ export default function HomePage() {
                 </div>
                 <button
                   type="submit"
+                  disabled={emailStatus === "submitting"}
+                  aria-busy={emailStatus === "submitting"}
                   className="min-h-[48px] inline-flex items-center justify-center gap-2 rounded-full px-6 text-[15px] font-[650] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
                 >
-                  {t("heroPrimary")}
+                  {emailStatus === "submitting"
+                    ? t("emailSubmittingButton")
+                    : t("heroPrimary")}
                 </button>
               </AnimateOnScroll>
               <p
                 id="cta-message"
                 className={`mt-4 text-[14px] transition-colors ${
-                  emailError ? "text-red-500" : emailSubmitted ? "text-[#21a89a]" : "text-[#6e6e73]"
+                  emailError ? "text-red-500" : emailStatus === "success" ? "text-[#21a89a]" : "text-[#6e6e73]"
                 }`}
               >
-                {emailError
+                {emailError === "invalid"
                   ? t("emailError")
-                  : emailSubmitted
+                  : emailError === "unavailable"
+                  ? t("emailUnavailable")
+                  : emailError === "server"
+                  ? t("emailServerError")
+                  : emailStatus === "success"
                   ? t("emailSuccess")
+                  : emailStatus === "submitting"
+                  ? t("emailSubmitting")
                   : t("ctaSub")}
               </p>
             </form>

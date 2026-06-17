@@ -61,6 +61,10 @@ export const strings = {
     emailPlaceholder: "you@company.com",
     ctaSub: "No spam. We’ll email you when it’s ready.",
     emailError: "Enter a valid email address.",
+    emailSubmitting: "Joining the waitlist...",
+    emailSubmittingButton: "Joining...",
+    emailUnavailable: "Waitlist is not configured yet. Add Supabase env variables first.",
+    emailServerError: "Something went wrong. Please try again.",
     emailSuccess:
       "You’re on the waitlist. We’ll email you when early access opens.",
     footerTagline: "Instant answers from company docs.",
@@ -236,6 +240,10 @@ export const strings = {
     emailPlaceholder: "you@company.com",
     ctaSub: "Без спама. Напишем, когда продукт будет готов.",
     emailError: "Введите корректный email.",
+    emailSubmitting: "Добавляем в лист ожидания...",
+    emailSubmittingButton: "Отправляем...",
+    emailUnavailable: "Waitlist пока не настроен. Сначала добавьте Supabase env-переменные.",
+    emailServerError: "Что-то пошло не так. Попробуйте еще раз.",
     emailSuccess:
       "Вы в листе ожидания. Напишем, когда откроем ранний доступ.",
     footerTagline: "Мгновенные ответы из документов компании.",

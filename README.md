@@ -17,6 +17,16 @@ Open `http://localhost:3000`.
 npm run build
 ```
 
+## Waitlist -> Supabase
+
+1. Copy `.env.example` to `.env.local` and fill in `SUPABASE_URL` plus `SUPABASE_SERVICE_ROLE_KEY`.
+2. Run the SQL from `supabase/waitlist.sql` in your Supabase SQL editor.
+3. The landing page form posts to `POST /api/waitlist`, and the server stores signups in `waitlist_signups`.
+
+Use the project URL format `https://<project-ref>.supabase.co`, not the `/rest/v1` endpoint.
+
+`SUPABASE_SERVICE_ROLE_KEY` is only used on the server inside the route handler. Do not expose it in client-side code.
+
 ## Project structure
 
 - `app/page.tsx` - main landing page.
