@@ -33,6 +33,28 @@ const navConfig = [
 
 const faqIds = ["listening", "sources", "customer", "sales-only", "crm"] as const;
 const HINT_IDS = ["question", "answer", "confidence", "source"] as const;
+const HERO_MORPH = {
+  heroFadeEnd: 0.16,
+  cardMoveStart: 0.04,
+  cardMoveEnd: 0.34,
+  hintsRevealStart: 0.24,
+  hintsRevealEnd: 0.38,
+  hintsRegionStart: 0.32,
+  glowFadeStart: 0.18,
+  glowFadeEnd: 0.34,
+  cardStartLeft: 73,
+  cardEndLeft: 38.5,
+  cardStartScale: 0.68,
+  cardEndScale: 1,
+} as const;
+
+function clamp01(value: number) {
+  return Math.min(1, Math.max(0, value));
+}
+
+function mix(from: number, to: number, progress: number) {
+  return from + (to - from) * progress;
+}
 
 type PricingPlan = {
   name: string;
@@ -44,6 +66,18 @@ type PricingPlan = {
 };
 
 export default function HomePage() {
+  /* ─────────────────────────────────────────────────────────
+   * HERO MORPH STORYBOARD
+   *
+   * Static shell stays interactive.
+   * Product card finishes its intro first.
+   *
+   *    0ms   hero copy and card rest in a calm split layout
+   * scroll   hero copy soft-fades and drifts away
+   * scroll   card glides toward center while scaling up continuously
+   * scroll   onboarding narrative fades in on the right
+   * scroll   hint focus advances across question → answer → confidence → source
+   * ───────────────────────────────────────────────────────── */
   const [lang, setLang] = useState<Lang>("en");
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -108,6 +142,36 @@ export default function HomePage() {
     url: item.url,
     icon: item.icon,
   }));
+
+  const heroFadeProgress = clamp01(heroScrollProgress / HERO_MORPH.heroFadeEnd);
+  const heroMorphProgress = animComplete
+    ? clamp01(
+        (heroScrollProgress - HERO_MORPH.cardMoveStart) /
+          (HERO_MORPH.cardMoveEnd - HERO_MORPH.cardMoveStart)
+      )
+    : 0;
+  const hintsRevealProgress = animComplete
+    ? clamp01(
+        (heroScrollProgress - HERO_MORPH.hintsRevealStart) /
+          (HERO_MORPH.hintsRevealEnd - HERO_MORPH.hintsRevealStart)
+      )
+    : 0;
+  const cardLeft = `${mix(
+    HERO_MORPH.cardStartLeft,
+    HERO_MORPH.cardEndLeft,
+    heroMorphProgress
+  )}%`;
+  const cardScale = mix(
+    HERO_MORPH.cardStartScale,
+    HERO_MORPH.cardEndScale,
+    heroMorphProgress
+  );
+  const cardGlowOpacity =
+    1 -
+    clamp01(
+      (heroScrollProgress - HERO_MORPH.glowFadeStart) /
+        (HERO_MORPH.glowFadeEnd - HERO_MORPH.glowFadeStart)
+    );
 
   useEffect(() => {
     const saved = localStorage.getItem("liveassist-lang") as Lang | null;
@@ -255,12 +319,15 @@ export default function HomePage() {
       if (p < 0.05) {
         setHeroPhase("hero");
         setActiveScrollHint(null);
-      } else if (p < 0.25) {
+      } else if (p < HERO_MORPH.hintsRegionStart) {
         setHeroPhase("transition");
         setActiveScrollHint(null);
       } else {
         setHeroPhase("hints");
-        const hintsP = (p - 0.25) / 0.75;
+        const hintsP = clamp01(
+          (p - HERO_MORPH.hintsRegionStart) /
+            (1 - HERO_MORPH.hintsRegionStart)
+        );
         const idx = Math.min(3, Math.floor(hintsP * 4));
         setActiveScrollHint(HINT_IDS[idx]);
       }
@@ -416,9 +483,15 @@ export default function HomePage() {
                 className="absolute left-0 top-1/2"
                 style={{
                   width: "46%",
-                  transform: "translateY(-50%)",
-                  opacity: Math.max(0, 1 - heroScrollProgress * 8),
+                  transform: `translateY(-50%) translateX(${mix(
+                    0,
+                    -48,
+                    heroFadeProgress
+                  )}px) scale(${mix(1, 0.985, heroFadeProgress)})`,
+                  opacity: 1 - heroFadeProgress,
+                  filter: `blur(${mix(0, 10, heroFadeProgress)}px)`,
                   pointerEvents: heroPhase === "hero" ? "auto" : "none",
+                  willChange: "transform, opacity, filter",
                 }}
               >
                 <AnimateOnScroll
@@ -464,102 +537,112 @@ export default function HomePage() {
                 </AnimateOnScroll>
               </div>
 
-              {/* ── Текст Onboarding (появляется в hints-фазе слева) ── */}
+              {/* ── Текст Onboarding (появляется в hints-фазе справа) ── */}
               {animComplete && (
                 <div
-                  className="absolute left-0 top-1/2"
+                  className="absolute top-1/2"
                   style={{
-                    width: "38%",
-                    transform: "translateY(-50%)",
-                  opacity:
-                    heroPhase === "hints"
-                      ? Math.min(1, (heroScrollProgress - 0.25) / 0.06)
-                      : 0,
+                    right: 0,
+                    width: "min(340px, 29vw)",
+                    transform: `translateY(-50%) translateX(${mix(
+                      28,
+                      0,
+                      hintsRevealProgress
+                    )}px)`,
+                    opacity: hintsRevealProgress,
+                    filter: `blur(${mix(10, 0, hintsRevealProgress)}px)`,
                     pointerEvents: "none",
                     zIndex: 10,
+                    willChange: "transform, opacity, filter",
                   }}
                 >
-                  <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-5">
-                    {lang === "ru" ? "Разберём по частям" : "Let's break it down"}
-                  </p>
+                  <div
+                    style={{
+                      paddingLeft: 28,
+                      borderLeft: "1px solid rgba(209,209,214,0.9)",
+                    }}
+                  >
+                    <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-5">
+                      {lang === "ru" ? "Разберём по частям" : "Let's break it down"}
+                    </p>
 
-                  {activeScrollHint &&
-                    (() => {
-                      const texts: Record<string, { title: string; body: string }> =
-                        lang === "ru"
-                          ? {
-                              question: {
-                                title: "Вопрос клиента",
-                                body: "Менеджер нажимает хоткей прямо во время звонка и вбивает вопрос. Клиент ничего не замечает.",
-                              },
-                              answer: {
-                                title: "Готовый ответ",
-                                body: "AI ищет по документам компании и выдаёт конкретную фразу — её можно сразу сказать клиенту.",
-                              },
-                              confidence: {
-                                title: "Уверенность AI",
-                                body: "Видишь 94% — смело говоришь. Низкий процент — лучше уточнить перед ответом.",
-                              },
-                              source: {
-                                title: "Источник ответа",
-                                body: "Конкретный файл и страница. Можно открыть и показать клиенту прямо на звонке.",
-                              },
-                            }
-                          : {
-                              question: {
-                                title: "Customer question",
-                                body: "The rep presses a hotkey mid-call and types the question — the customer never notices.",
-                              },
-                              answer: {
-                                title: "Ready-to-say answer",
-                                body: "AI searches your company docs and returns a phrase the rep can say immediately.",
-                              },
-                              confidence: {
-                                title: "AI confidence",
-                                body: "94% means go ahead. Low score — double-check before saying it out loud.",
-                              },
-                              source: {
-                                title: "Source document",
-                                body: "Exact file and page. Open it and show the customer right on the call.",
-                              },
-                            };
-                      const c = texts[activeScrollHint];
-                      return c ? (
-                        <div>
-                          <h2
-                            className="font-[760] leading-[1.05] mb-4"
+                    {activeScrollHint &&
+                      (() => {
+                        const texts: Record<string, { title: string; body: string }> =
+                          lang === "ru"
+                            ? {
+                                question: {
+                                  title: "Вопрос клиента",
+                                  body: "Менеджер нажимает хоткей в момент звонка. Вопрос уходит в overlay тихо и без переключения контекста.",
+                                },
+                                answer: {
+                                  title: "Готовый ответ",
+                                  body: "AI возвращает короткую формулировку, которую можно сразу озвучить, без импровизации и пауз.",
+                                },
+                                confidence: {
+                                  title: "Уверенность AI",
+                                  body: "Сигнал уверенности помогает понять, когда можно отвечать сразу, а когда лучше перепроверить.",
+                                },
+                                source: {
+                                  title: "Источник ответа",
+                                  body: "Файл и страница остаются рядом с ответом, чтобы менеджер видел основание, а не просто догадку модели.",
+                                },
+                              }
+                            : {
+                                question: {
+                                  title: "Customer question",
+                                  body: "The rep triggers the overlay mid-call. The question is captured without breaking the flow of the conversation.",
+                                },
+                                answer: {
+                                  title: "Ready-to-say answer",
+                                  body: "AI returns a compact phrase the rep can use immediately instead of improvising under pressure.",
+                                },
+                                confidence: {
+                                  title: "AI confidence",
+                                  body: "The confidence signal tells the rep when to answer directly and when to pause for a quick double-check.",
+                                },
+                                source: {
+                                  title: "Source document",
+                                  body: "The file and page stay attached to the answer so the rep sees evidence, not just a model guess.",
+                                },
+                              };
+                        const c = texts[activeScrollHint];
+                        return c ? (
+                          <div>
+                            <h2
+                              className="font-[760] leading-[1.03] mb-4"
+                              style={{
+                                fontFamily:
+                                  '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+                                fontSize: "clamp(30px, 3.2vw, 48px)",
+                                color: "#1d1d1f",
+                              }}
+                            >
+                              {c.title}
+                            </h2>
+                            <p className="text-[18px] leading-[1.58] text-[#6e6e73]">
+                              {c.body}
+                            </p>
+                          </div>
+                        ) : null;
+                      })()}
+
+                    <div className="flex gap-2 mt-8">
+                      {(["question", "answer", "confidence", "source"] as const).map(
+                        (id) => (
+                          <div
+                            key={id}
+                            className="rounded-full transition-all duration-300 ease-out"
                             style={{
-                              fontFamily:
-                                '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
-                              fontSize: "clamp(32px, 4vw, 52px)",
-                              color: "#1d1d1f",
+                              width: activeScrollHint === id ? 28 : 6,
+                              height: 6,
+                              backgroundColor:
+                                activeScrollHint === id ? "#5e5ce6" : "#d1d1d6",
                             }}
-                          >
-                            {c.title}
-                          </h2>
-                          <p className="text-[19px] leading-[1.5] text-[#6e6e73]">
-                            {c.body}
-                          </p>
-                        </div>
-                      ) : null;
-                    })()}
-
-                  {/* Прогресс-пилюли */}
-                  <div className="flex gap-2 mt-8">
-                    {(["question", "answer", "confidence", "source"] as const).map(
-                      (id) => (
-                        <div
-                          key={id}
-                          className="rounded-full transition-all duration-300 ease-out"
-                          style={{
-                            width: activeScrollHint === id ? 20 : 6,
-                            height: 6,
-                            backgroundColor:
-                              activeScrollHint === id ? "#5e5ce6" : "#d1d1d6",
-                          }}
-                        />
-                      )
-                    )}
+                          />
+                        )
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -568,24 +651,11 @@ export default function HomePage() {
               <div
                 className="absolute top-1/2"
                 style={{
-                  left: (() => {
-                    if (!animComplete) return "auto";
-                    if (heroPhase === "hero") return "auto";
-                    return "auto";
-                  })(),
-                  right: (() => {
-                    if (!animComplete || heroPhase === "hero") return 0;
-                    return 0;
-                  })(),
-                  transform: (() => {
-                    if (!animComplete || heroPhase === "hero") {
-                      return "translateY(-50%)";
-                    }
-                    const p = Math.min(1, Math.max(0, (heroScrollProgress - 0.05) / 0.2));
-                    const xMove = -p * 180;
-                    return `translateY(-50%) translateX(${xMove}px)`;
-                  })(),
+                  left: cardLeft,
+                  transform: `translate(-50%, -50%) scale(${cardScale})`,
                   transition: "none",
+                  transformOrigin: "center center",
+                  willChange: "transform, left",
                 }}
               >
                 {/* Glow */}
@@ -600,8 +670,8 @@ export default function HomePage() {
                     transform: "translate(-50%, -50%)",
                     background:
                       "radial-gradient(circle, rgba(94,92,230,0.18), transparent 62%), radial-gradient(circle at 32% 28%, rgba(33,168,154,0.16), transparent 38%)",
-                    filter: "blur(4px)",
-                    opacity: heroPhase === "hints" ? 0 : 1,
+                    filter: "blur(10px)",
+                    opacity: cardGlowOpacity,
                   }}
                 />
 
@@ -610,7 +680,7 @@ export default function HomePage() {
                   lang={lang}
                   onboarding={animComplete}
                   staticState={animComplete}
-                  large={heroPhase === "hints"}
+                  large
                   scrollActiveHintId={heroPhase === "hints" ? activeScrollHint : null}
                   onAnimationComplete={() => setAnimComplete(true)}
                   skipAnimation={skipAnim}

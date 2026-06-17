@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { useState, useRef, useEffect, useCallback } from "react";
 import type { CSSProperties } from "react";
 import type { Lang } from "@/lib/strings";
@@ -27,10 +26,9 @@ type OnboardingHint = {
   eyebrow: string;
   title: string;
   body: string;
-  zone: CSSProperties;
-  tooltip: CSSProperties;
-  tail: CSSProperties;
 };
+
+type HintZoneMap = Partial<Record<OnboardingHint["id"], CSSProperties>>;
 
 type ProductMockupProps = {
   copy: ProductMockupCopy;
@@ -57,10 +55,14 @@ export default function ProductMockup({
   skipAnimation = false,
 }: ProductMockupProps) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const questionBoxRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLSpanElement>(null);
   const answerBlockRef = useRef<HTMLDivElement>(null);
+  const answerPanelRef = useRef<HTMLDivElement>(null);
   const confidenceRef = useRef<HTMLDivElement>(null);
+  const confidencePanelRef = useRef<HTMLDivElement>(null);
   const citationRef = useRef<HTMLDivElement>(null);
+  const sourceCardRef = useRef<HTMLDivElement>(null);
   const toastRef = useRef<HTMLDivElement>(null);
   const floatRef = useRef<HTMLDivElement>(null);
 
@@ -72,6 +74,7 @@ export default function ProductMockup({
   const [typedText, setTypedText] = useState("");
   const [isDemoReady, setIsDemoReady] = useState(false);
   const [hoverHint, setHoverHint] = useState<OnboardingHint | null>(null);
+  const [hintZones, setHintZones] = useState<HintZoneMap>({});
   const reduceMotionRef = useRef(false);
 
   const charDelay = 42;
@@ -91,13 +94,6 @@ export default function ProductMockup({
           eyebrow: "Пояснение к вопросу",
           title: "Вопрос клиента",
           body: "Сюда попадает конкретный вопрос, который менеджер задает через хоткей, не уходя из звонка.",
-          zone: large
-            ? { top: 84, left: 28, right: 28, height: 88 }
-            : { top: 74, left: 20, right: 20, height: 102 },
-          tooltip: large
-            ? { top: "108px", right: "22px" }
-            : { top: "118px", left: "28px" },
-          tail: { top: 22, left: -6 },
         },
         {
           id: "answer",
@@ -105,13 +101,6 @@ export default function ProductMockup({
           eyebrow: "Пояснение к ответу",
           title: "Готовая фраза для ответа",
           body: "Это короткая подсказка, которую можно сразу сказать клиенту. Она появляется только после поиска по документам.",
-          zone: large
-            ? { top: 206, left: 28, right: 28, height: 112 }
-            : { top: 192, left: 20, right: 20, height: 110 },
-          tooltip: large
-            ? { top: "244px", right: "22px" }
-            : { top: "250px", right: "28px" },
-          tail: { top: 22, left: -6 },
         },
         {
           id: "confidence",
@@ -119,13 +108,6 @@ export default function ProductMockup({
           eyebrow: "Пояснение к индикатору",
           title: "Проверка надежности",
           body: "Индикатор показывает, насколько уверенно AI нашел ответ в базе знаний компании.",
-          zone: large
-            ? { top: 344, left: 28, right: 28, height: 64 }
-            : { bottom: 104, left: 20, right: 20, height: 62 },
-          tooltip: large
-            ? { top: "332px", left: "28px" }
-            : { bottom: "118px", left: "28px" },
-          tail: { top: 22, right: -6 },
         },
         {
           id: "source",
@@ -133,13 +115,6 @@ export default function ProductMockup({
           eyebrow: "Пояснение к источнику",
           title: "Документ под ответом",
           body: "Менеджер видит файл и страницу, поэтому может быстро проверить, откуда взялся ответ.",
-          zone: large
-            ? { top: 432, left: 28, right: 28, height: 86 }
-            : { bottom: 36, left: 20, right: 20, height: 76 },
-          tooltip: large
-            ? { top: "414px", right: "22px" }
-            : { bottom: "92px", right: "28px" },
-          tail: { top: 22, left: -6 },
         },
       ]
     : [
@@ -149,13 +124,6 @@ export default function ProductMockup({
           eyebrow: "Attached to question",
           title: "Customer question",
           body: "This is the exact question the rep asks through the hotkey without leaving the live call.",
-          zone: large
-            ? { top: 84, left: 28, right: 28, height: 88 }
-            : { top: 74, left: 20, right: 20, height: 102 },
-          tooltip: large
-            ? { top: "108px", right: "22px" }
-            : { top: "118px", left: "28px" },
-          tail: { top: 22, left: -6 },
         },
         {
           id: "answer",
@@ -163,13 +131,6 @@ export default function ProductMockup({
           eyebrow: "Attached to answer",
           title: "Ready-to-say response",
           body: "A short answer the rep can use immediately. It appears only after LiveAssist checks company docs.",
-          zone: large
-            ? { top: 206, left: 28, right: 28, height: 112 }
-            : { top: 192, left: 20, right: 20, height: 110 },
-          tooltip: large
-            ? { top: "244px", right: "22px" }
-            : { top: "250px", right: "28px" },
-          tail: { top: 22, left: -6 },
         },
         {
           id: "confidence",
@@ -177,13 +138,6 @@ export default function ProductMockup({
           eyebrow: "Attached to confidence",
           title: "Reliability check",
           body: "The score shows how confidently AI matched the answer to your internal knowledge base.",
-          zone: large
-            ? { top: 344, left: 28, right: 28, height: 64 }
-            : { bottom: 104, left: 20, right: 20, height: 62 },
-          tooltip: large
-            ? { top: "332px", left: "28px" }
-            : { bottom: "118px", left: "28px" },
-          tail: { top: 22, right: -6 },
         },
         {
           id: "source",
@@ -191,13 +145,6 @@ export default function ProductMockup({
           eyebrow: "Attached to source",
           title: "Document under the answer",
           body: "The rep sees the file and page, so the answer can be verified before saying it out loud.",
-          zone: large
-            ? { top: 432, left: 28, right: 28, height: 86 }
-            : { bottom: 36, left: 20, right: 20, height: 76 },
-          tooltip: large
-            ? { top: "414px", right: "22px" }
-            : { bottom: "92px", right: "28px" },
-          tail: { top: 22, left: -6 },
         },
       ];
 
@@ -219,6 +166,75 @@ export default function ProductMockup({
     intervalsRef.current = [];
     isRunningRef.current = false;
   }
+
+  const measureZone = useCallback(
+    (
+      element: HTMLElement | null,
+      card: HTMLDivElement,
+      cardRect: DOMRect,
+      padding: { top: number; right: number; bottom: number; left: number }
+    ): CSSProperties | null => {
+      if (!element) return null;
+      const rect = element.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return null;
+
+      const scaleX = card.offsetWidth > 0 ? cardRect.width / card.offsetWidth : 1;
+      const scaleY = card.offsetHeight > 0 ? cardRect.height / card.offsetHeight : 1;
+
+      const left = (rect.left - cardRect.left) / scaleX - padding.left;
+      const top = (rect.top - cardRect.top) / scaleY - padding.top;
+      const width = rect.width / scaleX + padding.left + padding.right;
+      const height = rect.height / scaleY + padding.top + padding.bottom;
+
+      return {
+        left: Math.max(8, left),
+        top: Math.max(8, top),
+        width: Math.min(card.offsetWidth - 16, width),
+        height,
+      };
+    },
+    []
+  );
+
+  const recomputeHintZones = useCallback(() => {
+    const card = cardRef.current;
+    if (!card) return;
+
+    const cardRect = card.getBoundingClientRect();
+    const zones: HintZoneMap = {};
+
+    const questionZone = measureZone(questionBoxRef.current, card, cardRect, {
+      top: 8,
+      right: 8,
+      bottom: 8,
+      left: 8,
+    });
+    const answerZone = measureZone(answerPanelRef.current, card, cardRect, {
+      top: 8,
+      right: 8,
+      bottom: 8,
+      left: 8,
+    });
+    const confidenceZone = measureZone(confidencePanelRef.current, card, cardRect, {
+      top: 10,
+      right: 8,
+      bottom: 8,
+      left: 8,
+    });
+    const sourceZone = measureZone(sourceCardRef.current, card, cardRect, {
+      top: 8,
+      right: 8,
+      bottom: 8,
+      left: 8,
+    });
+
+    if (questionZone) zones.question = questionZone;
+    if (answerZone) zones.answer = answerZone;
+    if (confidenceZone) zones.confidence = confidenceZone;
+    if (sourceZone) zones.source = sourceZone;
+
+    setHintZones(zones);
+  }, [measureZone]);
 
   const resetDOM = useCallback(function resetDOM() {
     const card = cardRef.current;
@@ -309,6 +325,14 @@ export default function ProductMockup({
     setIsDemoReady(true);
     hasPlayedRef.current = true;
   }, [copy.question, expandedMaxHeight, expandedWidth]);
+
+  const finishSequence = useCallback(function finishSequence() {
+    isRunningRef.current = false;
+    hasPlayedRef.current = true;
+    setIsDemoReady(true);
+    if (floatRef.current) floatRef.current.style.animationPlayState = "paused";
+    onAnimationComplete?.();
+  }, [onAnimationComplete]);
 
   const runSequence = useCallback(function runSequence() {
     if (isRunningRef.current || hasPlayedRef.current) return;
@@ -429,14 +453,118 @@ export default function ProductMockup({
 
     safeTimeout(() => {
       if (!isRunningRef.current) return;
-      isRunningRef.current = false;
-      hasPlayedRef.current = true;
-      setIsDemoReady(true);
-      if (floatRef.current) floatRef.current.style.animationPlayState = "paused";
-      // Уведомляем родителя что анимация завершена
-      onAnimationComplete?.();
+      finishSequence();
     }, 4200);
-  }, [copy.question, expandedMaxHeight, expandedWidth, resetDOM, onAnimationComplete]);
+  }, [copy.question, expandedMaxHeight, expandedWidth, finishSequence, resetDOM]);
+
+  const fastForwardSequence = useCallback(function fastForwardSequence() {
+    if (hasPlayedRef.current) return;
+
+    stopAnimation();
+
+    if (reduceMotionRef.current) {
+      showFinalState();
+      finishSequence();
+      return;
+    }
+
+    const card = cardRef.current;
+    if (!card) return;
+
+    isRunningRef.current = true;
+    card.style.opacity = "1";
+    card.style.transform = "scale(1)";
+    card.style.transition =
+      "opacity 180ms cubic-bezier(0, 0, 0.2, 1), transform 180ms cubic-bezier(0, 0, 0.2, 1)";
+    card.style.overflowY = "hidden";
+
+    if (floatRef.current) floatRef.current.style.animationPlayState = "paused";
+    if (cursorRef.current) cursorRef.current.style.display = "none";
+
+    setTypedText(copy.question);
+
+    const loader = card.querySelector("[data-loader]") as HTMLElement | null;
+    const answerAlreadyVisible = answerBlockRef.current?.style.display === "block";
+
+    if (loader && !answerAlreadyVisible) {
+      loader.style.display = "flex";
+      loader.style.transition = "opacity 120ms cubic-bezier(0, 0, 0.2, 1)";
+      requestAnimationFrame(() => {
+        loader.style.opacity = "1";
+      });
+    }
+
+    safeTimeout(() => {
+      if (!isRunningRef.current) return;
+
+      if (loader) {
+        loader.style.transition = "opacity 140ms cubic-bezier(0.4, 0, 1, 1)";
+        loader.style.opacity = "0";
+      }
+
+      card.style.transition =
+        "width 220ms cubic-bezier(0, 0, 0.2, 1), max-height 220ms cubic-bezier(0, 0, 0.2, 1)";
+      card.style.width = `${expandedWidth}px`;
+      card.style.maxHeight = `${expandedMaxHeight}px`;
+      card.style.overflowY = "auto";
+    }, answerAlreadyVisible ? 40 : 110);
+
+    safeTimeout(() => {
+      if (!isRunningRef.current || !answerBlockRef.current) return;
+      answerBlockRef.current.style.display = "block";
+      requestAnimationFrame(() => {
+        if (!answerBlockRef.current) return;
+        answerBlockRef.current.style.transition =
+          "opacity 180ms cubic-bezier(0, 0, 0.2, 1), transform 180ms cubic-bezier(0, 0, 0.2, 1)";
+        answerBlockRef.current.style.opacity = "1";
+        answerBlockRef.current.style.transform = "translateY(0)";
+      });
+    }, 170);
+
+    safeTimeout(() => {
+      if (!isRunningRef.current || !confidenceRef.current) return;
+      confidenceRef.current.style.display = "block";
+      requestAnimationFrame(() => {
+        if (!confidenceRef.current) return;
+        confidenceRef.current.style.transition =
+          "opacity 180ms cubic-bezier(0, 0, 0.2, 1), transform 180ms cubic-bezier(0, 0, 0.2, 1)";
+        confidenceRef.current.style.opacity = "1";
+        confidenceRef.current.style.transform = "translateY(0)";
+
+        const fill = confidenceRef.current.querySelector(
+          "[data-confidence-fill]"
+        ) as HTMLElement;
+        if (fill) {
+          fill.style.transition = "width 280ms cubic-bezier(0, 0, 0.2, 1)";
+          fill.style.width = "94%";
+        }
+      });
+    }, 240);
+
+    safeTimeout(() => {
+      if (!isRunningRef.current || !citationRef.current) return;
+      citationRef.current.style.display = "block";
+      requestAnimationFrame(() => {
+        if (!citationRef.current) return;
+        citationRef.current.style.transition =
+          "opacity 180ms cubic-bezier(0, 0, 0.2, 1), transform 180ms cubic-bezier(0, 0, 0.2, 1)";
+        citationRef.current.style.opacity = "1";
+        citationRef.current.style.transform = "translateY(0)";
+      });
+    }, 290);
+
+    safeTimeout(() => {
+      if (!isRunningRef.current) return;
+      showFinalState();
+      finishSequence();
+    }, 460);
+  }, [
+    copy.question,
+    expandedMaxHeight,
+    expandedWidth,
+    finishSequence,
+    showFinalState,
+  ]);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -495,14 +623,40 @@ export default function ProductMockup({
     };
   }, [resetDOM, runSequence, showFinalState, staticState]);
 
-  // Мгновенный пропуск анимации (когда пользователь скроллит до её завершения)
+  // При первом скролл-жесте быстро доматываем анимацию, а не прыгаем в финал.
   useEffect(() => {
     if (!skipAnimation) return;
     if (hasPlayedRef.current) return;
-    stopAnimation();
-    showFinalState();
-    onAnimationComplete?.();
-  }, [skipAnimation, showFinalState, onAnimationComplete]);
+    fastForwardSequence();
+  }, [fastForwardSequence, skipAnimation]);
+
+  useEffect(() => {
+    if (!onboarding || !isDemoReady) return;
+
+    recomputeHintZones();
+
+    const observed = [
+      cardRef.current,
+      questionBoxRef.current,
+      answerBlockRef.current,
+      answerPanelRef.current,
+      confidenceRef.current,
+      confidencePanelRef.current,
+      sourceCardRef.current,
+    ].filter(Boolean) as HTMLElement[];
+
+    const resizeObserver = new ResizeObserver(() => {
+      recomputeHintZones();
+    });
+
+    observed.forEach((element) => resizeObserver.observe(element));
+    window.addEventListener("resize", recomputeHintZones);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", recomputeHintZones);
+    };
+  }, [copy, isDemoReady, lang, onboarding, recomputeHintZones]);
 
   function handleOpen() {
     const toast = toastRef.current;
@@ -577,6 +731,7 @@ export default function ProductMockup({
             {copy.questionLabel}
           </p>
           <div
+            ref={questionBoxRef}
             className="rounded-xl"
             style={{ backgroundColor: "#F5F5F7", padding: large ? "18px 20px" : "14px 16px" }}
           >
@@ -634,6 +789,7 @@ export default function ProductMockup({
             {copy.answerLabel}
           </p>
           <div
+            ref={answerPanelRef}
             className={large ? "text-[22px] leading-[1.5]" : "text-[15px] leading-[1.5]"}
             style={{
               backgroundColor: "#F0FDF4",
@@ -657,32 +813,34 @@ export default function ProductMockup({
             transform: "translateY(16px)",
           }}
         >
-          <p
-            className={large ? "text-[12px] uppercase mb-[8px]" : "text-[10px] uppercase mb-[6px]"}
-            style={{ color: "#6E6E73", letterSpacing: "0.08em" }}
-          >
-            {copy.confidenceLabel}
-          </p>
-          <div
-            className="w-full mb-[2px]"
-            style={{ backgroundColor: "#E5E7EB", borderRadius: 2, height: 4 }}
-          >
+          <div ref={confidencePanelRef}>
+            <p
+              className={large ? "text-[12px] uppercase mb-[8px]" : "text-[10px] uppercase mb-[6px]"}
+              style={{ color: "#6E6E73", letterSpacing: "0.08em" }}
+            >
+              {copy.confidenceLabel}
+            </p>
             <div
-              data-confidence-fill
-              className="h-full"
-              style={{
-                width: "0%",
-                background: "linear-gradient(90deg, #22C55E, #16A34A)",
-                borderRadius: 2,
-              }}
-            />
+              className="w-full mb-[2px]"
+              style={{ backgroundColor: "#E5E7EB", borderRadius: 2, height: 4 }}
+            >
+              <div
+                data-confidence-fill
+                className="h-full"
+                style={{
+                  width: "0%",
+                  background: "linear-gradient(90deg, #22C55E, #16A34A)",
+                  borderRadius: 2,
+                }}
+              />
+            </div>
+            <p
+              className={large ? "text-right text-[16px] font-semibold" : "text-right text-[11px] font-semibold"}
+              style={{ color: "#22C55E" }}
+            >
+              {copy.confidenceValue}
+            </p>
           </div>
-          <p
-            className={large ? "text-right text-[16px] font-semibold" : "text-right text-[11px] font-semibold"}
-            style={{ color: "#22C55E" }}
-          >
-            {copy.confidenceValue}
-          </p>
         </div>
 
         {/* Citation / Source */}
@@ -695,6 +853,7 @@ export default function ProductMockup({
           }}
         >
           <div
+            ref={sourceCardRef}
             style={{
               backgroundColor: "#F8FAFC",
               border: "1px solid #E2E8F0",
@@ -754,9 +913,12 @@ export default function ProductMockup({
         {onboarding && isDemoReady ? (
           <>
             {hints.map((hint) => {
+              const zone = hintZones[hint.id];
               const isActive = activeHint?.id === hint.id;
               // В scroll-режиме hover-зоны визуально подсвечиваются, но не меняют activeHint
               const isScrollMode = scrollActiveHintId != null;
+
+              if (!zone) return null;
 
               return (
                 <button
@@ -771,7 +933,7 @@ export default function ProductMockup({
                       ? "border-[rgba(31,157,99,0.22)] bg-[rgba(31,157,99,0.03)] shadow-[0_0_0_4px_rgba(15,23,42,0.04)]"
                       : "border-transparent"
                   }`}
-                  style={hint.zone}
+                  style={zone}
                   aria-label={`${hint.eyebrow}: ${hint.title}`}
                 >
                   <span
@@ -786,40 +948,6 @@ export default function ProductMockup({
               );
             })}
 
-            <AnimatePresence>
-              {activeHint ? (
-                <motion.div
-                  key={activeHint.id}
-                  initial={reduceMotionRef.current ? false : { opacity: 0, y: 10, scale: 0.96, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                  exit={reduceMotionRef.current ? { opacity: 0 } : { opacity: 0, y: 6, scale: 0.98, filter: "blur(3px)" }}
-                  transition={{
-                    duration: reduceMotionRef.current ? 0 : 0.22,
-                    ease: [0.16, 1, 0.3, 1],
-                  }}
-                  className="pointer-events-none absolute z-30 w-[270px] rounded-[16px] border border-[rgba(15,23,42,0.08)] bg-[rgba(255,255,255,0.98)] p-4 text-left shadow-[0_20px_52px_rgba(29,29,31,0.14)] backdrop-blur-xl"
-                  style={activeHint.tooltip}
-                >
-                  <div
-                    className="absolute h-3 w-3 rotate-45 border border-[rgba(15,23,42,0.08)] bg-[rgba(255,255,255,0.98)]"
-                    style={activeHint.tail}
-                    aria-hidden="true"
-                  />
-                  <div className="mb-3 flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#1F9D63]" aria-hidden="true" />
-                    <p className="text-[11px] font-[800] uppercase tracking-[0.12em] text-[#1F9D63]">
-                      {activeHint.eyebrow}
-                    </p>
-                  </div>
-                  <p className="text-[15px] font-[720] leading-[1.25] text-[#1d1d1f]">
-                    {activeHint.title}
-                  </p>
-                  <p className="mt-2 text-[13px] leading-[1.45] text-[#6e6e73]">
-                    {activeHint.body}
-                  </p>
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
           </>
         ) : null}
 
