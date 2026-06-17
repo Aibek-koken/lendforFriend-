@@ -42,7 +42,7 @@ const HERO_MORPH = {
   hintsRegionStart: 0.32,
   glowFadeStart: 0.18,
   glowFadeEnd: 0.34,
-  cardStartLeft: 73,
+  cardStartLeft: 78.5,
   cardEndLeft: 38.5,
   cardStartScale: 0.68,
   cardEndScale: 1,
@@ -469,20 +469,24 @@ export default function HomePage() {
             className="sticky top-0 flex items-center overflow-hidden"
             style={{
               minHeight: "100svh",
-              padding: "132px 20px 88px",
+              padding: "132px clamp(20px, 4vw, 40px) 88px",
               background:
                 "radial-gradient(circle at 82% 22%, rgba(94,92,230,0.12), transparent 30%), linear-gradient(180deg, #ffffff 0%, #fbfbfd 78%, #f5f5f7 100%)",
             }}
           >
             <div
-              className="w-full mx-auto relative"
-              style={{ maxWidth: "min(1180px, 100%)", minHeight: "100%" }}
+              className="w-full mx-auto relative md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center"
+              style={{
+                maxWidth: "min(1200px, 90vw)",
+                minHeight: "100%",
+                columnGap: "clamp(60px, 6vw, 80px)",
+              }}
             >
               {/* ── Текст Hero (уходит при скролле) ── */}
               <div
                 className="absolute left-0 top-1/2"
                 style={{
-                  width: "46%",
+                  width: "min(560px, calc((100% - clamp(60px, 6vw, 80px)) / 2))",
                   transform: `translateY(-50%) translateX(${mix(
                     0,
                     -48,
@@ -517,23 +521,9 @@ export default function HomePage() {
                 <AnimateOnScroll
                   as="p"
                   delay={0.16}
-                  className="text-[21px] leading-[1.45] text-[#6e6e73] mb-8 max-w-[520px]"
+                  className="text-[21px] leading-[1.45] text-[#6e6e73] mb-8 max-w-[560px]"
                 >
                   {t("heroSub")}
-                </AnimateOnScroll>
-                <AnimateOnScroll delay={0.22} className="flex flex-wrap gap-3">
-                  <a
-                    href="#waitlist"
-                    className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[650] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
-                  >
-                    {t("heroPrimary")}
-                  </a>
-                  <a
-                    href="#scrolly"
-                    className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[650] leading-none border border-[#e5e5ea] bg-[rgba(255,255,255,0.76)] text-[#1d1d1f] transition-all duration-150 hover:border-[rgba(94,92,230,0.38)] hover:text-[#5e5ce6] hover:-translate-y-px"
-                  >
-                    {t("heroSecondary")}
-                  </a>
                 </AnimateOnScroll>
               </div>
 

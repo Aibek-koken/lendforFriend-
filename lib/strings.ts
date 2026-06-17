@@ -13,7 +13,7 @@ export const strings = {
     joinWaitlist: "Join waitlist",
     heroEyebrow: "Private desktop overlay",
     heroHeadline:
-      "Never pause a customer call to search for an answer again",
+      "Know the answer. Before they finish asking.",
     heroSub:
       "LiveAssist AI gives your team instant, source-backed answers from your own documents — without leaving the call.",
     heroPrimary: "Join the waitlist →",
@@ -22,9 +22,9 @@ export const strings = {
       ariaLabel: "LiveAssist AI overlay demo",
       privateOverlay: "Private overlay",
       questionLabel: "Question",
-      question: "Does the annual plan include onboarding?",
+      question: "Does the setup take long?",
       answerLabel: "Answer",
-      answer: "Yes. Annual plans include onboarding and priority support.",
+      answer: "No. Upload your documents once and you're ready in under 5 minutes.",
       confidenceLabel: "AI confidence",
       confidenceValue: "94% confident",
       sourceFile: "Pricing_Terms.pdf",
@@ -185,7 +185,7 @@ export const strings = {
     joinWaitlist: "В лист ожидания",
     heroEyebrow: "Приватный оверлей на рабочем столе",
     heroHeadline:
-      "Больше не ставьте звонок на паузу, чтобы найти ответ",
+      "Знай ответ. До того, как они договорят.",
     heroSub:
       "LiveAssist AI мгновенно находит ответы в документах вашей компании прямо во время разговора — без переключения вкладок и без выхода из звонка.",
     heroPrimary: "В лист ожидания →",
@@ -194,9 +194,9 @@ export const strings = {
       ariaLabel: "Демо оверлея LiveAssist AI",
       privateOverlay: "Приватный оверлей",
       questionLabel: "Вопрос",
-      question: "В годовой тариф входит онбординг?",
+      question: "Настройка займёт много времени?",
       answerLabel: "Ответ",
-      answer: "Да. В годовые тарифы входят онбординг и приоритетная поддержка.",
+      answer: "Нет. Загрузите документы один раз — и готово за 5 минут.",
       confidenceLabel: "Уверенность AI",
       confidenceValue: "94% уверенности",
       sourceFile: "Pricing_Terms.pdf",
