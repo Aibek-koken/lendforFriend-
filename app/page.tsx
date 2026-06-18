@@ -66,6 +66,11 @@ type PricingPlan = {
   features: string[];
 };
 
+type HeroMetric = {
+  title: string;
+  lines: [string, string];
+};
+
 export default function HomePage() {
   /* ─────────────────────────────────────────────────────────
    * HERO MORPH STORYBOARD
@@ -126,6 +131,24 @@ export default function HomePage() {
   const tUseCases = (): string[] => {
     return (strings[lang] as Record<string, unknown>).useCases as string[];
   };
+
+  const heroMetrics: HeroMetric[] =
+    lang === "ru"
+      ? [
+          { title: "1 кнопка", lines: ["Нажал —", "получил ответ"] },
+          { title: "Только ты", lines: ["Оверлей видишь", "только ты"] },
+          { title: "Твои файлы", lines: ["Прайс, FAQ,", "условия — всё тут"] },
+        ]
+      : [
+          { title: "1 hotkey", lines: ["Press once and", "get the answer"] },
+          { title: "Only you", lines: ["The overlay stays", "visible only to you"] },
+          { title: "Your files", lines: ["Pricing, FAQ,", "terms stay attached"] },
+        ];
+
+  const heroHeadlineLines =
+    lang === "ru"
+      ? ["Знай ответ.", "До того, как", "они договорят."]
+      : ["Know the answer.", "Before they finish asking."];
 
   const tFaqs = (): FaqProItem[] => {
     const faqs = (strings[lang] as Record<string, unknown>).faqs as [string, string][];
@@ -526,29 +549,52 @@ export default function HomePage() {
                 <AnimateOnScroll
                   as="p"
                   delay={0}
-                  className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-5"
+                  className="mb-5 text-[13px] font-[760] uppercase tracking-[0.18em] text-[#6B65CC]"
                 >
                   {t("heroEyebrow")}
                 </AnimateOnScroll>
                 <AnimateOnScroll
                   as="h1"
                   delay={0.08}
-                  className="font-[760] leading-[0.96] mb-6"
+                  className="mb-6 max-w-[700px] leading-[0.9] text-[#111111]"
                   style={{
                     fontFamily:
-                      '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif',
-                    fontSize: "clamp(48px, 7vw, 86px)",
-                    letterSpacing: 0,
+                      lang === "en"
+                        ? '"Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif'
+                        : '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif',
+                    fontSize: lang === "en" ? "clamp(52px, 7vw, 92px)" : "clamp(54px, 7.2vw, 86px)",
+                    fontWeight: lang === "en" ? 700 : 800,
+                    letterSpacing: lang === "en" ? "-0.04em" : "-0.035em",
                   }}
                 >
-                  {t("heroHeadline")}
+                  {heroHeadlineLines.map((line) => (
+                    <span key={line} className="block">
+                      {line}
+                    </span>
+                  ))}
                 </AnimateOnScroll>
                 <AnimateOnScroll
                   as="p"
                   delay={0.16}
-                  className="text-[21px] leading-[1.45] text-[#6e6e73] mb-8 max-w-[560px]"
+                  className="mb-8 max-w-[420px] text-[15px] leading-[1.62] text-[#5a5a63] md:max-w-[360px] md:text-[16px]"
                 >
                   {t("heroSub")}
+                </AnimateOnScroll>
+                <AnimateOnScroll
+                  delay={0.22}
+                  className="flex flex-wrap gap-x-8 gap-y-5"
+                >
+                  {heroMetrics.map((metric) => (
+                    <div key={metric.title} className="min-w-[132px]">
+                      <p className="text-[18px] font-[800] leading-none text-[#5B54D6] md:text-[20px]">
+                        {metric.title}
+                      </p>
+                      <p className="mt-2 text-[13px] leading-[1.4] text-[#8a8a94] md:text-[14px]">
+                        <span className="block">{metric.lines[0]}</span>
+                        <span className="block">{metric.lines[1]}</span>
+                      </p>
+                    </div>
+                  ))}
                 </AnimateOnScroll>
               </div>
 
