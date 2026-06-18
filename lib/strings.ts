@@ -4,13 +4,13 @@ export const strings = {
     navLabel: "Main navigation",
     navHow: "How it works",
     navUseCases: "Use cases",
-    navPricing: "Pricing",
+    navPricing: "Early access",
     navFaq: "FAQ",
     switchToRu: "Switch language to Russian",
     switchToEn: "Switch language to English",
     openMenuLabel: "Open menu",
     closeMenuLabel: "Close menu",
-    joinWaitlist: "Join waitlist",
+    joinWaitlist: "Get early access",
     heroEyebrow: "Private desktop overlay",
     heroHeadline:
       "Know the answer. Before they finish asking.",
@@ -49,8 +49,13 @@ export const strings = {
     howTitle: "Four steps from document chaos to live answers",
     useEyebrow: "Use cases",
     useTitle: "For teams that answer high-stakes questions in real time",
-    pricingEyebrow: "Pricing",
-    pricingTitle: "Simple plans for individuals and teams",
+    pricingEyebrow: "Early access",
+    pricingTitle: "Choose your early access format",
+    pricingSub:
+      "Join the waitlist. Early users will get a free trial and help shape the product before public launch.",
+    pricingTrustLine: "No payment. No card. No commitment.",
+    pricingFutureNote:
+      "Future pricing for reference. Early access is free, with no credit card required.",
     popular: "Most popular",
     faqEyebrow: "FAQ",
     faqTitle: "Clear answers before early access",
@@ -58,7 +63,7 @@ export const strings = {
     ctaLabel: "Early access",
     ctaHeadline: "Be first to try LiveAssist AI",
     emailLabel: "Email",
-    emailPlaceholder: "you@company.com",
+    emailPlaceholder: "your@gmail.com",
     ctaSub: "No spam. We’ll email you when it’s ready.",
     emailError: "Enter a valid email address.",
     emailSubmitting: "Joining the waitlist...",
@@ -119,19 +124,24 @@ export const strings = {
         price: "$19",
         period: "/mo",
         description: "For one rep, consultant, or operator.",
+        cta: "Get early access →",
+        footnote: "14 days free when we launch",
         features: [
-          "Personal document library",
+          "Personal knowledge base",
           "Desktop overlay",
           "Hotkey answers",
-          "Source citations"
+          "Sources on every answer"
         ]
       },
       {
         name: "Team",
         price: "$99",
         period: "/mo",
-        description: "For small customer-facing teams.",
+        description: "Up to 5 users. For small sales and support teams.",
         highlighted: true,
+        badge: "Popular choice",
+        cta: "Reserve early access →",
+        footnote: "First teams get setup for free",
         features: [
           "Up to 5 users",
           "Shared company knowledge base",
@@ -140,10 +150,12 @@ export const strings = {
         ]
       },
       {
-        name: "Custom",
+        name: "Corporate",
         price: "Contact us",
         period: "",
         description: "For larger teams and complex document sets.",
+        cta: "Discuss rollout →",
+        footnote: "No commitment",
         features: [
           "Custom onboarding",
           "Advanced permissions",
@@ -152,6 +164,11 @@ export const strings = {
         ]
       }
     ],
+    pricingNudgeTitle: "Not ready to choose a plan?",
+    pricingNudgeBody:
+      "Leave a request for early access and we’ll email you when testing opens.",
+    pricingNudgeCta: "Join the waitlist →",
+    pricingNudgeNote: "It’s free and comes with no obligation.",
     faqs: [
       [
         "Does LiveAssist AI listen all the time?",
@@ -180,13 +197,13 @@ export const strings = {
     navLabel: "Основная навигация",
     navHow: "Как работает",
     navUseCases: "Сценарии",
-    navPricing: "Тарифы",
+    navPricing: "Ранний доступ",
     navFaq: "Вопросы",
     switchToRu: "Переключить язык на русский",
     switchToEn: "Переключить язык на английский",
     openMenuLabel: "Открыть меню",
     closeMenuLabel: "Закрыть меню",
-    joinWaitlist: "В лист ожидания",
+    joinWaitlist: "Получить ранний доступ",
     heroEyebrow: "Приватный оверлей на рабочем столе",
     heroHeadline:
       "Знай ответ. До того, как они договорят.",
@@ -228,8 +245,13 @@ export const strings = {
     useEyebrow: "Сценарии",
     useTitle:
       "Для команд, которые отвечают на важные вопросы в реальном времени",
-    pricingEyebrow: "Тарифы",
-    pricingTitle: "Простые планы для специалистов и команд",
+    pricingEyebrow: "Ранний доступ",
+    pricingTitle: "Выберите формат раннего доступа",
+    pricingSub:
+      "Запишитесь в waitlist. Первые пользователи получат бесплатный тест и смогут повлиять на продукт до публичного запуска.",
+    pricingTrustLine: "Без оплаты. Без карты. Без обязательств.",
+    pricingFutureNote:
+      "Цены для ориентира. Ранний доступ — бесплатно, без карты.",
     popular: "Популярный выбор",
     faqEyebrow: "Вопросы",
     faqTitle: "Коротко перед ранним доступом",
@@ -294,23 +316,28 @@ export const strings = {
     ],
     pricing: [
       {
-        name: "Соло",
+        name: "Solo",
         price: "$19",
         period: "/мес",
         description: "Для одного менеджера, консультанта или оператора.",
+        cta: "Получить ранний доступ →",
+        footnote: "14 дней бесплатно при запуске",
         features: [
-          "Личная библиотека документов",
+          "Личная база документов",
           "Оверлей на рабочем столе",
           "Ответы по горячей клавише",
-          "Источники у ответов"
+          "Источники к каждому ответу"
         ]
       },
       {
-        name: "Команда",
+        name: "Team",
         price: "$99",
         period: "/мес",
-        description: "Для небольших команд, которые общаются с клиентами.",
+        description: "До 5 пользователей. Для небольших команд продаж и поддержки.",
         highlighted: true,
+        badge: "Популярный выбор",
+        cta: "Забронировать ранний доступ →",
+        footnote: "Первые команды получат настройку бесплатно",
         features: [
           "До 5 пользователей",
           "Общая база знаний компании",
@@ -319,18 +346,25 @@ export const strings = {
         ]
       },
       {
-        name: "Индивидуально",
+        name: "Corporate",
         price: "Связаться",
         period: "",
         description: "Для больших команд и сложных наборов документов.",
+        cta: "Обсудить внедрение →",
+        footnote: "Без обязательств",
         features: [
           "Индивидуальный онбординг",
           "Расширенные права доступа",
-          "Большой объем документов",
+          "Большой объём документов",
           "Поддержка внедрения"
         ]
       }
     ],
+    pricingNudgeTitle: "Не готовы выбирать тариф?",
+    pricingNudgeBody:
+      "Оставьте заявку на ранний доступ — мы напишем, когда откроем тестирование.",
+    pricingNudgeCta: "Встать в waitlist →",
+    pricingNudgeNote: "Это бесплатно и ни к чему не обязывает.",
     faqs: [
       [
         "LiveAssist AI слушает всё время?",

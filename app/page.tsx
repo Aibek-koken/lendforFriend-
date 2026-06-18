@@ -78,6 +78,9 @@ type PricingPlan = {
   period: string;
   description: string;
   highlighted?: boolean;
+  badge?: string;
+  cta: string;
+  footnote: string;
   features: string[];
 };
 
@@ -1097,23 +1100,35 @@ export default function HomePage() {
               <h2 className="text-[clamp(34px,4vw,54px)] font-[700] leading-[1.06] tracking-[-0.04em]">
                 {t("pricingTitle")}
               </h2>
+              <p className="mt-5 max-w-[780px] text-[17px] font-[400] leading-[1.62] text-[#5a5a63]">
+                {t("pricingSub")}
+              </p>
+              <p className="mt-4 text-[14px] font-[600] text-[#3f3f46]">
+                {t("pricingTrustLine")}
+              </p>
             </AnimateOnScroll>
-            <div className="grid gap-4 lg:grid-cols-3">
+            <AnimateOnScroll
+              delay={0.04}
+              className="mb-8 inline-flex rounded-full border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.82)] px-4 py-2 text-[13px] font-[500] text-[#6e6e73] shadow-[inset_0_1px_0_rgba(255,255,255,0.88)]"
+            >
+              {t("pricingFutureNote")}
+            </AnimateOnScroll>
+            <div className="grid gap-5 lg:grid-cols-3">
               {tPricing().map((plan, i) => (
                 <AnimateOnScroll
                   as="article"
                   key={plan.name}
                   delay={[0.05, 0.12, 0.2][i] ?? 0.05}
                   y={plan.highlighted ? 40 : 32}
-                  className={`relative rounded-[16px] border bg-white p-7 ${
+                  className={`relative flex h-full flex-col rounded-[24px] border bg-white p-7 ${
                     plan.highlighted
-                      ? "border-[#5e5ce6] shadow-[0_0_0_1px_#5e5ce6,0_12px_24px_rgba(94,92,230,0.12)]"
-                      : "border-[#e5e5ea]"
+                      ? "border-[rgba(94,92,230,0.72)] shadow-[0_0_0_1px_rgba(94,92,230,0.28),0_18px_36px_rgba(94,92,230,0.12)]"
+                      : "border-[#e5e5ea] shadow-[0_10px_28px_rgba(15,23,42,0.04)]"
                   }`}
                 >
                   {plan.highlighted ? (
-                    <span className="absolute -top-3 left-6 rounded-full bg-[#5e5ce6] px-3 py-1 text-[11px] font-[700] text-white">
-                      {t("popular")}
+                    <span className="absolute -top-3 left-6 rounded-full border border-[rgba(94,92,230,0.18)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-3 py-1 text-[11px] font-[700] text-white shadow-[0_8px_18px_rgba(94,92,230,0.2)]">
+                      {plan.badge ?? t("popular")}
                     </span>
                   ) : null}
                   <h3 className="text-[18px] font-[700] tracking-[-0.02em]">{plan.name}</h3>
@@ -1134,17 +1149,40 @@ export default function HomePage() {
                   </ul>
                   <a
                     href="#waitlist"
-                    className={`mt-7 inline-flex w-full min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[600] leading-none transition-all duration-150 hover:-translate-y-px ${
+                    className={`mt-8 inline-flex w-full min-h-[48px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[600] leading-none transition-all duration-150 hover:-translate-y-px ${
                       plan.highlighted
                         ? "bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] hover:bg-[#4846c9]"
-                        : "border border-[#e5e5ea] bg-[rgba(255,255,255,0.76)] text-[#1d1d1f] hover:border-[rgba(94,92,230,0.38)] hover:text-[#5e5ce6]"
+                        : "border border-[#d7d7dc] bg-[rgba(255,255,255,0.82)] text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] hover:border-[rgba(94,92,230,0.38)] hover:text-[#5e5ce6]"
                     }`}
                   >
-                    {t("heroPrimary")}
+                    {plan.cta}
                   </a>
+                  <p className="mt-3 text-center text-[13px] font-[500] leading-[1.45] text-[#8a8a94]">
+                    {plan.footnote}
+                  </p>
                 </AnimateOnScroll>
               ))}
             </div>
+            <AnimateOnScroll
+              delay={0.24}
+              className="mt-10 rounded-[28px] border border-[rgba(29,29,31,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.9)_0%,rgba(250,250,252,0.96)_100%)] px-6 py-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] sm:px-8"
+            >
+              <h3 className="text-[24px] font-[700] tracking-[-0.03em] text-[#1d1d1f]">
+                {t("pricingNudgeTitle")}
+              </h3>
+              <p className="mx-auto mt-3 max-w-[620px] text-[16px] font-[400] leading-[1.6] text-[#6e6e73]">
+                {t("pricingNudgeBody")}
+              </p>
+              <a
+                href="#waitlist"
+                className="mt-6 inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-[#1d1d1f] px-6 text-[15px] font-[600] leading-none text-white shadow-[0_12px_24px_rgba(29,29,31,0.14)] transition-all duration-150 hover:-translate-y-px hover:bg-[#111111]"
+              >
+                {t("pricingNudgeCta")}
+              </a>
+              <p className="mt-3 text-[13px] font-[500] text-[#8a8a94]">
+                {t("pricingNudgeNote")}
+              </p>
+            </AnimateOnScroll>
           </div>
         </section>
 
