@@ -809,7 +809,7 @@ export default function HomePage() {
         )}
       </header>
 
-      <main id="top" style={{ overflow: "clip" }}>
+      <main id="top" style={{ overflowX: "clip", overflowY: "visible" }}>
         <section className="relative overflow-hidden px-4 pb-10 pt-28 md:hidden">
           <div
             className="absolute inset-0"
@@ -879,13 +879,15 @@ export default function HomePage() {
         <section
           ref={mobileHeroRef}
           id="hero-mobile-demo"
-          className="relative overflow-hidden md:hidden"
-          style={{ minHeight: "220vh" }}
+          className="relative md:hidden"
+          style={{ minHeight: "220vh", overflowX: "clip", overflowY: "visible" }}
         >
           <div
-            className="sticky top-0 overflow-hidden px-4 py-10"
+            className="sticky top-0 px-4 py-10"
             style={{
               minHeight: "100svh",
+              overflowX: "clip",
+              overflowY: "visible",
               background:
                 "linear-gradient(180deg, rgba(249,250,255,0.94) 0%, rgba(255,255,255,1) 100%)",
             }}
@@ -1175,12 +1177,12 @@ export default function HomePage() {
         <section
           ref={mobileScrollyRef}
           id="scrolly-mobile"
-          className="relative overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#fafbff_100%)] md:hidden"
-          style={{ minHeight: "420vh" }}
+          className="relative bg-[linear-gradient(180deg,#ffffff_0%,#fafbff_100%)] md:hidden"
+          style={{ minHeight: "420vh", overflowX: "clip", overflowY: "visible" }}
         >
           <div
             className="sticky top-0 flex items-center px-4 py-16"
-            style={{ minHeight: "100svh" }}
+            style={{ minHeight: "100svh", overflowX: "clip", overflowY: "visible" }}
           >
             <div className="relative mx-auto w-full max-w-[430px]" style={{ minHeight: 420 }}>
               <div
