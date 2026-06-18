@@ -1254,14 +1254,8 @@ export default function HomePage() {
                 <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(94,92,230,0.1)] text-[#5e5ce6]">
                   <Headphones size={24} aria-hidden="true" />
                 </div>
-                <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#6B65CC]">
-                  {mobileStorySteps[0].step}
-                </p>
                 <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
                   {mobileStorySteps[0].title}
-                </p>
-                <p className="mt-4 max-w-[28ch] text-[15px] leading-[1.6] text-[#666670]">
-                  {mobileStorySteps[0].body}
                 </p>
               </div>
 
@@ -1282,14 +1276,8 @@ export default function HomePage() {
                 <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(94,92,230,0.1)] text-[#5e5ce6]">
                   <MessageSquareText size={24} aria-hidden="true" />
                 </div>
-                <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#6B65CC]">
-                  {mobileStorySteps[1].step}
-                </p>
                 <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
                   {mobileStorySteps[1].title}
-                </p>
-                <p className="mt-4 max-w-[28ch] text-[15px] leading-[1.6] text-[#666670]">
-                  {mobileStorySteps[1].body}
                 </p>
               </div>
 
@@ -1313,14 +1301,8 @@ export default function HomePage() {
                 >
                   <span className="text-[34px] font-[700] leading-none">{t("scrollyKey")}</span>
                 </div>
-                <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#6B65CC]">
-                  {mobileStorySteps[2].step}
-                </p>
                 <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
                   {mobileStorySteps[2].title}
-                </p>
-                <p className="mt-4 max-w-[28ch] text-[15px] leading-[1.6] text-[#666670]">
-                  {mobileStorySteps[2].body}
                 </p>
               </div>
 
@@ -1341,14 +1323,8 @@ export default function HomePage() {
                 <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(33,168,154,0.12)] text-[#1f9d63]">
                   <LockKeyhole size={24} aria-hidden="true" />
                 </div>
-                <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#6B65CC]">
-                  {mobileStorySteps[3].step}
-                </p>
                 <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
                   {mobileStorySteps[3].title}
-                </p>
-                <p className="mt-4 max-w-[28ch] text-[15px] leading-[1.6] text-[#666670]">
-                  {mobileStorySteps[3].body}
                 </p>
               </div>
 
@@ -1515,7 +1491,7 @@ export default function HomePage() {
         {/* FEATURES */}
         <section className="px-4 py-20 sm:px-5 md:py-28" id="features">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
-            <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
+            <AnimateOnScroll delay={0} className="mb-10 max-w-3xl md:mb-12">
               <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
                 {t("featuresEyebrow")}
               </p>
@@ -1555,7 +1531,7 @@ export default function HomePage() {
         {/* HOW IT WORKS */}
         <section className="bg-[#f5f5f7] px-4 py-20 sm:px-5 md:py-28" id="how-it-works">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
-            <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
+            <AnimateOnScroll delay={0} className="mb-10 max-w-3xl md:mb-12">
               <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
                 {t("howEyebrow")}
               </p>
@@ -1622,7 +1598,7 @@ export default function HomePage() {
         {/* PRICING */}
         <section className="bg-[#f5f5f7] px-4 py-20 sm:px-5 md:py-28" id="pricing">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
-            <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
+            <AnimateOnScroll delay={0} className="mb-10 max-w-3xl md:mb-12">
               <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
                 {t("pricingEyebrow")}
               </p>
@@ -1635,12 +1611,6 @@ export default function HomePage() {
               <p className="mt-4 text-[14px] font-[600] text-[#3f3f46]">
                 {t("pricingTrustLine")}
               </p>
-            </AnimateOnScroll>
-            <AnimateOnScroll
-              delay={0.04}
-              className="mb-8 inline-flex rounded-full border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.82)] px-4 py-2 text-[13px] font-[500] text-[#6e6e73] shadow-[inset_0_1px_0_rgba(255,255,255,0.88)]"
-            >
-              {t("pricingFutureNote")}
             </AnimateOnScroll>
             <div className="grid gap-5 lg:grid-cols-3">
               {tPricing().map((plan, i) => (

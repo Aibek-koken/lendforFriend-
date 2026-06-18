@@ -54,8 +54,6 @@ export const strings = {
     pricingSub:
       "Join the waitlist. Early users will get a free trial and help shape the product before public launch.",
     pricingTrustLine: "No payment. No card. No commitment.",
-    pricingFutureNote:
-      "Future pricing for reference. Early access is free, with no credit card required.",
     popular: "Most popular",
     faqEyebrow: "FAQ",
     faqTitle: "Clear answers before early access",
@@ -250,8 +248,6 @@ export const strings = {
     pricingSub:
       "Запишитесь в waitlist. Первые пользователи получат бесплатный тест и смогут повлиять на продукт до публичного запуска.",
     pricingTrustLine: "Без оплаты. Без карты. Без обязательств.",
-    pricingFutureNote:
-      "Цены для ориентира. Ранний доступ — бесплатно, без карты.",
     popular: "Популярный выбор",
     faqEyebrow: "Вопросы",
     faqTitle: "Коротко перед ранним доступом",
