@@ -105,16 +105,16 @@ type MobileStoryStep = {
 const MOBILE_HERO_MORPH = {
   heroFadeEnd: 0.18,
   cardMoveStart: 0.06,
-  cardMoveEnd: 0.34,
-  hintsRevealStart: 0.24,
-  hintsRevealEnd: 0.42,
-  hintsRegionStart: 0.3,
+  cardMoveEnd: 0.4,
+  hintsRevealStart: 0.38,
+  hintsRevealEnd: 0.54,
+  hintsRegionStart: 0.46,
   cardStartScale: 0.88,
-  cardEndScale: 0.92,
+  cardEndScale: 0.78,
   cardStartY: 40,
-  cardEndY: -26,
+  cardEndY: -40,
   glowFadeStart: 0.18,
-  glowFadeEnd: 0.34,
+  glowFadeEnd: 0.42,
 } as const;
 
 export default function HomePage() {
@@ -161,6 +161,7 @@ export default function HomePage() {
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [viewportReady, setViewportReady] = useState(false);
+  const [mobileHeroPinState, setMobileHeroPinState] = useState<"before" | "pinned" | "after">("before");
   const scrollLockedRef = useRef(false);
 
   const t = (key: string) => {
@@ -311,6 +312,7 @@ export default function HomePage() {
     url: item.url,
     icon: item.icon,
   }));
+  const mobileNavItems = navItems.slice(0, 2);
 
   const heroFadeProgress = clamp01(heroScrollProgress / HERO_MORPH.heroFadeEnd);
   const heroMorphProgress = animComplete
@@ -341,7 +343,6 @@ export default function HomePage() {
       (heroScrollProgress - HERO_MORPH.glowFadeStart) /
         (HERO_MORPH.glowFadeEnd - HERO_MORPH.glowFadeStart)
     );
-  const mobileHeroFadeProgress = clamp01(heroScrollProgress / MOBILE_HERO_MORPH.heroFadeEnd);
   const mobileHeroMorphProgress = animComplete
     ? clamp01(
         (heroScrollProgress - MOBILE_HERO_MORPH.cardMoveStart) /
@@ -446,6 +447,42 @@ export default function HomePage() {
     setSkipAnimInstant(true);
     setAnimComplete(true);
   }, [isMobileViewport, prefersReducedMotion, viewportReady]);
+
+  useEffect(() => {
+    if (!viewportReady || !isMobileViewport) {
+      setMobileHeroPinState("before");
+      return;
+    }
+
+    const handlePosition = () => {
+      const section = mobileHeroRef.current;
+      if (!section) return;
+
+      const rect = section.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+
+      if (rect.top >= 0) {
+        setMobileHeroPinState("before");
+        return;
+      }
+
+      if (rect.bottom > viewportHeight) {
+        setMobileHeroPinState("pinned");
+        return;
+      }
+
+      setMobileHeroPinState("after");
+    };
+
+    handlePosition();
+    window.addEventListener("scroll", handlePosition, { passive: true });
+    window.addEventListener("resize", handlePosition);
+
+    return () => {
+      window.removeEventListener("scroll", handlePosition);
+      window.removeEventListener("resize", handlePosition);
+    };
+  }, [isMobileViewport, viewportReady]);
 
   useEffect(() => {
     const sectionIds = ["how-it-works", "use-cases", "pricing", "faq"];
@@ -719,97 +756,127 @@ export default function HomePage() {
   }
 
   const featureIcons = [FileText, FileSearch, Layers, Keyboard, Mic, Shield];
+  const activeMobileHintId =
+    heroPhase === "hints" && activeScrollHint ? activeScrollHint : "question";
   const activeMobileHintContent =
-    heroPhase === "hints" && activeScrollHint
-      ? scrollHintContent[activeScrollHint as (typeof HINT_IDS)[number]]
-      : scrollHintContent.question;
+    scrollHintContent[activeMobileHintId as (typeof HINT_IDS)[number]];
+  const mobileHeroFrameStyle =
+    mobileHeroPinState === "pinned"
+      ? {
+          position: "fixed" as const,
+          inset: 0,
+          zIndex: 20,
+        }
+      : mobileHeroPinState === "after"
+        ? {
+            position: "absolute" as const,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }
+        : {
+            position: "absolute" as const,
+            left: 0,
+            right: 0,
+            top: 0,
+          };
 
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-180 ease-out">
         <nav
-          className="mx-auto grid w-full grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 pt-4 pb-2 sm:gap-6 sm:px-5 sm:pt-7 sm:pb-3"
+          className="mx-auto w-full px-4 pt-4 pb-3 sm:px-5 sm:pt-7 sm:pb-3"
           style={{ maxWidth: "min(1180px, calc(100% - 40px))" }}
           aria-label={t("navLabel")}
         >
-          <span className="inline-flex min-h-10 select-none items-center gap-2 text-[15px] font-[700] text-[#1d1d1f]">
-            {t("logo")}
-          </span>
+          <div className="relative md:hidden rounded-[20px] border border-[rgba(29,29,31,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.94)_0%,rgba(246,248,255,0.9)_100%)] px-3 py-2 shadow-[0_14px_32px_rgba(15,23,42,0.06),inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-md">
+            <div className="flex min-h-[40px] items-center justify-between gap-2">
+              <span className="inline-flex min-w-0 flex-1 select-none items-center gap-2 overflow-hidden whitespace-nowrap text-[13px] font-[700] text-[#1d1d1f]">
+                {t("logo")}
+              </span>
+              <div className="flex shrink-0 items-center gap-1.5">
+                <a
+                  href="#waitlist"
+                  className="inline-flex min-h-[32px] items-center justify-center rounded-full border border-[rgba(72,70,201,0.24)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-3 text-[11px] font-[700] leading-none text-white shadow-[0_10px_18px_rgba(94,92,230,0.16),inset_0_1px_0_rgba(255,255,255,0.18)] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e5ce6] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                >
+                  {t("navPricing")}
+                </a>
+                <button
+                  onClick={() => setMenuOpen((current) => !current)}
+                  className="inline-flex min-h-[32px] min-w-[32px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.1)] bg-white/88 text-[16px] font-[700] leading-none text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e5ce6] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                  aria-label={menuOpen ? t("closeMenuLabel") : t("openMenuLabel")}
+                  aria-expanded={menuOpen}
+                >
+                  &#9776;
+                </button>
+              </div>
+            </div>
 
-          <NavBar
-            items={navItems}
-            activeTab={activeTab}
-            setActiveTab={(id) =>
-              setActiveTab(id as (typeof navConfig)[number]["id"])
-            }
-            className="hidden md:flex items-center justify-center"
-          />
+            {menuOpen ? (
+              <div className="absolute left-0 right-0 top-[calc(100%+8px)] rounded-[20px] border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.96)] p-3 shadow-[0_16px_32px_rgba(15,23,42,0.08)] backdrop-blur-md">
+                <div className="flex flex-col gap-1.5">
+                  {navItems.map((item) => (
+                    <a
+                      key={item.id}
+                      href={item.url}
+                      onClick={() => {
+                        setActiveTab(item.id as (typeof navConfig)[number]["id"]);
+                        setMenuOpen(false);
+                      }}
+                      className="inline-flex min-h-[36px] items-center rounded-full px-3 text-[13px] font-[600] text-[#3f3f46] transition-colors duration-150 hover:bg-[rgba(94,92,230,0.08)] hover:text-[#5e5ce6]"
+                    >
+                      {item.name}
+                    </a>
+                  ))}
+                  <button
+                    onClick={() => {
+                      setLang(lang === "en" ? "ru" : "en");
+                      setMenuOpen(false);
+                    }}
+                    className="inline-flex min-h-[36px] items-center justify-between rounded-full px-3 text-[13px] font-[700] text-[#1d1d1f] transition-colors duration-150 hover:bg-[rgba(94,92,230,0.08)]"
+                  >
+                    <span>{lang === "en" ? "Russian" : "English"}</span>
+                    <span className="text-[#5e5ce6]">{lang === "en" ? "RU" : "EN"}</span>
+                  </button>
+                </div>
+              </div>
+            ) : null}
+          </div>
 
-          <div className="flex items-center justify-end gap-[10px]">
-            <button
-              onClick={() => setLang(lang === "en" ? "ru" : "en")}
-              className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(244,246,255,0.92)_100%)] px-3 text-[13px] font-[500] text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] transition-all duration-150 hover:border-[rgba(99,91,255,0.22)] hover:bg-[linear-gradient(180deg,rgba(255,255,255,1)_0%,rgba(238,242,255,0.96)_100%)]"
-              aria-label={lang === "en" ? t("switchToRu") : t("switchToEn")}
-            >
-              {lang === "en" ? "RU" : "EN"}
-            </button>
-            <a
-              href="#waitlist"
-              className="hidden md:inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-[rgba(72,70,201,0.34)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-5 text-[15px] font-[600] leading-none text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] transition-all duration-150 hover:border-[rgba(72,70,201,0.42)] hover:bg-[linear-gradient(180deg,rgba(103,96,247,1)_0%,rgba(72,70,201,1)_100%)] hover:-translate-y-px"
-            >
-              {t("joinWaitlist")}
-            </a>
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden inline-flex min-w-[44px] min-h-[44px] flex-col items-center justify-center gap-[4px] rounded-full border border-[rgba(29,29,31,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(244,246,255,0.92)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] transition-all duration-150 hover:border-[rgba(99,91,255,0.22)] hover:bg-[linear-gradient(180deg,rgba(255,255,255,1)_0%,rgba(238,242,255,0.96)_100%)]"
-              aria-label={menuOpen ? t("closeMenuLabel") : t("openMenuLabel")}
-              aria-expanded={menuOpen}
-            >
-              <span
-                className="w-[17px] h-[2px] rounded-full bg-[#1d1d1f] transition-transform duration-180"
-                style={{ transform: menuOpen ? "translateY(6px) rotate(45deg)" : "" }}
-              />
-              <span
-                className="w-[17px] h-[2px] rounded-full bg-[#1d1d1f] transition-opacity duration-180"
-                style={{ opacity: menuOpen ? 0 : 1 }}
-              />
-              <span
-                className="w-[17px] h-[2px] rounded-full bg-[#1d1d1f] transition-transform duration-180"
-                style={{ transform: menuOpen ? "translateY(-6px) rotate(-45deg)" : "" }}
-              />
-            </button>
+          <div className="hidden md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-3">
+            <span className="inline-flex min-h-10 select-none items-center gap-2 text-[15px] font-[700] text-[#1d1d1f]">
+              {t("logo")}
+            </span>
+
+            <NavBar
+              items={navItems}
+              activeTab={activeTab}
+              setActiveTab={(id) =>
+                setActiveTab(id as (typeof navConfig)[number]["id"])
+              }
+              className="flex items-center justify-center"
+            />
+
+            <div className="flex items-center justify-end gap-[10px]">
+              <button
+                onClick={() => setLang(lang === "en" ? "ru" : "en")}
+                className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(244,246,255,0.92)_100%)] px-3 text-[13px] font-[500] text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] transition-all duration-150 hover:border-[rgba(99,91,255,0.22)] hover:bg-[linear-gradient(180deg,rgba(255,255,255,1)_0%,rgba(238,242,255,0.96)_100%)]"
+                aria-label={lang === "en" ? t("switchToRu") : t("switchToEn")}
+              >
+                {lang === "en" ? "RU" : "EN"}
+              </button>
+              <a
+                href="#waitlist"
+                className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-[rgba(72,70,201,0.34)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-5 text-[15px] font-[600] leading-none text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] transition-all duration-150 hover:border-[rgba(72,70,201,0.42)] hover:bg-[linear-gradient(180deg,rgba(103,96,247,1)_0%,rgba(72,70,201,1)_100%)] hover:-translate-y-px"
+              >
+                {t("joinWaitlist")}
+              </a>
+            </div>
           </div>
         </nav>
-
-        {menuOpen && (
-          <div className="space-y-3 border-t border-[#e5e5ea] bg-[rgba(255,255,255,0.96)] px-4 py-5 backdrop-blur-md md:hidden">
-            {[
-              ["navHow", "#hero-mobile-demo"],
-              ["navUseCases", "#use-cases"],
-              ["navPricing", "#pricing"],
-              ["navFaq", "#faq"],
-            ].map(([key, href]) => (
-              <a
-                key={key}
-                href={href}
-                onClick={() => setMenuOpen(false)}
-                className="block rounded-full px-[14px] py-3 text-[15px] font-[500] text-[#6e6e73] hover:text-[#5e5ce6]"
-              >
-                {t(key)}
-              </a>
-            ))}
-            <a
-              href="#waitlist"
-              onClick={() => setMenuOpen(false)}
-              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[600] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] w-full"
-            >
-              {t("joinWaitlist")}
-            </a>
-          </div>
-        )}
       </header>
 
-      <main id="top" style={{ overflowX: "clip", overflowY: "visible" }}>
+      <main id="top">
         <section className="relative overflow-hidden px-4 pb-10 pt-28 md:hidden">
           <div
             className="absolute inset-0"
@@ -880,101 +947,86 @@ export default function HomePage() {
           ref={mobileHeroRef}
           id="hero-mobile-demo"
           className="relative md:hidden"
-          style={{ minHeight: "220vh", overflowX: "clip", overflowY: "visible" }}
+          style={{ minHeight: "320vh" }}
         >
           <div
-            className="sticky top-0 px-4 py-10"
+            className="px-4 pb-6 pt-24"
             style={{
+              ...mobileHeroFrameStyle,
               minHeight: "100svh",
-              overflowX: "clip",
-              overflowY: "visible",
               background:
                 "linear-gradient(180deg, rgba(249,250,255,0.94) 0%, rgba(255,255,255,1) 100%)",
             }}
           >
-            <div className="mx-auto flex min-h-[calc(100svh-80px)] max-w-[430px] flex-col">
-              <div
-                style={{
-                  opacity: 1 - mobileHeroFadeProgress,
-                  transform: `translateY(${mix(0, -18, mobileHeroFadeProgress)}px)`,
-                  filter: `blur(${mix(0, 6, mobileHeroFadeProgress)}px)`,
-                  willChange: "transform, opacity, filter",
-                }}
-              >
-                <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#6B65CC]">
-                  {lang === "ru" ? "Как это выглядит в звонке" : "How it looks mid-call"}
-                </p>
-                <h2 className="mt-3 text-[34px] font-[700] leading-[1.02] tracking-[-0.05em] text-[#111111]">
-                  {lang === "ru" ? "Скроль вниз и разбери ответ по шагам." : "Scroll down and unpack the answer step by step."}
-                </h2>
-                <p className="mt-3 max-w-[30ch] text-[14px] leading-[1.58] text-[#666670]">
-                  {lang === "ru"
-                    ? "Сначала видишь сам оверлей, потом отдельно вопрос, ответ, уверенность и источник."
-                    : "First you see the overlay, then the question, answer, confidence, and source one by one."}
-                </p>
-              </div>
-
-              <div className="relative flex flex-1 items-center justify-center pb-6 pt-8">
+            <div
+              className="mx-auto flex max-w-[430px] items-center justify-center"
+              style={{
+                minHeight: "calc(100svh - 120px)",
+              }}
+            >
+              <div className="relative z-10 flex w-full flex-col items-center gap-2">
                 <div
-                  className="absolute left-1/2 top-1/2 aspect-square w-[88vw] max-w-[430px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[16px]"
-                  aria-hidden="true"
-                  style={{
-                    background:
-                      "radial-gradient(circle, rgba(94,92,230,0.18), transparent 62%), radial-gradient(circle at 36% 28%, rgba(33,168,154,0.14), transparent 38%)",
-                    opacity: mobileCardGlowOpacity,
-                  }}
-                />
-                <div
-                  className="relative z-10 w-full max-w-[316px]"
+                  className="relative w-full max-w-[296px]"
                   style={{
                     transform: `translateY(${mobileCardTranslateY}px) scale(${mobileCardScale})`,
                     transformOrigin: "center center",
                     willChange: "transform",
                   }}
                 >
-                  <div className="rounded-[28px] border border-[rgba(94,92,230,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.94)_0%,rgba(244,246,255,0.99)_100%)] p-2.5 shadow-[0_24px_52px_rgba(94,92,230,0.12)]">
+                  <div
+                    className="absolute left-1/2 top-1/2 aspect-square w-[82vw] max-w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[16px]"
+                    aria-hidden="true"
+                    style={{
+                      background:
+                        "radial-gradient(circle, rgba(94,92,230,0.18), transparent 62%), radial-gradient(circle at 36% 28%, rgba(33,168,154,0.14), transparent 38%)",
+                      opacity: mobileCardGlowOpacity,
+                    }}
+                  />
+                  <div className="relative rounded-[28px] border border-[rgba(94,92,230,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.94)_0%,rgba(244,246,255,0.99)_100%)] p-2.5 shadow-[0_24px_52px_rgba(94,92,230,0.12)]">
                     <div className="rounded-[24px] bg-[linear-gradient(180deg,rgba(248,249,255,0.98)_0%,rgba(255,255,255,1)_100%)] p-1.5">
                       <ProductMockup
                         copy={strings[lang].mockup}
                         lang={lang}
+                        onboarding
                         staticState
                         compact
+                        scrollActiveHintId={activeMobileHintId}
                       />
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <div
-                style={{
-                  opacity: mobileHintsRevealProgress,
-                  transform: `translateY(${mix(24, 0, mobileHintsRevealProgress)}px)`,
-                  filter: `blur(${mix(8, 0, mobileHintsRevealProgress)}px)`,
-                  willChange: "transform, opacity, filter",
-                }}
-              >
-                <div className="rounded-[28px] border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.96)] p-5 shadow-[0_18px_44px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-                  <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#6B65CC]">
-                    {lang === "ru" ? "Разберём по частям" : "Let's break it down"}
-                  </p>
-                  <h2 className="mt-3 text-[26px] font-[700] leading-[0.98] tracking-[-0.05em] text-[#111111]">
-                    {activeMobileHintContent.title}
-                  </h2>
-                  <p className="mt-3 text-[13px] leading-[1.55] text-[#61616a]">
-                    {activeMobileHintContent.body}
-                  </p>
-                  <div className="mt-5 flex gap-2">
-                    {HINT_IDS.map((id) => (
-                      <div
-                        key={id}
-                        className="rounded-full transition-all duration-300 ease-out"
-                        style={{
-                          width: activeScrollHint === id ? 26 : 6,
-                          height: 6,
-                          backgroundColor: activeScrollHint === id ? "#5e5ce6" : "#d1d1d6",
-                        }}
-                      />
-                    ))}
+                <div
+                  className="w-full max-w-[344px]"
+                  style={{
+                    opacity: mix(0.96, 1, mobileHintsRevealProgress),
+                    transform: `translateY(${mix(-45, -35, mobileHintsRevealProgress)}px)`,
+                    filter: `blur(${mix(2, 0, mobileHintsRevealProgress)}px)`,
+                    willChange: "transform, opacity, filter",
+                  }}
+                >
+                  <div className="rounded-[26px] border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.96)] px-5 py-4 shadow-[0_18px_44px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+                    <p className="text-[11px] font-[700] uppercase tracking-[0.15em] text-[#6B65CC]">
+                      {lang === "ru" ? "Разберём по частям" : "Let's break it down"}
+                    </p>
+                    <h2 className="mt-2.5 text-[20px] font-[700] leading-[1] tracking-[-0.04em] text-[#111111]">
+                      {activeMobileHintContent.title}
+                    </h2>
+                    <p className="mt-2.5 text-[12px] leading-[1.45] text-[#61616a]">
+                      {activeMobileHintContent.body}
+                    </p>
+                    <div className="mt-4 flex gap-2">
+                      {HINT_IDS.map((id) => (
+                        <div
+                          key={id}
+                          className="rounded-full transition-all duration-300 ease-out"
+                          style={{
+                            width: activeScrollHint === id ? 22 : 6,
+                            height: 6,
+                            backgroundColor: activeScrollHint === id ? "#5e5ce6" : "#d1d1d6",
+                          }}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1178,11 +1230,11 @@ export default function HomePage() {
           ref={mobileScrollyRef}
           id="scrolly-mobile"
           className="relative bg-[linear-gradient(180deg,#ffffff_0%,#fafbff_100%)] md:hidden"
-          style={{ minHeight: "420vh", overflowX: "clip", overflowY: "visible" }}
+          style={{ minHeight: "420vh" }}
         >
           <div
             className="sticky top-0 flex items-center px-4 py-16"
-            style={{ minHeight: "100svh", overflowX: "clip", overflowY: "visible" }}
+            style={{ minHeight: "100svh" }}
           >
             <div className="relative mx-auto w-full max-w-[430px]" style={{ minHeight: 420 }}>
               <div

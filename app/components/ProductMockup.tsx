@@ -85,7 +85,7 @@ export default function ProductMockup({
   const charDelay = 42;
   const baseWidth = large ? 620 : compact ? 288 : 420;
   const expandedWidth = large ? 760 : compact ? 288 : 520;
-  const expandedMaxHeight = large ? 620 : compact ? 340 : 480;
+  const expandedMaxHeight = large ? 620 : compact ? 448 : 480;
   const outerPadding = large ? "28px 32px" : compact ? "14px 14px 16px" : "20px 24px";
   const fileAccent = onboarding ? "#1F9D63" : "#5E5CE6";
   const sourceButtonBg = onboarding ? "#1D1D1F" : "#5E5CE6";
@@ -152,6 +152,8 @@ export default function ProductMockup({
           body: "The rep sees the file and page, so the answer can be verified before saying it out loud.",
         },
       ];
+
+  const renderFinalState = staticState;
 
   // Активный hint: scroll-driven имеет приоритет над hover
   const activeHint = scrollActiveHintId != null
@@ -704,11 +706,12 @@ export default function ProductMockup({
         className="bg-white rounded-[20px]"
         style={{
           position: "relative",
-          width: baseWidth,
+          width: renderFinalState ? expandedWidth : baseWidth,
           maxWidth: "100%",
-          opacity: 0,
-          transform: "scale(0.95)",
-          overflow: staticState ? "visible" : "hidden",
+          maxHeight: renderFinalState ? expandedMaxHeight : undefined,
+          opacity: renderFinalState ? 1 : 0,
+          transform: renderFinalState ? "scale(1)" : "scale(0.95)",
+          overflow: renderFinalState ? "visible" : "hidden",
           boxShadow:
             "0 32px 80px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06)",
           padding: outerPadding,
@@ -751,7 +754,7 @@ export default function ProductMockup({
             style={{ backgroundColor: "#F5F5F7", padding: large ? "18px 20px" : "14px 16px" }}
           >
             <span className={large ? "text-[22px]" : "text-[15px]"} style={{ color: "#1D1D1F" }}>
-              {typedText}
+              {renderFinalState ? copy.question : typedText}
             </span>
             <span
               ref={cursorRef}
@@ -792,9 +795,9 @@ export default function ProductMockup({
           ref={answerBlockRef}
           className={large ? "mb-5" : "mb-3"}
           style={{
-            display: "none",
-            opacity: 0,
-            transform: "translateY(16px)",
+            display: renderFinalState ? "block" : "none",
+            opacity: renderFinalState ? 1 : 0,
+            transform: renderFinalState ? "translateY(0)" : "translateY(16px)",
           }}
         >
           <p
@@ -823,9 +826,9 @@ export default function ProductMockup({
           ref={confidenceRef}
           className={large ? "mb-5" : "mb-3"}
           style={{
-            display: "none",
-            opacity: 0,
-            transform: "translateY(16px)",
+            display: renderFinalState ? "block" : "none",
+            opacity: renderFinalState ? 1 : 0,
+            transform: renderFinalState ? "translateY(0)" : "translateY(16px)",
           }}
         >
           <div ref={confidencePanelRef}>
@@ -843,7 +846,7 @@ export default function ProductMockup({
                 data-confidence-fill
                 className="h-full"
                 style={{
-                  width: "0%",
+                  width: renderFinalState ? "94%" : "0%",
                   background: "linear-gradient(90deg, #22C55E, #16A34A)",
                   borderRadius: 2,
                 }}
@@ -862,9 +865,9 @@ export default function ProductMockup({
         <div
           ref={citationRef}
           style={{
-            display: "none",
-            opacity: 0,
-            transform: "translateY(16px)",
+            display: renderFinalState ? "block" : "none",
+            opacity: renderFinalState ? 1 : 0,
+            transform: renderFinalState ? "translateY(0)" : "translateY(16px)",
           }}
         >
           <div
