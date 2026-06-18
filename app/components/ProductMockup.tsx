@@ -937,7 +937,7 @@ export default function ProductMockup({
                   aria-label={`${hint.eyebrow}: ${hint.title}`}
                 >
                   <span
-                    className={`absolute left-3 top-2 inline-flex items-center gap-1.5 rounded-full border border-[rgba(15,23,42,0.08)] bg-[rgba(255,255,255,0.96)] px-2.5 py-1 text-[10px] font-[800] uppercase tracking-[0.08em] text-[#1d1d1f] shadow-[0_8px_18px_rgba(15,23,42,0.08)] transition-[opacity,transform] duration-200 ease-out ${
+                    className={`absolute left-3 top-2 inline-flex items-center gap-1.5 rounded-full border border-[rgba(15,23,42,0.08)] bg-[rgba(255,255,255,0.96)] px-2.5 py-1 text-[10px] font-[700] uppercase tracking-[0.08em] text-[#1d1d1f] shadow-[0_8px_18px_rgba(15,23,42,0.08)] transition-[opacity,transform] duration-200 ease-out ${
                       isActive ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0"
                     }`}
                   >

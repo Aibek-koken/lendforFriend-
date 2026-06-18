@@ -45,7 +45,7 @@ export function FaqPro({
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder={searchPlaceholder}
-          className="w-full min-h-[48px] rounded-full border border-[#e5e5ea] bg-white px-11 text-[15px] text-[#1d1d1f] placeholder:text-[#6e6e73] focus-visible:outline-[3px] focus-visible:outline-[rgba(94,92,230,0.42)] focus-visible:outline-offset-[3px]"
+          className="w-full min-h-[48px] rounded-full border border-[#e5e5ea] bg-white px-11 text-[16px] font-[400] text-[#1d1d1f] placeholder:text-[#6e6e73] focus-visible:outline-[3px] focus-visible:outline-[rgba(94,92,230,0.42)] focus-visible:outline-offset-[3px]"
           aria-label={searchPlaceholder}
         />
       </div>
@@ -64,7 +64,7 @@ export function FaqPro({
               <button
                 type="button"
                 onClick={() => setOpenId(isOpen ? null : item.id)}
-                className="flex w-full items-center justify-between gap-4 p-5 text-left text-[15px] font-[650] transition-colors hover:bg-[#fafafa]"
+                className="flex w-full items-center justify-between gap-4 p-5 text-left text-[16px] font-[600] transition-colors hover:bg-[#fafafa]"
                 aria-expanded={isOpen}
                 aria-controls={`faq-pro-panel-${item.id}`}
               >
@@ -89,7 +89,7 @@ export function FaqPro({
                     transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
                     className="overflow-hidden"
                   >
-                    <div className="px-5 pb-5 text-[14px] leading-[1.6] text-[#6e6e73]">
+                    <div className="px-5 pb-5 text-[16px] font-[400] leading-[1.6] text-[#6e6e73]">
                       {item.answer}
                     </div>
                   </motion.div>

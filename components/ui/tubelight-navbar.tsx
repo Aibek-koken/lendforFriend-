@@ -33,7 +33,7 @@ export function NavBar({
               key={item.id}
               href={item.url}
               onClick={() => setActiveTab(item.id)}
-              className={`relative isolate inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-[14px] text-[13px] font-[560] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e5ce6] focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
+              className={`relative isolate inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-[14px] text-[13px] font-[500] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e5ce6] focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
                 isActive ? 'text-[#5e5ce6]' : 'text-[#6e6e73] hover:text-[#5e5ce6]'
               }`}
             >

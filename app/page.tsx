@@ -49,6 +49,21 @@ const HERO_MORPH = {
   cardEndScale: 1,
 } as const;
 
+const INTER_UI_STACK =
+  'Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif';
+const SCROLL_DISPLAY_STYLE = {
+  fontFamily: INTER_UI_STACK,
+  fontSize: "clamp(42px, 5vw, 72px)",
+  fontWeight: 900,
+  letterSpacing: "-2.5px",
+  lineHeight: 1,
+} as const;
+const UI_DISPLAY_STYLE = {
+  fontFamily: INTER_UI_STACK,
+  fontWeight: 700,
+  letterSpacing: "-2px",
+} as const;
+
 function clamp01(value: number) {
   return Math.min(1, Math.max(0, value));
 }
@@ -428,7 +443,7 @@ export default function HomePage() {
           style={{ maxWidth: "min(1180px, calc(100% - 40px))" }}
           aria-label={t("navLabel")}
         >
-          <span className="inline-flex min-h-10 select-none items-center gap-2 text-[15px] font-[650] text-[#1d1d1f]">
+          <span className="inline-flex min-h-10 select-none items-center gap-2 text-[15px] font-[700] text-[#1d1d1f]">
             {t("logo")}
           </span>
 
@@ -444,14 +459,14 @@ export default function HomePage() {
           <div className="flex items-center justify-end gap-[10px]">
             <button
               onClick={() => setLang(lang === "en" ? "ru" : "en")}
-              className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(244,246,255,0.92)_100%)] px-3 text-[13px] font-bold text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] transition-all duration-150 hover:border-[rgba(99,91,255,0.22)] hover:bg-[linear-gradient(180deg,rgba(255,255,255,1)_0%,rgba(238,242,255,0.96)_100%)]"
+              className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(244,246,255,0.92)_100%)] px-3 text-[13px] font-[500] text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] transition-all duration-150 hover:border-[rgba(99,91,255,0.22)] hover:bg-[linear-gradient(180deg,rgba(255,255,255,1)_0%,rgba(238,242,255,0.96)_100%)]"
               aria-label={lang === "en" ? t("switchToRu") : t("switchToEn")}
             >
               {lang === "en" ? "RU" : "EN"}
             </button>
             <a
               href="#waitlist"
-              className="hidden md:inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-[rgba(72,70,201,0.34)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-5 text-[15px] font-[650] leading-none text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] transition-all duration-150 hover:border-[rgba(72,70,201,0.42)] hover:bg-[linear-gradient(180deg,rgba(103,96,247,1)_0%,rgba(72,70,201,1)_100%)] hover:-translate-y-px"
+              className="hidden md:inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-[rgba(72,70,201,0.34)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-5 text-[15px] font-[600] leading-none text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] transition-all duration-150 hover:border-[rgba(72,70,201,0.42)] hover:bg-[linear-gradient(180deg,rgba(103,96,247,1)_0%,rgba(72,70,201,1)_100%)] hover:-translate-y-px"
             >
               {t("joinWaitlist")}
             </a>
@@ -489,7 +504,7 @@ export default function HomePage() {
                 key={key}
                 href={href}
                 onClick={() => setMenuOpen(false)}
-                className="block rounded-full px-[14px] py-3 text-[15px] font-[560] text-[#6e6e73] hover:text-[#5e5ce6]"
+                className="block rounded-full px-[14px] py-3 text-[15px] font-[500] text-[#6e6e73] hover:text-[#5e5ce6]"
               >
                 {t(key)}
               </a>
@@ -497,7 +512,7 @@ export default function HomePage() {
             <a
               href="#waitlist"
               onClick={() => setMenuOpen(false)}
-              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[650] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] w-full"
+              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[600] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] w-full"
             >
               {t("joinWaitlist")}
             </a>
@@ -549,22 +564,17 @@ export default function HomePage() {
                 <AnimateOnScroll
                   as="p"
                   delay={0}
-                  className="mb-5 text-[13px] font-[760] uppercase tracking-[0.18em] text-[#6B65CC]"
+                  className="mb-5 text-[13px] font-[600] uppercase tracking-[0.18em] text-[#6B65CC]"
                 >
                   {t("heroEyebrow")}
                 </AnimateOnScroll>
                 <AnimateOnScroll
                   as="h1"
                   delay={0.08}
-                  className="mb-6 max-w-[700px] leading-[0.9] text-[#111111]"
+                  className="mb-6 max-w-[700px] leading-[0.96] text-[#111111]"
                   style={{
-                    fontFamily:
-                      lang === "en"
-                        ? '"Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif'
-                        : '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif',
-                    fontSize: lang === "en" ? "clamp(52px, 7vw, 92px)" : "clamp(54px, 7.2vw, 86px)",
-                    fontWeight: lang === "en" ? 700 : 800,
-                    letterSpacing: lang === "en" ? "-0.04em" : "-0.035em",
+                    ...UI_DISPLAY_STYLE,
+                    fontSize: "clamp(40px, 4.5vw, 62px)",
                   }}
                 >
                   {heroHeadlineLines.map((line) => (
@@ -576,7 +586,7 @@ export default function HomePage() {
                 <AnimateOnScroll
                   as="p"
                   delay={0.16}
-                  className="mb-8 max-w-[420px] text-[15px] leading-[1.62] text-[#5a5a63] md:max-w-[360px] md:text-[16px]"
+                  className="mb-8 max-w-[420px] text-[16px] font-[400] leading-[1.62] text-[#5a5a63] md:max-w-[360px] md:text-[17px]"
                 >
                   {t("heroSub")}
                 </AnimateOnScroll>
@@ -586,10 +596,10 @@ export default function HomePage() {
                 >
                   {heroMetrics.map((metric) => (
                     <div key={metric.title} className="min-w-[132px]">
-                      <p className="text-[18px] font-[800] leading-none text-[#5B54D6] md:text-[20px]">
+                      <p className="text-[18px] font-[700] leading-none text-[#5B54D6] md:text-[20px]">
                         {metric.title}
                       </p>
-                      <p className="mt-2 text-[13px] leading-[1.4] text-[#8a8a94] md:text-[14px]">
+                      <p className="mt-2 text-[15px] font-[400] leading-[1.45] text-[#8a8a94] md:text-[16px]">
                         <span className="block">{metric.lines[0]}</span>
                         <span className="block">{metric.lines[1]}</span>
                       </p>
@@ -623,7 +633,7 @@ export default function HomePage() {
                       borderLeft: "1px solid rgba(209,209,214,0.9)",
                     }}
                   >
-                    <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-5">
+                    <p className="text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73] mb-5">
                       {lang === "ru" ? "Разберём по частям" : "Let's break it down"}
                     </p>
 
@@ -671,17 +681,16 @@ export default function HomePage() {
                         return c ? (
                           <div>
                             <h2
-                              className="font-[760] leading-[1.03] mb-4"
+                              className="mb-4 leading-[1.04]"
                               style={{
-                                fontFamily:
-                                  '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
-                                fontSize: "clamp(30px, 3.2vw, 48px)",
+                                ...UI_DISPLAY_STYLE,
+                                fontSize: "clamp(30px, 3vw, 44px)",
                                 color: "#1d1d1f",
                               }}
                             >
                               {c.title}
                             </h2>
-                            <p className="text-[18px] leading-[1.58] text-[#6e6e73]">
+                            <p className="text-[16px] font-[400] leading-[1.62] text-[#6e6e73] md:text-[17px]">
                               {c.body}
                             </p>
                           </div>
@@ -785,7 +794,14 @@ export default function HomePage() {
                 >
                   <Headphones size={32} />
                 </div>
-                <p className="font-[800] text-[#1d1d1f]" style={{ fontSize: "clamp(36px, 5vw, 64px)", lineHeight: 1.05 }}>
+                <p
+                  className="text-[#1d1d1f]"
+                  style={{
+                    ...UI_DISPLAY_STYLE,
+                    fontSize: "clamp(40px, 4.5vw, 62px)",
+                    lineHeight: 1,
+                  }}
+                >
                   {t("scrollyStep1")}
                 </p>
               </div>
@@ -812,7 +828,7 @@ export default function HomePage() {
                 >
                   <MessageSquareText size={32} />
                 </div>
-                <p className="font-[800] text-[#1d1d1f]" style={{ fontSize: "clamp(36px, 5vw, 64px)", lineHeight: 1.05 }}>
+                <p className="text-[#1d1d1f]" style={SCROLL_DISPLAY_STYLE}>
                   {t("scrollyStep2")}
                 </p>
               </div>
@@ -828,7 +844,7 @@ export default function HomePage() {
                 }}
               >
                 <div
-                  className="inline-flex items-center justify-center rounded-2xl bg-[#f5f5f7] text-[#5e5ce6] font-bold mb-8"
+                  className="mb-8 inline-flex items-center justify-center rounded-2xl bg-[#f5f5f7] text-[#5e5ce6] font-[700]"
                   style={{
                     minWidth: 100,
                     minHeight: 72,
@@ -843,7 +859,7 @@ export default function HomePage() {
                 >
                   {"\u2318J"}
                 </div>
-                <p className="font-[800] text-[#1d1d1f]" style={{ fontSize: "clamp(36px, 5vw, 64px)", lineHeight: 1.05 }}>
+                <p className="text-[#1d1d1f]" style={SCROLL_DISPLAY_STYLE}>
                   {t("scrollyStep3")}
                 </p>
               </div>
@@ -858,7 +874,7 @@ export default function HomePage() {
                   transitionTimingFunction: scrollyStep === 3 ? "cubic-bezier(0.4, 0, 0.2, 1)" : "cubic-bezier(0.4, 0, 1, 1)",
                 }}
               >
-                <p className="font-[800] text-[#1d1d1f]" style={{ fontSize: "clamp(36px, 5vw, 64px)", lineHeight: 1.05 }}>
+                <p className="text-[#1d1d1f]" style={SCROLL_DISPLAY_STYLE}>
                   {t("scrollyStep4")}
                 </p>
               </div>
@@ -873,15 +889,15 @@ export default function HomePage() {
                   transitionTimingFunction: scrollyStep === 4 ? "cubic-bezier(0.4, 0, 0.2, 1)" : "cubic-bezier(0.4, 0, 1, 1)",
                 }}
               >
-                <p className="font-[800] text-[#1d1d1f] mb-6" style={{ fontSize: "clamp(36px, 5vw, 64px)", lineHeight: 1.05 }}>
+                <p className="mb-6 text-[#1d1d1f]" style={SCROLL_DISPLAY_STYLE}>
                   {t("scrollyStep5")}
                 </p>
-                <p className="text-[21px] leading-[1.45] text-[#6e6e73] max-w-[560px] mx-auto mb-7">
+                <p className="mx-auto mb-7 max-w-[560px] text-[16px] font-[400] leading-[1.58] text-[#6e6e73] md:text-[17px]">
                   {t("scrollyStep5Sub")}
                 </p>
                 <a
                   href="#waitlist"
-                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[650] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
+                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[600] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
                 >
                   {t("heroPrimary")}
                 </a>
@@ -894,13 +910,13 @@ export default function HomePage() {
         <section className="px-5 py-28" id="features">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
             <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
-              <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3">
+              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
                 {t("featuresEyebrow")}
               </p>
-              <h2 className="text-[clamp(36px,4vw,56px)] font-[760] leading-[1.05] mb-5">
+              <h2 className="mb-5 text-[clamp(34px,4vw,54px)] font-[700] leading-[1.06] tracking-[-0.04em]">
                 {t("featuresTitle")}
               </h2>
-              <p className="text-[19px] leading-[1.5] text-[#6e6e73] max-w-[640px]">
+              <p className="max-w-[640px] text-[16px] font-[400] leading-[1.65] text-[#6e6e73] md:text-[17px]">
                 {t("featuresSub")}
               </p>
             </AnimateOnScroll>
@@ -921,8 +937,8 @@ export default function HomePage() {
                     <div className="w-11 h-11 rounded-xl bg-[#f5f5f7] flex items-center justify-center text-[#5e5ce6] mb-5 transition-transform duration-300 group-hover:-translate-y-[3px]">
                       <IconComp size={22} aria-hidden="true" />
                     </div>
-                    <h3 className="text-[19px] font-[650] mb-2">{title}</h3>
-                    <p className="text-[15px] leading-[1.55] text-[#6e6e73]">{body}</p>
+                    <h3 className="mb-2 text-[18px] font-[700] tracking-[-0.02em]">{title}</h3>
+                    <p className="text-[16px] font-[400] leading-[1.6] text-[#6e6e73]">{body}</p>
                   </AnimateOnScroll>
                 );
               })}
@@ -934,10 +950,10 @@ export default function HomePage() {
         <section className="px-5 py-28 bg-[#f5f5f7]" id="how-it-works">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
             <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
-              <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3">
+              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
                 {t("howEyebrow")}
               </p>
-              <h2 className="text-[clamp(36px,4vw,56px)] font-[760] leading-[1.05]">
+              <h2 className="text-[clamp(34px,4vw,54px)] font-[700] leading-[1.06] tracking-[-0.04em]">
                 {t("howTitle")}
               </h2>
             </AnimateOnScroll>
@@ -954,11 +970,11 @@ export default function HomePage() {
                     marginLeft: 0,
                   }}
                 >
-                  <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#f5f5f7] text-[#5e5ce6] text-sm font-bold mb-4">
+                  <span className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#f5f5f7] text-sm font-[700] text-[#5e5ce6]">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <h3 className="text-[17px] font-[650] mb-2">{title}</h3>
-                  <p className="text-[14px] leading-[1.5] text-[#6e6e73]">{body}</p>
+                  <h3 className="mb-2 text-[18px] font-[700] tracking-[-0.02em]">{title}</h3>
+                  <p className="text-[16px] font-[400] leading-[1.58] text-[#6e6e73]">{body}</p>
                 </AnimateOnScroll>
               ))}
             </div>
@@ -969,10 +985,10 @@ export default function HomePage() {
         <section className="px-5 py-28" id="use-cases">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
             <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
-              <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3">
+              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
                 {t("useEyebrow")}
               </p>
-              <h2 className="text-[clamp(36px,4vw,56px)] font-[760] leading-[1.05]">
+              <h2 className="text-[clamp(34px,4vw,54px)] font-[700] leading-[1.06] tracking-[-0.04em]">
                 {t("useTitle")}
               </h2>
             </AnimateOnScroll>
@@ -990,7 +1006,7 @@ export default function HomePage() {
                   className="group flex items-center gap-4 rounded-[16px] border border-[#e5e5ea] bg-white p-5 cursor-default"
                 >
                   <span className="text-2xl transition-transform duration-200 group-hover:scale-110" aria-hidden="true">{useIcons[i]}</span>
-                  <span className="text-[15px] font-[560]">{item}</span>
+                  <span className="text-[16px] font-[600]">{item}</span>
                 </AnimateOnScroll>
               ))}
             </div>
@@ -1001,10 +1017,10 @@ export default function HomePage() {
         <section className="px-5 py-28 bg-[#f5f5f7]" id="pricing">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
             <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
-              <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3">
+              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
                 {t("pricingEyebrow")}
               </p>
-              <h2 className="text-[clamp(36px,4vw,56px)] font-[760] leading-[1.05]">
+              <h2 className="text-[clamp(34px,4vw,54px)] font-[700] leading-[1.06] tracking-[-0.04em]">
                 {t("pricingTitle")}
               </h2>
             </AnimateOnScroll>
@@ -1022,21 +1038,21 @@ export default function HomePage() {
                   }`}
                 >
                   {plan.highlighted ? (
-                    <span className="absolute -top-3 left-6 rounded-full bg-[#5e5ce6] text-white text-[11px] font-bold px-3 py-1">
+                    <span className="absolute -top-3 left-6 rounded-full bg-[#5e5ce6] px-3 py-1 text-[11px] font-[700] text-white">
                       {t("popular")}
                     </span>
                   ) : null}
-                  <h3 className="text-[17px] font-[650]">{plan.name}</h3>
+                  <h3 className="text-[18px] font-[700] tracking-[-0.02em]">{plan.name}</h3>
                   <div className="mt-4 flex items-baseline gap-1">
-                    <span className="text-[40px] font-[760] leading-none">{plan.price}</span>
+                    <span className="text-[40px] font-[700] leading-none tracking-[-0.04em]">{plan.price}</span>
                     {plan.period ? (
-                      <span className="text-[15px] text-[#6e6e73]">{plan.period}</span>
+                      <span className="text-[16px] font-[400] text-[#6e6e73]">{plan.period}</span>
                     ) : null}
                   </div>
-                  <p className="mt-4 text-[14px] leading-[1.5] text-[#6e6e73]">{plan.description}</p>
+                  <p className="mt-4 text-[16px] font-[400] leading-[1.58] text-[#6e6e73]">{plan.description}</p>
                   <ul className="mt-6 space-y-3">
                     {plan.features.map((feature) => (
-                      <li key={feature} className="flex gap-3 text-[14px]">
+                      <li key={feature} className="flex gap-3 text-[16px] font-[400]">
                         <Check className="mt-px h-4 w-4 flex-none text-[#5e5ce6]" aria-hidden="true" />
                         <span>{feature}</span>
                       </li>
@@ -1044,7 +1060,7 @@ export default function HomePage() {
                   </ul>
                   <a
                     href="#waitlist"
-                    className={`mt-7 inline-flex w-full min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[650] leading-none transition-all duration-150 hover:-translate-y-px ${
+                    className={`mt-7 inline-flex w-full min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[600] leading-none transition-all duration-150 hover:-translate-y-px ${
                       plan.highlighted
                         ? "bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] hover:bg-[#4846c9]"
                         : "border border-[#e5e5ea] bg-[rgba(255,255,255,0.76)] text-[#1d1d1f] hover:border-[rgba(94,92,230,0.38)] hover:text-[#5e5ce6]"
@@ -1062,10 +1078,10 @@ export default function HomePage() {
         <section className="px-5 py-28" id="faq">
           <div className="mx-auto" style={{ maxWidth: "min(720px, 100%)" }}>
             <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
-              <p className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3">
+              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
                 {t("faqEyebrow")}
               </p>
-              <h2 className="text-[clamp(36px,4vw,56px)] font-[760] leading-[1.05]">
+              <h2 className="text-[clamp(34px,4vw,54px)] font-[700] leading-[1.06] tracking-[-0.04em]">
                 {t("faqTitle")}
               </h2>
             </AnimateOnScroll>
@@ -1084,14 +1100,14 @@ export default function HomePage() {
             <AnimateOnScroll
               as="p"
               delay={0}
-              className="text-[13px] font-[760] tracking-[0.16em] uppercase text-[#6e6e73] mb-3"
+              className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]"
             >
               {t("ctaLabel")}
             </AnimateOnScroll>
             <AnimateOnScroll
               as="h2"
               delay={0.08}
-              className="text-[clamp(32px,4.5vw,52px)] font-[760] leading-[1.05] mb-7"
+              className="mb-7 text-[clamp(34px,4.2vw,50px)] font-[700] leading-[1.06] tracking-[-0.04em]"
             >
               {t("ctaHeadline")}
             </AnimateOnScroll>
@@ -1115,14 +1131,14 @@ export default function HomePage() {
                     disabled={emailStatus === "submitting"}
                     aria-invalid={emailError ? "true" : undefined}
                     aria-describedby="cta-message"
-                    className="w-full min-h-[48px] rounded-full border border-[#e5e5ea] bg-white px-5 text-[15px] text-[#1d1d1f] placeholder:text-[#6e6e73] focus-visible:outline-[3px] focus-visible:outline-[rgba(94,92,230,0.42)] focus-visible:outline-offset-[3px]"
+                    className="w-full min-h-[48px] rounded-full border border-[#e5e5ea] bg-white px-5 text-[16px] font-[400] text-[#1d1d1f] placeholder:text-[#6e6e73] focus-visible:outline-[3px] focus-visible:outline-[rgba(94,92,230,0.42)] focus-visible:outline-offset-[3px]"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={emailStatus === "submitting"}
                   aria-busy={emailStatus === "submitting"}
-                  className="min-h-[48px] inline-flex items-center justify-center gap-2 rounded-full px-6 text-[15px] font-[650] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
+                  className="min-h-[48px] inline-flex items-center justify-center gap-2 rounded-full px-6 text-[15px] font-[600] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
                 >
                   {emailStatus === "submitting"
                     ? t("emailSubmittingButton")
@@ -1131,7 +1147,7 @@ export default function HomePage() {
               </AnimateOnScroll>
               <p
                 id="cta-message"
-                className={`mt-4 text-[14px] transition-colors ${
+                className={`mt-4 text-[16px] font-[400] transition-colors ${
                   emailError ? "text-red-500" : emailStatus === "success" ? "text-[#21a89a]" : "text-[#6e6e73]"
                 }`}
               >

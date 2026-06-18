@@ -24,6 +24,7 @@ body {
   margin: 0;
   background: #ffffff;
   color: #1d1d1f;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }

@@ -268,7 +268,7 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
               <span className="h-3 w-3 rounded-full bg-[#ffbd2e]" />
               <span className="h-3 w-3 rounded-full bg-[#28c840]" />
                   </div>
-            <span className="text-sm font-[650] text-white/[0.46]">LiveAssist.private</span>
+            <span className="text-sm font-[600] text-white/[0.46]">LiveAssist.private</span>
                 </div>
 
           <div className="relative min-h-[520px] p-6" style={stageStyle}>
@@ -287,7 +287,7 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                   >
               <div className="rounded-[14px] border border-white/10 bg-black/[0.22] p-8 shadow-[0_18px_50px_rgba(0,0,0,0.24)]">
                 <div className="mb-5 flex items-center justify-between">
-                  <span className="text-sm font-[760] uppercase tracking-[0.14em] text-white/[0.46]">
+                  <span className="text-sm font-[600] uppercase tracking-[0.14em] text-white/[0.46]">
                           {text.callTitle}
                         </span>
                   <span className="rounded-full bg-[#21a89a]/[0.14] px-3 py-1.5 text-xs font-[700] text-[#7ee7dc]">
@@ -310,10 +310,10 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                     >
                 <div className="mb-5 flex items-start justify-between gap-5">
                         <div>
-                    <p className="text-sm font-[760] uppercase tracking-[0.14em] text-[#b9bbff]">
+                    <p className="text-sm font-[600] uppercase tracking-[0.14em] text-[#b9bbff]">
                             {text.overlayTitle}
                           </p>
-                    <p className="mt-3 text-[22px] font-[720] leading-[1.25] text-white">
+                    <p className="mt-3 text-[22px] font-[700] leading-[1.25] tracking-[-0.03em] text-white">
                             {activeMoment.title}
                           </p>
                         </div>
@@ -321,9 +321,9 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                     <ActiveIcon size={22} aria-hidden="true" />
                         </div>
                       </div>
-                <p className="text-base leading-[1.55] text-[#d7d9e5]">{text.overlayBody}</p>
+                <p className="text-[16px] font-[400] leading-[1.6] text-[#d7d9e5]">{text.overlayBody}</p>
                 <div className="mt-6 rounded-[12px] border border-white/10 bg-black/[0.24] p-4">
-                  <div className="flex items-center gap-2 text-sm font-[700] uppercase tracking-[0.12em] text-[#7ee7dc]">
+                  <div className="flex items-center gap-2 text-sm font-[600] uppercase tracking-[0.12em] text-[#7ee7dc]">
                     <FileText size={16} aria-hidden="true" />
                           {text.sourceLabel}
                         </div>
@@ -345,10 +345,10 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                       </p>
                     </div>
               <div className="rounded-[12px] border border-white/10 bg-white/[0.06] p-5">
-                <p className="text-sm font-[760] uppercase tracking-[0.12em] text-white/[0.46]">
+                <p className="text-sm font-[600] uppercase tracking-[0.12em] text-white/[0.46]">
                         {activeMoment.label}
                       </p>
-                <p className="mt-2 text-[15px] leading-[1.45] text-white/[0.76]">{activeMoment.body}</p>
+                <p className="mt-2 text-[16px] font-[400] leading-[1.55] text-white/[0.76]">{activeMoment.body}</p>
                     </div>
                   </div>
 
@@ -369,11 +369,11 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                         transition={{ duration: prefersReducedMotion ? 0 : 0.18, ease: [0, 0, 0.2, 1] }}
                 className="rounded-[14px] border border-white/[0.14] bg-[#f7f8ff] p-5 text-[#17181d] shadow-[0_18px_46px_rgba(0,0,0,0.28)]"
                       >
-                <p className="text-xs font-[800] uppercase tracking-[0.13em] text-[#5e5ce6]">
+                <p className="text-xs font-[700] uppercase tracking-[0.13em] text-[#5e5ce6]">
                           {activeMoment.label}
                         </p>
-                <p className="mt-2 text-lg font-[760] leading-[1.25]">{activeMoment.title}</p>
-                <p className="mt-3 text-[15px] leading-[1.45] text-[#555864]">{activeMoment.body}</p>
+                <p className="mt-2 text-lg font-[700] leading-[1.25] tracking-[-0.02em]">{activeMoment.title}</p>
+                <p className="mt-3 text-[16px] font-[400] leading-[1.55] text-[#555864]">{activeMoment.body}</p>
                       </motion.div>
                     </AnimatePresence>
                   </div>
@@ -434,7 +434,7 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                     setPointer({ x: moment.x, y: moment.y });
                     setIsInside(true);
                   }}
-            className={`min-h-[52px] rounded-[10px] border px-8 py-3 text-left text-sm font-[700] transition-colors focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[#7ee7dc] ${
+            className={`min-h-[52px] rounded-[10px] border px-8 py-3 text-left text-sm font-[600] transition-colors focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[#7ee7dc] ${
                     activeMoment.id === moment.id
                       ? 'border-[#7ee7dc]/70 bg-[#21a89a]/[0.18] text-white'
                       : 'border-white/10 bg-white/[0.04] text-white/[0.62] hover:border-white/[0.24] hover:text-white'
@@ -456,7 +456,7 @@ export function InteractiveFooter({ copy }: { copy: FooterCopy }) {
         style={{ maxWidth: 'min(1180px, 100%)' }}
       >
           <div className="flex items-center gap-3">
-          <strong className="text-[15px] font-[650] text-[#1d1d1f]">{copy.logo}</strong>
+          <strong className="text-[15px] font-[700] text-[#1d1d1f]">{copy.logo}</strong>
           <span className="text-[14px] text-[#6e6e73]">{copy.tagline}</span>
           </div>
         <div className="flex flex-wrap gap-3 text-[14px] text-[#6e6e73]">
