@@ -36,6 +36,7 @@ type ProductMockupProps = {
   onboarding?: boolean;
   staticState?: boolean;
   large?: boolean;
+  compact?: boolean;
   /** Если передан — активирует тултип по id через скролл, игнорируя hover */
   scrollActiveHintId?: string | null;
   /** Колбэк когда анимация завершилась (для hero-scroll интеграции) */
@@ -52,6 +53,7 @@ export default function ProductMockup({
   onboarding = false,
   staticState = false,
   large = false,
+  compact = false,
   scrollActiveHintId,
   onAnimationComplete,
   skipAnimation = false,
@@ -81,10 +83,10 @@ export default function ProductMockup({
   const reduceMotionRef = useRef(false);
 
   const charDelay = 42;
-  const baseWidth = large ? 620 : 420;
-  const expandedWidth = large ? 760 : 520;
-  const expandedMaxHeight = large ? 620 : 480;
-  const outerPadding = large ? "28px 32px" : "20px 24px";
+  const baseWidth = large ? 620 : compact ? 288 : 420;
+  const expandedWidth = large ? 760 : compact ? 288 : 520;
+  const expandedMaxHeight = large ? 620 : compact ? 340 : 480;
+  const outerPadding = large ? "28px 32px" : compact ? "14px 14px 16px" : "20px 24px";
   const fileAccent = onboarding ? "#1F9D63" : "#5E5CE6";
   const sourceButtonBg = onboarding ? "#1D1D1F" : "#5E5CE6";
   const isRussian = lang === "ru";
@@ -703,6 +705,7 @@ export default function ProductMockup({
         style={{
           position: "relative",
           width: baseWidth,
+          maxWidth: "100%",
           opacity: 0,
           transform: "scale(0.95)",
           overflow: staticState ? "visible" : "hidden",

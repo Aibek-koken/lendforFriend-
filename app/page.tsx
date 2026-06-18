@@ -14,6 +14,7 @@ import {
   Check,
   MessageSquareText,
   Headphones,
+  LockKeyhole,
 } from "lucide-react";
 import { strings, type Lang } from "../lib/strings";
 import { FaqPro, type FaqProItem } from "@/components/ui/faq-pro";
@@ -89,6 +90,33 @@ type HeroMetric = {
   lines: [string, string];
 };
 
+type HintStory = {
+  title: string;
+  body: string;
+};
+
+type MobileStoryStep = {
+  step: string;
+  icon: typeof Headphones;
+  title: string;
+  body: string;
+};
+
+const MOBILE_HERO_MORPH = {
+  heroFadeEnd: 0.18,
+  cardMoveStart: 0.06,
+  cardMoveEnd: 0.34,
+  hintsRevealStart: 0.24,
+  hintsRevealEnd: 0.42,
+  hintsRegionStart: 0.3,
+  cardStartScale: 0.88,
+  cardEndScale: 0.92,
+  cardStartY: 40,
+  cardEndY: -26,
+  glowFadeStart: 0.18,
+  glowFadeEnd: 0.34,
+} as const;
+
 export default function HomePage() {
   /* ─────────────────────────────────────────────────────────
    * HERO MORPH STORYBOARD
@@ -116,8 +144,10 @@ export default function HomePage() {
   const scrollyLastRawRef = useRef(-1);
 
   const scrollyRef = useRef<HTMLElement>(null);
+  const mobileScrollyRef = useRef<HTMLElement>(null);
   // Hero scroll refs
   const heroRef = useRef<HTMLElement>(null);
+  const mobileHeroRef = useRef<HTMLElement>(null);
   const heroProgressRef = useRef(0);
   const heroTargetRef = useRef(0);
 
@@ -128,6 +158,9 @@ export default function HomePage() {
   const [animComplete, setAnimComplete] = useState(false);
   const [skipAnim, setSkipAnim] = useState(false);
   const [skipAnimInstant, setSkipAnimInstant] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [viewportReady, setViewportReady] = useState(false);
   const scrollLockedRef = useRef(false);
 
   const t = (key: string) => {
@@ -168,6 +201,100 @@ export default function HomePage() {
     lang === "ru"
       ? ["Знай ответ.", "До того, как", "они договорят."]
       : ["Know the answer.", "Before they finish asking."];
+
+  const scrollHintContent: Record<(typeof HINT_IDS)[number], HintStory> =
+    lang === "ru"
+      ? {
+          question: {
+            title: "Вопрос клиента",
+            body: "Менеджер нажимает хоткей в момент звонка. Вопрос уходит в overlay тихо и без переключения контекста.",
+          },
+          answer: {
+            title: "Готовый ответ",
+            body: "AI возвращает короткую формулировку, которую можно сразу озвучить, без импровизации и пауз.",
+          },
+          confidence: {
+            title: "Уверенность AI",
+            body: "Сигнал уверенности помогает понять, когда можно отвечать сразу, а когда лучше перепроверить.",
+          },
+          source: {
+            title: "Источник ответа",
+            body: "Файл и страница остаются рядом с ответом, чтобы менеджер видел основание, а не просто догадку модели.",
+          },
+        }
+      : {
+          question: {
+            title: "Customer question",
+            body: "The rep triggers the overlay mid-call. The question is captured without breaking the flow of the conversation.",
+          },
+          answer: {
+            title: "Ready-to-say answer",
+            body: "AI returns a compact phrase the rep can use immediately instead of improvising under pressure.",
+          },
+          confidence: {
+            title: "AI confidence",
+            body: "The confidence signal tells the rep when to answer directly and when to pause for a quick double-check.",
+          },
+          source: {
+            title: "Source document",
+            body: "The file and page stay attached to the answer so the rep sees evidence, not just a model guess.",
+          },
+        };
+
+  const mobileStorySteps: MobileStoryStep[] =
+    lang === "ru"
+      ? [
+          {
+            step: "01",
+            icon: Headphones,
+            title: t("scrollyStep1"),
+            body: "Разговор уже идёт. Нельзя терять темп и уходить в поиск по вкладкам.",
+          },
+          {
+            step: "02",
+            icon: MessageSquareText,
+            title: t("scrollyStep2"),
+            body: "Вопрос звучит внезапно, и ответ нужен в ту же секунду, а не после паузы.",
+          },
+          {
+            step: "03",
+            icon: Keyboard,
+            title: t("scrollyStep3"),
+            body: "Один хоткей открывает приватный слой поверх звонка, CRM или браузера.",
+          },
+          {
+            step: "04",
+            icon: LockKeyhole,
+            title: t("scrollyStep4"),
+            body: "Ответ, уверенность и источник приходят вместе, чтобы менеджер говорил спокойно и точно.",
+          },
+        ]
+      : [
+          {
+            step: "01",
+            icon: Headphones,
+            title: t("scrollyStep1"),
+            body: "The call is already moving. There is no time to hunt through tabs or docs.",
+          },
+          {
+            step: "02",
+            icon: MessageSquareText,
+            title: t("scrollyStep2"),
+            body: "The question lands unexpectedly, and the answer has to show up in the same moment.",
+          },
+          {
+            step: "03",
+            icon: Keyboard,
+            title: t("scrollyStep3"),
+            body: "One hotkey opens a private layer above the call, CRM, or browser without breaking flow.",
+          },
+          {
+            step: "04",
+            icon: LockKeyhole,
+            title: t("scrollyStep4"),
+            body: "Answer, confidence, and source arrive together so the rep can respond with control.",
+          },
+        ];
 
   const tFaqs = (): FaqProItem[] => {
     const faqs = (strings[lang] as Record<string, unknown>).faqs as [string, string][];
@@ -214,8 +341,41 @@ export default function HomePage() {
       (heroScrollProgress - HERO_MORPH.glowFadeStart) /
         (HERO_MORPH.glowFadeEnd - HERO_MORPH.glowFadeStart)
     );
+  const mobileHeroFadeProgress = clamp01(heroScrollProgress / MOBILE_HERO_MORPH.heroFadeEnd);
+  const mobileHeroMorphProgress = animComplete
+    ? clamp01(
+        (heroScrollProgress - MOBILE_HERO_MORPH.cardMoveStart) /
+          (MOBILE_HERO_MORPH.cardMoveEnd - MOBILE_HERO_MORPH.cardMoveStart)
+      )
+    : 0;
+  const mobileHintsRevealProgress = animComplete
+    ? clamp01(
+        (heroScrollProgress - MOBILE_HERO_MORPH.hintsRevealStart) /
+          (MOBILE_HERO_MORPH.hintsRevealEnd - MOBILE_HERO_MORPH.hintsRevealStart)
+      )
+    : 0;
+  const mobileCardScale = mix(
+    MOBILE_HERO_MORPH.cardStartScale,
+    MOBILE_HERO_MORPH.cardEndScale,
+    mobileHeroMorphProgress
+  );
+  const mobileCardTranslateY = mix(
+    MOBILE_HERO_MORPH.cardStartY,
+    MOBILE_HERO_MORPH.cardEndY,
+    mobileHeroMorphProgress
+  );
+  const mobileCardGlowOpacity =
+    1 -
+    clamp01(
+      (heroScrollProgress - MOBILE_HERO_MORPH.glowFadeStart) /
+        (MOBILE_HERO_MORPH.glowFadeEnd - MOBILE_HERO_MORPH.glowFadeStart)
+    );
 
   const updateHeroScrollState = useCallback((progress: number) => {
+    const hintsRegionStart = isMobileViewport
+      ? MOBILE_HERO_MORPH.hintsRegionStart
+      : HERO_MORPH.hintsRegionStart;
+
     setHeroScrollProgress(progress);
 
     if (progress < 0.05) {
@@ -224,7 +384,7 @@ export default function HomePage() {
       return;
     }
 
-    if (progress < HERO_MORPH.hintsRegionStart) {
+    if (progress < hintsRegionStart) {
       setHeroPhase("transition");
       setActiveScrollHint(null);
       return;
@@ -232,14 +392,13 @@ export default function HomePage() {
 
     setHeroPhase("hints");
     const hintsP = clamp01(
-      (progress - HERO_MORPH.hintsRegionStart) / (1 - HERO_MORPH.hintsRegionStart)
+      (progress - hintsRegionStart) / (1 - hintsRegionStart)
     );
     const idx = Math.min(3, Math.floor(hintsP * 4));
     setActiveScrollHint(HINT_IDS[idx]);
-  }, []);
+  }, [isMobileViewport]);
 
-  const readHeroScrollProgress = useCallback(() => {
-    const section = heroRef.current;
+  const readSectionScrollProgress = useCallback((section: HTMLElement | null) => {
     if (!section) return 0;
 
     const total = section.offsetHeight - window.innerHeight;
@@ -258,6 +417,35 @@ export default function HomePage() {
     localStorage.setItem("liveassist-lang", lang);
     document.documentElement.lang = lang;
   }, [lang]);
+
+  useEffect(() => {
+    const mobileMq = window.matchMedia("(max-width: 767px)");
+    const reducedMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const syncViewport = () => {
+      setIsMobileViewport(mobileMq.matches);
+      setPrefersReducedMotion(reducedMq.matches);
+      setViewportReady(true);
+    };
+
+    syncViewport();
+    mobileMq.addEventListener("change", syncViewport);
+    reducedMq.addEventListener("change", syncViewport);
+
+    return () => {
+      mobileMq.removeEventListener("change", syncViewport);
+      reducedMq.removeEventListener("change", syncViewport);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!viewportReady) return;
+    if (!isMobileViewport && !prefersReducedMotion) return;
+
+    setSkipAnim(true);
+    setSkipAnimInstant(true);
+    setAnimComplete(true);
+  }, [isMobileViewport, prefersReducedMotion, viewportReady]);
 
   useEffect(() => {
     const sectionIds = ["how-it-works", "use-cases", "pricing", "faq"];
@@ -284,9 +472,8 @@ export default function HomePage() {
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    if (!scrollyRef.current) return;
-    const section = scrollyRef.current;
+    const section = isMobileViewport ? mobileScrollyRef.current : scrollyRef.current;
+    if (!section) return;
     let animId: number;
 
     if (mq.matches) {
@@ -311,7 +498,9 @@ export default function HomePage() {
     };
 
     function tick() {
-      scrollyProgressRef.current += (scrollyTargetRef.current - scrollyProgressRef.current) * 0.08;
+      scrollyProgressRef.current +=
+        (scrollyTargetRef.current - scrollyProgressRef.current) *
+        (isMobileViewport ? 0.12 : 0.08);
 
       const raw = scrollyProgressRef.current * 5;
       const index = Math.min(4, Math.max(0, Math.floor(raw)));
@@ -333,15 +522,23 @@ export default function HomePage() {
     }
 
     window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
     animId = requestAnimationFrame(tick);
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
       cancelAnimationFrame(animId);
+      scrollyProgressRef.current = 0;
+      scrollyTargetRef.current = 0;
+      scrollyLastRawRef.current = -1;
     };
-  }, []);
+  }, [isMobileViewport]);
 
   useEffect(() => {
+    if (isMobileViewport || prefersReducedMotion) {
+      scrollLockedRef.current = false;
+      return;
+    }
     if (animComplete) {
       scrollLockedRef.current = false;
       return;
@@ -425,28 +622,33 @@ export default function HomePage() {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [animComplete]);
+  }, [animComplete, isMobileViewport, prefersReducedMotion]);
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen || !animComplete ? "hidden" : "";
+    if (!viewportReady) return;
+    document.body.style.overflow =
+      menuOpen || (!animComplete && !isMobileViewport && !prefersReducedMotion)
+        ? "hidden"
+        : "";
 
     return () => {
       document.body.style.overflow = "";
     };
-  }, [animComplete, menuOpen]);
+  }, [animComplete, isMobileViewport, menuOpen, prefersReducedMotion, viewportReady]);
 
   // Hero scroll-driven animation
   useEffect(() => {
+    if (prefersReducedMotion) return;
     if (!animComplete) return;
-    const section = heroRef.current;
+    const section = isMobileViewport ? mobileHeroRef.current : heroRef.current;
     if (!section) return;
     let rafId: number;
 
     const onScroll = () => {
-      heroTargetRef.current = readHeroScrollProgress();
+      heroTargetRef.current = readSectionScrollProgress(section);
     };
 
-    const initialProgress = readHeroScrollProgress();
+    const initialProgress = readSectionScrollProgress(section);
     heroTargetRef.current = initialProgress;
     heroProgressRef.current = initialProgress;
     updateHeroScrollState(initialProgress);
@@ -467,7 +669,7 @@ export default function HomePage() {
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(rafId);
     };
-  }, [animComplete, readHeroScrollProgress, updateHeroScrollState]);
+  }, [animComplete, isMobileViewport, prefersReducedMotion, readSectionScrollProgress, updateHeroScrollState]);
 
   async function handleEmailSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -517,12 +719,16 @@ export default function HomePage() {
   }
 
   const featureIcons = [FileText, FileSearch, Layers, Keyboard, Mic, Shield];
+  const activeMobileHintContent =
+    heroPhase === "hints" && activeScrollHint
+      ? scrollHintContent[activeScrollHint as (typeof HINT_IDS)[number]]
+      : scrollHintContent.question;
 
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-180 ease-out">
         <nav
-          className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 w-full px-5 pt-7 pb-3 mx-auto"
+          className="mx-auto grid w-full grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 pt-4 pb-2 sm:gap-6 sm:px-5 sm:pt-7 sm:pb-3"
           style={{ maxWidth: "min(1180px, calc(100% - 40px))" }}
           aria-label={t("navLabel")}
         >
@@ -576,9 +782,9 @@ export default function HomePage() {
         </nav>
 
         {menuOpen && (
-          <div className="md:hidden border-t border-[#e5e5ea] bg-white px-5 py-6 space-y-3">
+          <div className="space-y-3 border-t border-[#e5e5ea] bg-[rgba(255,255,255,0.96)] px-4 py-5 backdrop-blur-md md:hidden">
             {[
-              ["navHow", "#scrolly"],
+              ["navHow", "#hero-mobile-demo"],
               ["navUseCases", "#use-cases"],
               ["navPricing", "#pricing"],
               ["navFaq", "#faq"],
@@ -604,11 +810,181 @@ export default function HomePage() {
       </header>
 
       <main id="top" style={{ overflow: "clip" }}>
+        <section className="relative overflow-hidden px-4 pb-10 pt-28 md:hidden">
+          <div
+            className="absolute inset-0"
+            aria-hidden="true"
+            style={{
+              background:
+                "radial-gradient(circle at 18% 14%, rgba(94,92,230,0.18), transparent 30%), radial-gradient(circle at 82% 18%, rgba(33,168,154,0.14), transparent 28%), linear-gradient(180deg, #ffffff 0%, #fbfbff 52%, #f5f7ff 100%)",
+            }}
+          />
+          <div className="relative mx-auto max-w-[430px]">
+            <p className="inline-flex items-center gap-2 rounded-full border border-[rgba(94,92,230,0.12)] bg-[rgba(255,255,255,0.82)] px-3 py-2 text-[12px] font-[700] uppercase tracking-[0.14em] text-[#645FDE] shadow-[0_12px_30px_rgba(94,92,230,0.08)] backdrop-blur-sm">
+              <span className="h-2 w-2 rounded-full bg-[#5E5CE6]" aria-hidden="true" />
+              {t("heroEyebrow")}
+            </p>
+            <h1
+              className="mt-5 text-[#111111]"
+              style={{
+                ...UI_DISPLAY_STYLE,
+                fontSize: "clamp(42px, 13vw, 58px)",
+                lineHeight: 0.92,
+              }}
+            >
+              {heroHeadlineLines.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
+            </h1>
+            <p className="mt-5 max-w-[32ch] text-[16px] font-[400] leading-[1.62] text-[#5a5a63]">
+              {t("heroSub")}
+            </p>
+            <div className="mt-8 grid gap-3">
+              <a
+                href="#waitlist"
+                className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full border border-[rgba(72,70,201,0.34)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-6 text-[15px] font-[600] leading-none text-white shadow-[0_20px_40px_rgba(94,92,230,0.22)]"
+              >
+                {t("heroPrimary")}
+              </a>
+              <a
+                href="#hero-mobile-demo"
+                className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.8)] px-6 text-[15px] font-[600] leading-none text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]"
+              >
+                {t("heroSecondary")}
+              </a>
+            </div>
+            <div className="mt-8 grid grid-cols-2 gap-3">
+              {heroMetrics.map((metric, index) => (
+                <div
+                  key={metric.title}
+                  className={`rounded-[22px] border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.84)] p-4 shadow-[0_14px_32px_rgba(15,23,42,0.05)] ${
+                    index === heroMetrics.length - 1 ? "col-span-2" : ""
+                  }`}
+                >
+                  <p className="text-[18px] font-[700] leading-none text-[#5B54D6]">
+                    {metric.title}
+                  </p>
+                  <p className="mt-2 text-[14px] font-[400] leading-[1.45] text-[#7d7d88]">
+                    <span className="block">{metric.lines[0]}</span>
+                    <span className="block">{metric.lines[1]}</span>
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section
+          ref={mobileHeroRef}
+          id="hero-mobile-demo"
+          className="relative overflow-hidden md:hidden"
+          style={{ minHeight: "220vh" }}
+        >
+          <div
+            className="sticky top-0 overflow-hidden px-4 py-10"
+            style={{
+              minHeight: "100svh",
+              background:
+                "linear-gradient(180deg, rgba(249,250,255,0.94) 0%, rgba(255,255,255,1) 100%)",
+            }}
+          >
+            <div className="mx-auto flex min-h-[calc(100svh-80px)] max-w-[430px] flex-col">
+              <div
+                style={{
+                  opacity: 1 - mobileHeroFadeProgress,
+                  transform: `translateY(${mix(0, -18, mobileHeroFadeProgress)}px)`,
+                  filter: `blur(${mix(0, 6, mobileHeroFadeProgress)}px)`,
+                  willChange: "transform, opacity, filter",
+                }}
+              >
+                <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#6B65CC]">
+                  {lang === "ru" ? "Как это выглядит в звонке" : "How it looks mid-call"}
+                </p>
+                <h2 className="mt-3 text-[34px] font-[700] leading-[1.02] tracking-[-0.05em] text-[#111111]">
+                  {lang === "ru" ? "Скроль вниз и разбери ответ по шагам." : "Scroll down and unpack the answer step by step."}
+                </h2>
+                <p className="mt-3 max-w-[30ch] text-[14px] leading-[1.58] text-[#666670]">
+                  {lang === "ru"
+                    ? "Сначала видишь сам оверлей, потом отдельно вопрос, ответ, уверенность и источник."
+                    : "First you see the overlay, then the question, answer, confidence, and source one by one."}
+                </p>
+              </div>
+
+              <div className="relative flex flex-1 items-center justify-center pb-6 pt-8">
+                <div
+                  className="absolute left-1/2 top-1/2 aspect-square w-[88vw] max-w-[430px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[16px]"
+                  aria-hidden="true"
+                  style={{
+                    background:
+                      "radial-gradient(circle, rgba(94,92,230,0.18), transparent 62%), radial-gradient(circle at 36% 28%, rgba(33,168,154,0.14), transparent 38%)",
+                    opacity: mobileCardGlowOpacity,
+                  }}
+                />
+                <div
+                  className="relative z-10 w-full max-w-[316px]"
+                  style={{
+                    transform: `translateY(${mobileCardTranslateY}px) scale(${mobileCardScale})`,
+                    transformOrigin: "center center",
+                    willChange: "transform",
+                  }}
+                >
+                  <div className="rounded-[28px] border border-[rgba(94,92,230,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.94)_0%,rgba(244,246,255,0.99)_100%)] p-2.5 shadow-[0_24px_52px_rgba(94,92,230,0.12)]">
+                    <div className="rounded-[24px] bg-[linear-gradient(180deg,rgba(248,249,255,0.98)_0%,rgba(255,255,255,1)_100%)] p-1.5">
+                      <ProductMockup
+                        copy={strings[lang].mockup}
+                        lang={lang}
+                        staticState
+                        compact
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                style={{
+                  opacity: mobileHintsRevealProgress,
+                  transform: `translateY(${mix(24, 0, mobileHintsRevealProgress)}px)`,
+                  filter: `blur(${mix(8, 0, mobileHintsRevealProgress)}px)`,
+                  willChange: "transform, opacity, filter",
+                }}
+              >
+                <div className="rounded-[28px] border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.96)] p-5 shadow-[0_18px_44px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+                  <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#6B65CC]">
+                    {lang === "ru" ? "Разберём по частям" : "Let's break it down"}
+                  </p>
+                  <h2 className="mt-3 text-[26px] font-[700] leading-[0.98] tracking-[-0.05em] text-[#111111]">
+                    {activeMobileHintContent.title}
+                  </h2>
+                  <p className="mt-3 text-[13px] leading-[1.55] text-[#61616a]">
+                    {activeMobileHintContent.body}
+                  </p>
+                  <div className="mt-5 flex gap-2">
+                    {HINT_IDS.map((id) => (
+                      <div
+                        key={id}
+                        className="rounded-full transition-all duration-300 ease-out"
+                        style={{
+                          width: activeScrollHint === id ? 26 : 6,
+                          height: 6,
+                          backgroundColor: activeScrollHint === id ? "#5e5ce6" : "#d1d1d6",
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* HERO + ONBOARDING — объединённая sticky-секция */}
         <section
           ref={heroRef}
-          id="hero"
-          className="relative"
+          id="hero-desktop"
+          className="relative hidden md:block"
           style={{ minHeight: "300vh" }}
         >
           <div
@@ -628,7 +1004,6 @@ export default function HomePage() {
                 columnGap: "clamp(60px, 6vw, 80px)",
               }}
             >
-              {/* ── Текст Hero (уходит при скролле) ── */}
               <div
                 className="absolute left-0 top-1/2"
                 style={{
@@ -691,7 +1066,6 @@ export default function HomePage() {
                 </AnimateOnScroll>
               </div>
 
-              {/* ── Текст Onboarding (появляется в hints-фазе справа) ── */}
               {animComplete && (
                 <div
                   className="absolute top-1/2"
@@ -716,91 +1090,46 @@ export default function HomePage() {
                       borderLeft: "1px solid rgba(209,209,214,0.9)",
                     }}
                   >
-                    <p className="text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73] mb-5">
+                    <p className="mb-5 text-[13px] font-[600] uppercase tracking-[0.16em] text-[#6e6e73]">
                       {lang === "ru" ? "Разберём по частям" : "Let's break it down"}
                     </p>
 
-                    {activeScrollHint &&
-                      (() => {
-                        const texts: Record<string, { title: string; body: string }> =
-                          lang === "ru"
-                            ? {
-                                question: {
-                                  title: "Вопрос клиента",
-                                  body: "Менеджер нажимает хоткей в момент звонка. Вопрос уходит в overlay тихо и без переключения контекста.",
-                                },
-                                answer: {
-                                  title: "Готовый ответ",
-                                  body: "AI возвращает короткую формулировку, которую можно сразу озвучить, без импровизации и пауз.",
-                                },
-                                confidence: {
-                                  title: "Уверенность AI",
-                                  body: "Сигнал уверенности помогает понять, когда можно отвечать сразу, а когда лучше перепроверить.",
-                                },
-                                source: {
-                                  title: "Источник ответа",
-                                  body: "Файл и страница остаются рядом с ответом, чтобы менеджер видел основание, а не просто догадку модели.",
-                                },
-                              }
-                            : {
-                                question: {
-                                  title: "Customer question",
-                                  body: "The rep triggers the overlay mid-call. The question is captured without breaking the flow of the conversation.",
-                                },
-                                answer: {
-                                  title: "Ready-to-say answer",
-                                  body: "AI returns a compact phrase the rep can use immediately instead of improvising under pressure.",
-                                },
-                                confidence: {
-                                  title: "AI confidence",
-                                  body: "The confidence signal tells the rep when to answer directly and when to pause for a quick double-check.",
-                                },
-                                source: {
-                                  title: "Source document",
-                                  body: "The file and page stay attached to the answer so the rep sees evidence, not just a model guess.",
-                                },
-                              };
-                        const c = texts[activeScrollHint];
-                        return c ? (
-                          <div>
-                            <h2
-                              className="mb-4 leading-[1.04]"
-                              style={{
-                                ...UI_DISPLAY_STYLE,
-                                fontSize: "clamp(30px, 3vw, 44px)",
-                                color: "#1d1d1f",
-                              }}
-                            >
-                              {c.title}
-                            </h2>
-                            <p className="text-[16px] font-[400] leading-[1.62] text-[#6e6e73] md:text-[17px]">
-                              {c.body}
-                            </p>
-                          </div>
-                        ) : null;
-                      })()}
+                    {activeScrollHint ? (
+                      <div>
+                        <h2
+                          className="mb-4 leading-[1.04]"
+                          style={{
+                            ...UI_DISPLAY_STYLE,
+                            fontSize: "clamp(30px, 3vw, 44px)",
+                            color: "#1d1d1f",
+                          }}
+                        >
+                          {scrollHintContent[activeScrollHint as (typeof HINT_IDS)[number]]?.title}
+                        </h2>
+                        <p className="text-[16px] font-[400] leading-[1.62] text-[#6e6e73] md:text-[17px]">
+                          {scrollHintContent[activeScrollHint as (typeof HINT_IDS)[number]]?.body}
+                        </p>
+                      </div>
+                    ) : null}
 
-                    <div className="flex gap-2 mt-8">
-                      {(["question", "answer", "confidence", "source"] as const).map(
-                        (id) => (
-                          <div
-                            key={id}
-                            className="rounded-full transition-all duration-300 ease-out"
-                            style={{
-                              width: activeScrollHint === id ? 28 : 6,
-                              height: 6,
-                              backgroundColor:
-                                activeScrollHint === id ? "#5e5ce6" : "#d1d1d6",
-                            }}
-                          />
-                        )
-                      )}
+                    <div className="mt-8 flex gap-2">
+                      {HINT_IDS.map((id) => (
+                        <div
+                          key={id}
+                          className="rounded-full transition-all duration-300 ease-out"
+                          style={{
+                            width: activeScrollHint === id ? 28 : 6,
+                            height: 6,
+                            backgroundColor:
+                              activeScrollHint === id ? "#5e5ce6" : "#d1d1d6",
+                          }}
+                        />
+                      ))}
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* ── ProductMockup: едет из правой колонки в центр ── */}
               <div
                 className="absolute top-1/2"
                 style={{
@@ -811,7 +1140,6 @@ export default function HomePage() {
                   willChange: "transform, left",
                 }}
               >
-                {/* Glow */}
                 <div
                   className="absolute rounded-full pointer-events-none"
                   aria-hidden="true"
@@ -844,11 +1172,163 @@ export default function HomePage() {
           </div>
         </section>
 
+        <section
+          ref={mobileScrollyRef}
+          id="scrolly-mobile"
+          className="relative overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#fafbff_100%)] md:hidden"
+          style={{ minHeight: "420vh" }}
+        >
+          <div
+            className="sticky top-0 flex items-center px-4 py-16"
+            style={{ minHeight: "100svh" }}
+          >
+            <div className="relative mx-auto w-full max-w-[430px]" style={{ minHeight: 420 }}>
+              <div
+                className="absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-[320ms]"
+                style={{
+                  opacity: scrollyStep === 0 ? 1 : 0,
+                  transitionDuration: prefersReducedMotion ? "0ms" : "320ms",
+                  transform:
+                    scrollyStep === 0
+                      ? "translateY(0)"
+                      : scrollyStep > 0
+                        ? "translateY(-18px)"
+                        : "translateY(18px)",
+                  pointerEvents: scrollyStep === 0 ? "auto" : "none",
+                }}
+              >
+                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(94,92,230,0.1)] text-[#5e5ce6]">
+                  <Headphones size={24} aria-hidden="true" />
+                </div>
+                <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#6B65CC]">
+                  {mobileStorySteps[0].step}
+                </p>
+                <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
+                  {mobileStorySteps[0].title}
+                </p>
+                <p className="mt-4 max-w-[28ch] text-[15px] leading-[1.6] text-[#666670]">
+                  {mobileStorySteps[0].body}
+                </p>
+              </div>
+
+              <div
+                className="absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-[320ms]"
+                style={{
+                  opacity: scrollyStep === 1 ? 1 : 0,
+                  transitionDuration: prefersReducedMotion ? "0ms" : "320ms",
+                  transform:
+                    scrollyStep === 1
+                      ? "translateY(0)"
+                      : scrollyStep > 1
+                        ? "translateY(-18px)"
+                        : "translateY(18px)",
+                  pointerEvents: scrollyStep === 1 ? "auto" : "none",
+                }}
+              >
+                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(94,92,230,0.1)] text-[#5e5ce6]">
+                  <MessageSquareText size={24} aria-hidden="true" />
+                </div>
+                <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#6B65CC]">
+                  {mobileStorySteps[1].step}
+                </p>
+                <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
+                  {mobileStorySteps[1].title}
+                </p>
+                <p className="mt-4 max-w-[28ch] text-[15px] leading-[1.6] text-[#666670]">
+                  {mobileStorySteps[1].body}
+                </p>
+              </div>
+
+              <div
+                className="absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-[320ms]"
+                style={{
+                  opacity: scrollyStep === 2 ? 1 : 0,
+                  transitionDuration: prefersReducedMotion ? "0ms" : "320ms",
+                  transform:
+                    scrollyStep === 2
+                      ? "translateY(0)"
+                      : scrollyStep > 2
+                        ? "translateY(-18px)"
+                        : "translateY(18px)",
+                  pointerEvents: scrollyStep === 2 ? "auto" : "none",
+                }}
+              >
+                <div
+                  className="mb-6 inline-flex items-center justify-center rounded-[22px] bg-[#f5f5f7] px-6 py-5 text-[#5e5ce6] shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(0,0,0,0.06)]"
+                  style={{ minWidth: 128 }}
+                >
+                  <span className="text-[34px] font-[700] leading-none">{t("scrollyKey")}</span>
+                </div>
+                <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#6B65CC]">
+                  {mobileStorySteps[2].step}
+                </p>
+                <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
+                  {mobileStorySteps[2].title}
+                </p>
+                <p className="mt-4 max-w-[28ch] text-[15px] leading-[1.6] text-[#666670]">
+                  {mobileStorySteps[2].body}
+                </p>
+              </div>
+
+              <div
+                className="absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-[320ms]"
+                style={{
+                  opacity: scrollyStep === 3 ? 1 : 0,
+                  transitionDuration: prefersReducedMotion ? "0ms" : "320ms",
+                  transform:
+                    scrollyStep === 3
+                      ? "translateY(0)"
+                      : scrollyStep > 3
+                        ? "translateY(-18px)"
+                        : "translateY(18px)",
+                  pointerEvents: scrollyStep === 3 ? "auto" : "none",
+                }}
+              >
+                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(33,168,154,0.12)] text-[#1f9d63]">
+                  <LockKeyhole size={24} aria-hidden="true" />
+                </div>
+                <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#6B65CC]">
+                  {mobileStorySteps[3].step}
+                </p>
+                <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
+                  {mobileStorySteps[3].title}
+                </p>
+                <p className="mt-4 max-w-[28ch] text-[15px] leading-[1.6] text-[#666670]">
+                  {mobileStorySteps[3].body}
+                </p>
+              </div>
+
+              <div
+                className="absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-[320ms]"
+                style={{
+                  opacity: scrollyStep === 4 ? 1 : 0,
+                  transitionDuration: prefersReducedMotion ? "0ms" : "320ms",
+                  transform: scrollyStep === 4 ? "translateY(0)" : "translateY(18px)",
+                  pointerEvents: scrollyStep === 4 ? "auto" : "none",
+                }}
+              >
+                <p className="text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
+                  {t("scrollyStep5")}
+                </p>
+                <p className="mx-auto mt-5 max-w-[28ch] text-[15px] leading-[1.6] text-[#666670]">
+                  {t("scrollyStep5Sub")}
+                </p>
+                <a
+                  href="#waitlist"
+                  className="mt-7 inline-flex min-h-[52px] w-full items-center justify-center rounded-full bg-[#1d1d1f] px-6 text-[15px] font-[600] leading-none text-white shadow-[0_16px_30px_rgba(29,29,31,0.16)]"
+                >
+                  {t("joinWaitlist")}
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* SCROLLYTELLING */}
         <section
           ref={scrollyRef}
-          id="scrolly"
-          className="relative bg-white"
+          id="scrolly-desktop"
+          className="relative hidden bg-white md:block"
           style={{ minHeight: "500vh" }}
         >
           <div
@@ -856,7 +1336,6 @@ export default function HomePage() {
             style={{ minHeight: "100svh", padding: "112px 20px" }}
           >
             <div className="relative w-full mx-auto" style={{ maxWidth: "min(700px, 100%)", minHeight: 320 }}>
-              {/* Step 0 — "Your rep is on a live call." */}
               <div
                 className="absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-[400ms]"
                 style={{
@@ -883,7 +1362,6 @@ export default function HomePage() {
                 </p>
               </div>
 
-              {/* Step 1 — "The customer asks something specific." */}
               <div
                 className="absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-[400ms]"
                 style={{
@@ -910,7 +1388,6 @@ export default function HomePage() {
                 </p>
               </div>
 
-              {/* Step 2 — "They press ⌘ J" */}
               <div
                 className="absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-[400ms]"
                 style={{
@@ -941,7 +1418,6 @@ export default function HomePage() {
                 </p>
               </div>
 
-              {/* Step 3 — "Answer in 1–2 seconds. Source included." */}
               <div
                 className="absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-[400ms]"
                 style={{
@@ -956,7 +1432,6 @@ export default function HomePage() {
                 </p>
               </div>
 
-              {/* Step 4 — CTA */}
               <div
                 className="absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-[400ms]"
                 style={{
@@ -984,7 +1459,7 @@ export default function HomePage() {
         </section>
 
         {/* FEATURES */}
-        <section className="px-5 py-28" id="features">
+        <section className="px-4 py-20 sm:px-5 md:py-28" id="features">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
             <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
               <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
@@ -1024,7 +1499,7 @@ export default function HomePage() {
         </section>
 
         {/* HOW IT WORKS */}
-        <section className="px-5 py-28 bg-[#f5f5f7]" id="how-it-works">
+        <section className="bg-[#f5f5f7] px-4 py-20 sm:px-5 md:py-28" id="how-it-works">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
             <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
               <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
@@ -1059,7 +1534,7 @@ export default function HomePage() {
         </section>
 
         {/* USE CASES */}
-        <section className="px-5 py-28" id="use-cases">
+        <section className="px-4 py-20 sm:px-5 md:py-28" id="use-cases">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
             <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
               <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
@@ -1091,7 +1566,7 @@ export default function HomePage() {
         </section>
 
         {/* PRICING */}
-        <section className="px-5 py-28 bg-[#f5f5f7]" id="pricing">
+        <section className="bg-[#f5f5f7] px-4 py-20 sm:px-5 md:py-28" id="pricing">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
             <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
               <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
@@ -1187,7 +1662,7 @@ export default function HomePage() {
         </section>
 
         {/* FAQ */}
-        <section className="px-5 py-28" id="faq">
+        <section className="px-4 py-20 sm:px-5 md:py-28" id="faq">
           <div className="mx-auto" style={{ maxWidth: "min(720px, 100%)" }}>
             <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
               <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
@@ -1207,7 +1682,7 @@ export default function HomePage() {
         </section>
 
         {/* CTA */}
-        <section className="px-5 py-28 bg-[#f5f5f7]" id="waitlist">
+        <section className="bg-[#f5f5f7] px-4 py-20 sm:px-5 md:py-28" id="waitlist">
           <div className="mx-auto text-center" style={{ maxWidth: "min(640px, 100%)" }}>
             <AnimateOnScroll
               as="p"
