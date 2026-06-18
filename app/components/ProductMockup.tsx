@@ -42,6 +42,8 @@ type ProductMockupProps = {
   onAnimationComplete?: () => void;
   /** Мгновенно пропустить анимацию и перейти в финальное состояние */
   skipAnimation?: boolean;
+  /** Полностью перескочить интро без ускоренного промежуточного прохода */
+  skipAnimationInstant?: boolean;
 };
 
 export default function ProductMockup({
@@ -53,6 +55,7 @@ export default function ProductMockup({
   scrollActiveHintId,
   onAnimationComplete,
   skipAnimation = false,
+  skipAnimationInstant = false,
 }: ProductMockupProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const questionBoxRef = useRef<HTMLDivElement>(null);
@@ -624,6 +627,15 @@ export default function ProductMockup({
   }, [resetDOM, runSequence, showFinalState, staticState]);
 
   // При первом скролл-жесте быстро доматываем анимацию, а не прыгаем в финал.
+  useEffect(() => {
+    if (!skipAnimationInstant) return;
+    if (hasPlayedRef.current) return;
+
+    stopAnimation();
+    showFinalState();
+    finishSequence();
+  }, [finishSequence, showFinalState, skipAnimationInstant]);
+
   useEffect(() => {
     if (!skipAnimation) return;
     if (hasPlayedRef.current) return;

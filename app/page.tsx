@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, FormEvent } from "react";
+import { useState, useEffect, useRef, FormEvent, useCallback } from "react";
 import {
   Briefcase,
   CreditCard,
@@ -124,6 +124,7 @@ export default function HomePage() {
   const [activeScrollHint, setActiveScrollHint] = useState<string | null>(null);
   const [animComplete, setAnimComplete] = useState(false);
   const [skipAnim, setSkipAnim] = useState(false);
+  const [skipAnimInstant, setSkipAnimInstant] = useState(false);
   const scrollLockedRef = useRef(false);
 
   const t = (key: string) => {
@@ -210,6 +211,40 @@ export default function HomePage() {
       (heroScrollProgress - HERO_MORPH.glowFadeStart) /
         (HERO_MORPH.glowFadeEnd - HERO_MORPH.glowFadeStart)
     );
+
+  const updateHeroScrollState = useCallback((progress: number) => {
+    setHeroScrollProgress(progress);
+
+    if (progress < 0.05) {
+      setHeroPhase("hero");
+      setActiveScrollHint(null);
+      return;
+    }
+
+    if (progress < HERO_MORPH.hintsRegionStart) {
+      setHeroPhase("transition");
+      setActiveScrollHint(null);
+      return;
+    }
+
+    setHeroPhase("hints");
+    const hintsP = clamp01(
+      (progress - HERO_MORPH.hintsRegionStart) / (1 - HERO_MORPH.hintsRegionStart)
+    );
+    const idx = Math.min(3, Math.floor(hintsP * 4));
+    setActiveScrollHint(HINT_IDS[idx]);
+  }, []);
+
+  const readHeroScrollProgress = useCallback(() => {
+    const section = heroRef.current;
+    if (!section) return 0;
+
+    const total = section.offsetHeight - window.innerHeight;
+    if (total <= 0) return 0;
+
+    const rect = section.getBoundingClientRect();
+    return clamp01(-rect.top / total);
+  }, []);
 
   useEffect(() => {
     const saved = localStorage.getItem("liveassist-lang") as Lang | null;
@@ -305,29 +340,97 @@ export default function HomePage() {
 
   useEffect(() => {
     if (animComplete) {
-      document.body.style.overflow = "";
       scrollLockedRef.current = false;
       return;
     }
-
-    document.body.style.overflow = "hidden";
     scrollLockedRef.current = true;
 
-    const trigger = () => {
-      if (scrollLockedRef.current) {
-        setSkipAnim(true);
+    let touchStartY = 0;
+
+    const triggerFastForward = () => {
+      if (!scrollLockedRef.current) return;
+      setSkipAnim(true);
+    };
+
+    const triggerInstantFinish = () => {
+      if (!scrollLockedRef.current) return;
+      setSkipAnim(true);
+      setSkipAnimInstant(true);
+    };
+
+    const handleWheel = (event: WheelEvent) => {
+      if (event.deltaY <= 0) return;
+
+      if (event.deltaY > 120) {
+        triggerInstantFinish();
+        return;
+      }
+
+      triggerFastForward();
+    };
+
+    const handleTouchStart = (event: TouchEvent) => {
+      touchStartY = event.touches[0]?.clientY ?? 0;
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      const currentY = event.touches[0]?.clientY ?? touchStartY;
+      const delta = touchStartY - currentY;
+
+      if (delta > 90) {
+        triggerInstantFinish();
+        return;
+      }
+
+      if (delta > 12) {
+        triggerFastForward();
       }
     };
 
-    window.addEventListener("wheel", trigger, { passive: true });
-    window.addEventListener("touchmove", trigger, { passive: true });
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (["End", "PageDown"].includes(event.key)) {
+        triggerInstantFinish();
+        return;
+      }
+
+      if (["ArrowDown", " ", "Spacebar"].includes(event.key)) {
+        triggerFastForward();
+      }
+    };
+
+    const handleScroll = () => {
+      if (window.scrollY > window.innerHeight * 0.18) {
+        triggerInstantFinish();
+        return;
+      }
+
+      if (window.scrollY > 8) {
+        triggerFastForward();
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: true });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [animComplete]);
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen || !animComplete ? "hidden" : "";
 
     return () => {
       document.body.style.overflow = "";
-      window.removeEventListener("wheel", trigger);
-      window.removeEventListener("touchmove", trigger);
     };
-  }, [animComplete]);
+  }, [animComplete, menuOpen]);
 
   // Hero scroll-driven animation
   useEffect(() => {
@@ -337,33 +440,19 @@ export default function HomePage() {
     let rafId: number;
 
     const onScroll = () => {
-      const rect = section.getBoundingClientRect();
-      const total = section.offsetHeight - window.innerHeight;
-      if (total <= 0) return;
-      heroTargetRef.current = Math.min(1, Math.max(0, -rect.top / total));
+      heroTargetRef.current = readHeroScrollProgress();
     };
+
+    const initialProgress = readHeroScrollProgress();
+    heroTargetRef.current = initialProgress;
+    heroProgressRef.current = initialProgress;
+    updateHeroScrollState(initialProgress);
 
     const tick = () => {
       heroProgressRef.current +=
         (heroTargetRef.current - heroProgressRef.current) * 0.1;
       const p = heroProgressRef.current;
-      setHeroScrollProgress(p);
-
-      if (p < 0.05) {
-        setHeroPhase("hero");
-        setActiveScrollHint(null);
-      } else if (p < HERO_MORPH.hintsRegionStart) {
-        setHeroPhase("transition");
-        setActiveScrollHint(null);
-      } else {
-        setHeroPhase("hints");
-        const hintsP = clamp01(
-          (p - HERO_MORPH.hintsRegionStart) /
-            (1 - HERO_MORPH.hintsRegionStart)
-        );
-        const idx = Math.min(3, Math.floor(hintsP * 4));
-        setActiveScrollHint(HINT_IDS[idx]);
-      }
+      updateHeroScrollState(p);
 
       rafId = requestAnimationFrame(tick);
     };
@@ -375,16 +464,7 @@ export default function HomePage() {
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(rafId);
     };
-  }, [animComplete]);
-
-  useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => { document.body.style.overflow = ""; };
-  }, [menuOpen]);
+  }, [animComplete, readHeroScrollProgress, updateHeroScrollState]);
 
   async function handleEmailSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -526,7 +606,7 @@ export default function HomePage() {
           ref={heroRef}
           id="hero"
           className="relative"
-          style={{ minHeight: animComplete ? "300vh" : "100svh" }}
+          style={{ minHeight: "300vh" }}
         >
           <div
             className="sticky top-0 flex items-center overflow-hidden"
@@ -754,6 +834,7 @@ export default function HomePage() {
                   scrollActiveHintId={heroPhase === "hints" ? activeScrollHint : null}
                   onAnimationComplete={() => setAnimComplete(true)}
                   skipAnimation={skipAnim}
+                  skipAnimationInstant={skipAnimInstant}
                 />
               </div>
             </div>
@@ -794,14 +875,7 @@ export default function HomePage() {
                 >
                   <Headphones size={32} />
                 </div>
-                <p
-                  className="text-[#1d1d1f]"
-                  style={{
-                    ...UI_DISPLAY_STYLE,
-                    fontSize: "clamp(40px, 4.5vw, 62px)",
-                    lineHeight: 1,
-                  }}
-                >
+                <p className="text-[#1d1d1f]" style={SCROLL_DISPLAY_STYLE}>
                   {t("scrollyStep1")}
                 </p>
               </div>
