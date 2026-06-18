@@ -467,7 +467,7 @@ export function InteractiveFooter({ copy }: { copy: FooterCopy }) {
               {copy.terms}
             </a>
             <a
-              href="mailto:hello@liveassist.ai"
+              href="mailto:zarylkasynajbek92@gmail.com"
             className="transition-colors hover:text-[#1d1d1f] focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[rgba(94,92,230,0.42)]"
             >
               {copy.contact}
