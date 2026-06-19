@@ -119,8 +119,8 @@ export const strings = {
     pricing: [
       {
         name: "Solo",
-        price: "$19",
-        period: "/mo",
+        price: "Contact us",
+        period: "",
         description: "For one rep, consultant, or operator.",
         cta: "Get early access →",
         footnote: "14 days free when we launch",
@@ -133,8 +133,8 @@ export const strings = {
       },
       {
         name: "Team",
-        price: "$99",
-        period: "/mo",
+        price: "Contact us",
+        period: "",
         description: "Up to 5 users. For small sales and support teams.",
         highlighted: true,
         badge: "Popular choice",
@@ -313,8 +313,8 @@ export const strings = {
     pricing: [
       {
         name: "Solo",
-        price: "$19",
-        period: "/мес",
+        price: "Связаться",
+        period: "",
         description: "Для одного менеджера, консультанта или оператора.",
         cta: "Получить ранний доступ →",
         footnote: "14 дней бесплатно при запуске",
@@ -327,8 +327,8 @@ export const strings = {
       },
       {
         name: "Team",
-        price: "$99",
-        period: "/мес",
+        price: "Связаться",
+        period: "",
         description: "До 5 пользователей. Для небольших команд продаж и поддержки.",
         highlighted: true,
         badge: "Популярный выбор",
