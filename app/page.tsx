@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef, FormEvent, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
-  Briefcase,
   CreditCard,
   FileText,
   FileSearch,
@@ -11,7 +10,6 @@ import {
   Keyboard,
   Mic,
   Shield,
-  Check,
   MessageSquareText,
   Headphones,
   LockKeyhole,
@@ -23,18 +21,13 @@ import { AnimateOnScroll } from "../components/ui/animate-on-scroll";
 import { InteractiveFooter } from "../components/InteractiveFooter";
 import ProductMockup from "./components/ProductMockup";
 
-const useIcons = ["\uD83C\uDF93", "\u2708\uFE0F", "\u279A", "\u2699", "\u2302", "\u25A3", "\u260E", "\u25C7"];
-
 const navConfig = [
-  { id: "how-it-works", labelKey: "navHow", url: "#how-it-works", icon: Layers },
-  { id: "use-cases", labelKey: "navUseCases", url: "#use-cases", icon: Briefcase },
   { id: "pricing", labelKey: "navPricing", url: "#pricing", icon: CreditCard },
   { id: "faq", labelKey: "navFaq", url: "#faq", icon: HelpCircle },
 ] as const;
 
 const faqIds = ["listening", "sources", "customer", "sales-only", "crm"] as const;
 const HINT_IDS = ["question", "answer", "confidence", "source"] as const;
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const HERO_MORPH = {
   heroFadeEnd: 0.16,
   cardMoveStart: 0.04,
@@ -72,18 +65,6 @@ function clamp01(value: number) {
 function mix(from: number, to: number, progress: number) {
   return from + (to - from) * progress;
 }
-
-type PricingPlan = {
-  name: string;
-  price: string;
-  period: string;
-  description: string;
-  highlighted?: boolean;
-  badge?: string;
-  cta: string;
-  footnote: string;
-  features: string[];
-};
 
 type HeroMetric = {
   title: string;
@@ -132,9 +113,6 @@ export default function HomePage() {
    * ───────────────────────────────────────────────────────── */
   const [lang, setLang] = useState<Lang>("en");
   const [menuOpen, setMenuOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [emailStatus, setEmailStatus] = useState<"idle" | "submitting" | "success">("idle");
-  const [emailError, setEmailError] = useState<"" | "invalid" | "server" | "unavailable">("");
   const [scrollyStep, setScrollyStep] = useState(0);
   const [activeTab, setActiveTab] = useState<(typeof navConfig)[number]["id"]>(
     navConfig[0].id
@@ -169,20 +147,8 @@ export default function HomePage() {
     return val as string;
   };
 
-  const tPricing = (): PricingPlan[] => {
-    return (strings[lang] as Record<string, unknown>).pricing as PricingPlan[];
-  };
-
   const tFeatures = (): [string, string][] => {
     return (strings[lang] as Record<string, unknown>).features as [string, string][];
-  };
-
-  const tSteps = (): [string, string][] => {
-    return (strings[lang] as Record<string, unknown>).steps as [string, string][];
-  };
-
-  const tUseCases = (): string[] => {
-    return (strings[lang] as Record<string, unknown>).useCases as string[];
   };
 
   const heroMetrics: HeroMetric[] =
@@ -485,7 +451,7 @@ export default function HomePage() {
   }, [isMobileViewport, viewportReady]);
 
   useEffect(() => {
-    const sectionIds = ["how-it-works", "use-cases", "pricing", "faq"];
+    const sectionIds = ["pricing", "faq"];
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -708,53 +674,6 @@ export default function HomePage() {
     };
   }, [animComplete, isMobileViewport, prefersReducedMotion, readSectionScrollProgress, updateHeroScrollState]);
 
-  async function handleEmailSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const normalizedEmail = email.trim().toLowerCase();
-
-    if (!EMAIL_REGEX.test(normalizedEmail)) {
-      setEmailError("invalid");
-      setEmailStatus("idle");
-      return;
-    }
-
-    try {
-      setEmailError("");
-      setEmailStatus("submitting");
-
-      const response = await fetch("/api/waitlist", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: normalizedEmail,
-          lang,
-        }),
-      });
-
-      if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as
-          | { errorCode?: string }
-          | null;
-
-        setEmailError(
-          payload?.errorCode === "waitlist_not_configured" ? "unavailable" : "server"
-        );
-        setEmailStatus("idle");
-        return;
-      }
-
-      setEmail("");
-      setEmailError("");
-      setEmailStatus("success");
-    } catch {
-      setEmailError("server");
-      setEmailStatus("idle");
-    }
-  }
-
   const featureIcons = [FileText, FileSearch, Layers, Keyboard, Mic, Shield];
   const activeMobileHintId =
     heroPhase === "hints" && activeScrollHint ? activeScrollHint : "question";
@@ -796,7 +715,7 @@ export default function HomePage() {
               </span>
               <div className="flex shrink-0 items-center gap-1.5">
                 <a
-                  href="#waitlist"
+                  href="#download"
                   className="inline-flex min-h-[32px] items-center justify-center rounded-full border border-[rgba(72,70,201,0.24)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-3 text-[11px] font-[700] leading-none text-white shadow-[0_10px_18px_rgba(94,92,230,0.16),inset_0_1px_0_rgba(255,255,255,0.18)] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e5ce6] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                 >
                   {t("navPricing")}
@@ -866,7 +785,7 @@ export default function HomePage() {
                 {lang === "en" ? "RU" : "EN"}
               </button>
               <a
-                href="#waitlist"
+                href="#download"
                 className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-[rgba(72,70,201,0.34)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-5 text-[15px] font-[600] leading-none text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] transition-all duration-150 hover:border-[rgba(72,70,201,0.42)] hover:bg-[linear-gradient(180deg,rgba(103,96,247,1)_0%,rgba(72,70,201,1)_100%)] hover:-translate-y-px"
               >
                 {t("joinWaitlist")}
@@ -910,7 +829,7 @@ export default function HomePage() {
             </p>
             <div className="mt-8 grid gap-3">
               <a
-                href="#waitlist"
+                href="#download"
                 className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full border border-[rgba(72,70,201,0.34)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-6 text-[15px] font-[600] leading-none text-white shadow-[0_20px_40px_rgba(94,92,230,0.22)]"
               >
                 {t("heroPrimary")}
@@ -1344,7 +1263,7 @@ export default function HomePage() {
                   {t("scrollyStep5Sub")}
                 </p>
                 <a
-                  href="#waitlist"
+                  href="#download"
                   className="mt-7 inline-flex min-h-[52px] w-full items-center justify-center rounded-full bg-[#1d1d1f] px-6 text-[15px] font-[600] leading-none text-white shadow-[0_16px_30px_rgba(29,29,31,0.16)]"
                 >
                   {t("joinWaitlist")}
@@ -1478,7 +1397,7 @@ export default function HomePage() {
                   {t("scrollyStep5Sub")}
                 </p>
                 <a
-                  href="#waitlist"
+                  href="#download"
                   className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[600] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
                 >
                   {t("heroPrimary")}
@@ -1528,73 +1447,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* HOW IT WORKS */}
-        <section className="bg-[#f5f5f7] px-4 py-20 sm:px-5 md:py-28" id="how-it-works">
-          <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
-            <AnimateOnScroll delay={0} className="mb-10 max-w-3xl md:mb-12">
-              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
-                {t("howEyebrow")}
-              </p>
-              <h2 className="text-[clamp(34px,4vw,54px)] font-[700] leading-[1.06] tracking-[-0.04em]">
-                {t("howTitle")}
-              </h2>
-            </AnimateOnScroll>
-            <div className="grid gap-0 sm:grid-cols-2 lg:grid-cols-4">
-              {tSteps().map(([title, body], i) => (
-                <AnimateOnScroll
-                  as="article"
-                  key={title}
-                  delay={i * 0.08}
-                  className="relative bg-white border border-[#e5e5ea] p-7 first:rounded-t-[16px] last:rounded-b-[16px] sm:first:rounded-l-[16px] sm:first:rounded-tr-none sm:last:rounded-r-[16px] sm:last:rounded-bl-none lg:rounded-none lg:first:rounded-l-[16px] lg:last:rounded-r-[16px]"
-                  style={{
-                    boxShadow: "none",
-                    marginTop: i > 0 ? -1 : 0,
-                    marginLeft: 0,
-                  }}
-                >
-                  <span className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#f5f5f7] text-sm font-[700] text-[#5e5ce6]">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <h3 className="mb-2 text-[18px] font-[700] tracking-[-0.02em]">{title}</h3>
-                  <p className="text-[16px] font-[400] leading-[1.58] text-[#6e6e73]">{body}</p>
-                </AnimateOnScroll>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* USE CASES */}
-        <section className="px-4 py-20 sm:px-5 md:py-28" id="use-cases">
-          <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
-            <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
-              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
-                {t("useEyebrow")}
-              </p>
-              <h2 className="text-[clamp(34px,4vw,54px)] font-[700] leading-[1.06] tracking-[-0.04em]">
-                {t("useTitle")}
-              </h2>
-            </AnimateOnScroll>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {tUseCases().map((item, i) => (
-                <AnimateOnScroll
-                  key={item}
-                  delay={(i + 1) * 0.05}
-                  whileHover={{
-                    y: -3,
-                    backgroundColor: "#fafafa",
-                    boxShadow: "0 8px 24px -8px rgba(0,0,0,0.08)",
-                    transition: { type: "spring", stiffness: 400, damping: 25 },
-                  }}
-                  className="group flex items-center gap-4 rounded-[16px] border border-[#e5e5ea] bg-white p-5 cursor-default"
-                >
-                  <span className="text-2xl transition-transform duration-200 group-hover:scale-110" aria-hidden="true">{useIcons[i]}</span>
-                  <span className="text-[16px] font-[600]">{item}</span>
-                </AnimateOnScroll>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* PRICING */}
         <section className="bg-[#f5f5f7] px-4 py-20 sm:px-5 md:py-28" id="pricing">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
@@ -1612,75 +1464,40 @@ export default function HomePage() {
                 {t("pricingTrustLine")}
               </p>
             </AnimateOnScroll>
-            <div className="grid gap-5 lg:grid-cols-3">
-              {tPricing().map((plan, i) => (
-                <AnimateOnScroll
-                  as="article"
-                  key={plan.name}
-                  delay={[0.05, 0.12, 0.2][i] ?? 0.05}
-                  y={plan.highlighted ? 40 : 32}
-                  className={`relative flex h-full flex-col rounded-[24px] border bg-white p-7 ${
-                    plan.highlighted
-                      ? "border-[rgba(94,92,230,0.72)] shadow-[0_0_0_1px_rgba(94,92,230,0.28),0_18px_36px_rgba(94,92,230,0.12)]"
-                      : "border-[#e5e5ea] shadow-[0_10px_28px_rgba(15,23,42,0.04)]"
-                  }`}
-                >
-                  {plan.highlighted ? (
-                    <span className="absolute -top-3 left-6 rounded-full border border-[rgba(94,92,230,0.18)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-3 py-1 text-[11px] font-[700] text-white shadow-[0_8px_18px_rgba(94,92,230,0.2)]">
-                      {plan.badge ?? t("popular")}
-                    </span>
-                  ) : null}
-                  <h3 className="text-[18px] font-[700] tracking-[-0.02em]">{plan.name}</h3>
-                  <div className="mt-4 flex items-baseline gap-1">
-                    <span className="text-[40px] font-[700] leading-none tracking-[-0.04em]">{plan.price}</span>
-                    {plan.period ? (
-                      <span className="text-[16px] font-[400] text-[#6e6e73]">{plan.period}</span>
-                    ) : null}
-                  </div>
-                  <p className="mt-4 text-[16px] font-[400] leading-[1.58] text-[#6e6e73]">{plan.description}</p>
-                  <ul className="mt-6 space-y-3">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex gap-3 text-[16px] font-[400]">
-                        <Check className="mt-px h-4 w-4 flex-none text-[#5e5ce6]" aria-hidden="true" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <a
-                    href="#waitlist"
-                    className={`mt-8 inline-flex w-full min-h-[48px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[600] leading-none transition-all duration-150 hover:-translate-y-px ${
-                      plan.highlighted
-                        ? "bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] hover:bg-[#4846c9]"
-                        : "border border-[#d7d7dc] bg-[rgba(255,255,255,0.82)] text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] hover:border-[rgba(94,92,230,0.38)] hover:text-[#5e5ce6]"
-                    }`}
-                  >
-                    {plan.cta}
-                  </a>
-                  <p className="mt-3 text-center text-[13px] font-[500] leading-[1.45] text-[#8a8a94]">
-                    {plan.footnote}
-                  </p>
-                </AnimateOnScroll>
-              ))}
-            </div>
             <AnimateOnScroll
-              delay={0.24}
-              className="mt-10 rounded-[28px] border border-[rgba(29,29,31,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.9)_0%,rgba(250,250,252,0.96)_100%)] px-6 py-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] sm:px-8"
+              delay={0.06}
+              className="rounded-[28px] border border-[rgba(29,29,31,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(246,248,255,0.92)_100%)] p-7 shadow-[0_20px_48px_rgba(15,23,42,0.06)] sm:p-9"
             >
-              <h3 className="text-[24px] font-[700] tracking-[-0.03em] text-[#1d1d1f]">
-                {t("pricingNudgeTitle")}
-              </h3>
-              <p className="mx-auto mt-3 max-w-[620px] text-[16px] font-[400] leading-[1.6] text-[#6e6e73]">
-                {t("pricingNudgeBody")}
-              </p>
-              <a
-                href="#waitlist"
-                className="mt-6 inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-[#1d1d1f] px-6 text-[15px] font-[600] leading-none text-white shadow-[0_12px_24px_rgba(29,29,31,0.14)] transition-all duration-150 hover:-translate-y-px hover:bg-[#111111]"
-              >
-                {t("pricingNudgeCta")}
-              </a>
-              <p className="mt-3 text-[13px] font-[500] text-[#8a8a94]">
-                {t("pricingNudgeNote")}
-              </p>
+              <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+                <div>
+                  <p className="text-[13px] font-[700] uppercase tracking-[0.16em] text-[#645FDE]">
+                    {t("downloadCardLabel")}
+                  </p>
+                  <h3 className="mt-3 text-[clamp(28px,3vw,40px)] font-[700] leading-[1.05] tracking-[-0.04em] text-[#1d1d1f]">
+                    {t("downloadCardTitle")}
+                  </h3>
+                  <p className="mt-4 max-w-[56ch] text-[16px] font-[400] leading-[1.65] text-[#5a5a63]">
+                    {t("downloadCardBody")}
+                  </p>
+                </div>
+                <div className="rounded-[24px] border border-[rgba(94,92,230,0.12)] bg-[rgba(255,255,255,0.88)] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+                  <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#8a8a94]">
+                    {t("downloadCardStatusLabel")}
+                  </p>
+                  <p className="mt-3 text-[34px] font-[700] leading-none tracking-[-0.04em] text-[#1d1d1f]">
+                    {t("downloadCardStatus")}
+                  </p>
+                  <p className="mt-4 text-[15px] font-[400] leading-[1.6] text-[#6e6e73]">
+                    {t("downloadCardNote")}
+                  </p>
+                  <a
+                    href="#download"
+                    className="mt-6 inline-flex min-h-[48px] w-full items-center justify-center rounded-full bg-[#5e5ce6] px-6 text-[15px] font-[600] leading-none text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
+                  >
+                    {t("downloadCta")}
+                  </a>
+                </div>
+              </div>
             </AnimateOnScroll>
           </div>
         </section>
@@ -1706,75 +1523,36 @@ export default function HomePage() {
         </section>
 
         {/* CTA */}
-        <section className="bg-[#f5f5f7] px-4 py-20 sm:px-5 md:py-28" id="waitlist">
+        <section className="bg-[#f5f5f7] px-4 py-20 sm:px-5 md:py-28" id="download">
           <div className="mx-auto text-center" style={{ maxWidth: "min(640px, 100%)" }}>
             <AnimateOnScroll
               as="p"
               delay={0}
               className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]"
             >
-              {t("ctaLabel")}
+              {t("downloadLabel")}
             </AnimateOnScroll>
             <AnimateOnScroll
               as="h2"
               delay={0.08}
               className="mb-7 text-[clamp(34px,4.2vw,50px)] font-[700] leading-[1.06] tracking-[-0.04em]"
             >
-              {t("ctaHeadline")}
+              {t("downloadHeadline")}
             </AnimateOnScroll>
-            <form onSubmit={handleEmailSubmit} noValidate>
-              <AnimateOnScroll delay={0.16} className="flex flex-col sm:flex-row gap-3 max-w-[480px] mx-auto">
-                <div className="flex-1">
-                  <label htmlFor="cta-email" className="sr-only">{t("emailLabel")}</label>
-                  <input
-                    id="cta-email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    spellCheck={false}
-                    placeholder={t("emailPlaceholder")}
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (emailError) setEmailError("");
-                      if (emailStatus === "success") setEmailStatus("idle");
-                    }}
-                    disabled={emailStatus === "submitting"}
-                    aria-invalid={emailError ? "true" : undefined}
-                    aria-describedby="cta-message"
-                    className="w-full min-h-[48px] rounded-full border border-[#e5e5ea] bg-white px-5 text-[16px] font-[400] text-[#1d1d1f] placeholder:text-[#6e6e73] focus-visible:outline-[3px] focus-visible:outline-[rgba(94,92,230,0.42)] focus-visible:outline-offset-[3px]"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={emailStatus === "submitting"}
-                  aria-busy={emailStatus === "submitting"}
-                  className="min-h-[48px] inline-flex items-center justify-center gap-2 rounded-full px-6 text-[15px] font-[600] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
-                >
-                  {emailStatus === "submitting"
-                    ? t("emailSubmittingButton")
-                    : t("heroPrimary")}
-                </button>
-              </AnimateOnScroll>
-              <p
-                id="cta-message"
-                className={`mt-4 text-[16px] font-[400] transition-colors ${
-                  emailError ? "text-red-500" : emailStatus === "success" ? "text-[#21a89a]" : "text-[#6e6e73]"
-                }`}
-              >
-                {emailError === "invalid"
-                  ? t("emailError")
-                  : emailError === "unavailable"
-                  ? t("emailUnavailable")
-                  : emailError === "server"
-                  ? t("emailServerError")
-                  : emailStatus === "success"
-                  ? t("emailSuccess")
-                  : emailStatus === "submitting"
-                  ? t("emailSubmitting")
-                  : t("ctaSub")}
+            <AnimateOnScroll
+              delay={0.16}
+              className="rounded-[28px] border border-[rgba(29,29,31,0.08)] bg-white px-6 py-8 shadow-[0_18px_42px_rgba(15,23,42,0.05)] sm:px-8"
+            >
+              <p className="text-[17px] font-[400] leading-[1.65] text-[#5a5a63]">
+                {t("downloadSub")}
               </p>
-            </form>
+              <a
+                href="#download"
+                className="mx-auto mt-6 inline-flex min-h-[48px] items-center justify-center rounded-full bg-[#5e5ce6] px-8 text-[15px] font-[600] leading-none text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
+              >
+                {t("downloadCta")}
+              </a>
+            </AnimateOnScroll>
           </div>
         </section>
       </main>

@@ -2,21 +2,19 @@ export const strings = {
   en: {
     logo: "⌘ LiveAssist AI",
     navLabel: "Main navigation",
-    navHow: "How it works",
-    navUseCases: "Use cases",
-    navPricing: "Early access",
+    navPricing: "Download",
     navFaq: "FAQ",
     switchToRu: "Switch language to Russian",
     switchToEn: "Switch language to English",
     openMenuLabel: "Open menu",
     closeMenuLabel: "Close menu",
-    joinWaitlist: "Get early access",
+    joinWaitlist: "Downlaud",
     heroEyebrow: "Private desktop overlay",
     heroHeadline:
       "Know the answer. Before they finish asking.",
     heroSub:
       "LiveAssist AI gives your team instant, source-backed answers from your own documents — without leaving the call.",
-    heroPrimary: "Join the waitlist →",
+    heroPrimary: "Downlaud",
     heroSecondary: "See how it works",
     mockup: {
       ariaLabel: "LiveAssist AI overlay demo",
@@ -45,19 +43,26 @@ export const strings = {
     featuresTitle: "Designed for the exact second a rep needs help",
     featuresSub:
       "Fast retrieval, cited answers, and a private overlay that stays out of the way until someone asks.",
-    howEyebrow: "How it works",
-    howTitle: "Four steps from document chaos to live answers",
-    useEyebrow: "Use cases",
-    useTitle: "For teams that answer high-stakes questions in real time",
-    pricingEyebrow: "Early access",
-    pricingTitle: "Choose your early access format",
+    pricingEyebrow: "Download",
+    pricingTitle: "Direct download is coming here",
     pricingSub:
-      "Join the waitlist. Early users will get a free trial and help shape the product before public launch.",
-    pricingTrustLine: "No payment. No card. No commitment.",
+      "This section now points to direct download. For now it stays as a simple placeholder.",
+    pricingTrustLine: "Placeholder only for now.",
     popular: "Most popular",
     faqEyebrow: "FAQ",
-    faqTitle: "Clear answers before early access",
+    faqTitle: "Clear answers before download",
     faqSearchPlaceholder: "Search questions...",
+    downloadLabel: "Download",
+    downloadHeadline: "Download placeholder",
+    downloadSub: "Direct download will appear here. Placeholder: Downlaud.",
+    downloadCta: "Downlaud",
+    downloadCardLabel: "Direct access",
+    downloadCardTitle: "Download flow comes next.",
+    downloadCardBody:
+      "This block now points toward the future download route. The current CTA is just a placeholder.",
+    downloadCardStatusLabel: "Status",
+    downloadCardStatus: "Downlaud",
+    downloadCardNote: "Temporary stub until the real download target is ready.",
     ctaLabel: "Early access",
     ctaHeadline: "Be first to try LiveAssist AI",
     emailLabel: "Email",
@@ -99,22 +104,6 @@ export const strings = {
         "No constant listening",
         "LiveAssist activates only on demand, so it stays private until the rep asks."
       ]
-    ],
-    steps: [
-      ["Upload your documents", "Add PDFs, FAQs, SOPs, pricing terms, and policy docs."],
-      ["Start a customer call", "Keep using your usual call, CRM, or support workspace."],
-      ["Press the hotkey", "Open the private overlay the moment the question appears."],
-      ["Get a cited answer", "Read a short answer with the exact source underneath."]
-    ],
-    useCases: [
-      "Online school managers",
-      "Travel agents",
-      "Clinic administrators",
-      "Car service managers",
-      "Real estate agents",
-      "B2B sales teams",
-      "Support agents",
-      "Freelancers & consultants"
     ],
     pricing: [
       {
@@ -193,21 +182,19 @@ export const strings = {
   ru: {
     logo: "⌘ LiveAssist AI",
     navLabel: "Основная навигация",
-    navHow: "Как работает",
-    navUseCases: "Сценарии",
-    navPricing: "Ранний доступ",
+    navPricing: "Download",
     navFaq: "Вопросы",
     switchToRu: "Переключить язык на русский",
     switchToEn: "Переключить язык на английский",
     openMenuLabel: "Открыть меню",
     closeMenuLabel: "Закрыть меню",
-    joinWaitlist: "Получить ранний доступ",
+    joinWaitlist: "Downlaud",
     heroEyebrow: "Приватный оверлей на рабочем столе",
     heroHeadline:
       "Знай ответ. До того, как они договорят.",
     heroSub:
       "LiveAssist AI мгновенно находит ответы в документах вашей компании прямо во время разговора — без переключения вкладок и без выхода из звонка.",
-    heroPrimary: "В лист ожидания →",
+    heroPrimary: "Downlaud",
     heroSecondary: "Посмотреть как работает",
     mockup: {
       ariaLabel: "Демо оверлея LiveAssist AI",
@@ -237,21 +224,26 @@ export const strings = {
       "Создан для той самой секунды, когда менеджеру нужен точный ответ",
     featuresSub:
       "Быстрый поиск, ответы с источниками и приватный оверлей, который не мешает, пока помощь не понадобится.",
-    howEyebrow: "Как работает",
-    howTitle:
-      "Четыре шага от хаоса в документах к точным ответам в звонке",
-    useEyebrow: "Сценарии",
-    useTitle:
-      "Для команд, которые отвечают на важные вопросы в реальном времени",
-    pricingEyebrow: "Ранний доступ",
-    pricingTitle: "Выберите формат раннего доступа",
+    pricingEyebrow: "Download",
+    pricingTitle: "Здесь будет прямое скачивание",
     pricingSub:
-      "Запишитесь в waitlist. Первые пользователи получат бесплатный тест и смогут повлиять на продукт до публичного запуска.",
-    pricingTrustLine: "Без оплаты. Без карты. Без обязательств.",
+      "Этот блок теперь ведет к прямому скачиванию. Пока здесь стоит простая заглушка.",
+    pricingTrustLine: "Пока это только плейсхолдер.",
     popular: "Популярный выбор",
     faqEyebrow: "Вопросы",
-    faqTitle: "Коротко перед ранним доступом",
+    faqTitle: "Коротко перед скачиванием",
     faqSearchPlaceholder: "Искать вопросы...",
+    downloadLabel: "Download",
+    downloadHeadline: "Заглушка для скачивания",
+    downloadSub: "Прямое скачивание появится здесь. Пока плейсхолдер: Downlaud.",
+    downloadCta: "Downlaud",
+    downloadCardLabel: "Прямой доступ",
+    downloadCardTitle: "Следующий шаг — direct download.",
+    downloadCardBody:
+      "Этот блок теперь ведет к будущему сценарию скачивания. Текущий CTA пока только заглушка.",
+    downloadCardStatusLabel: "Статус",
+    downloadCardStatus: "Downlaud",
+    downloadCardNote: "Временная заглушка, пока не готова реальная ссылка на скачивание.",
     ctaLabel: "Ранний доступ",
     ctaHeadline: "Попробуйте LiveAssist AI одними из первых",
     emailLabel: "Email",
@@ -293,22 +285,6 @@ export const strings = {
         "Без постоянного прослушивания",
         "LiveAssist включается только по запросу и остается приватным, пока менеджер сам не позовет помощь."
       ]
-    ],
-    steps: [
-      ["Загрузите документы", "Добавьте PDF, FAQ, SOP, условия тарифов и внутренние политики."],
-      ["Начните звонок с клиентом", "Продолжайте работать в привычном инструменте для звонков, CRM или службе поддержки."],
-      ["Нажмите горячую клавишу", "Откройте приватный оверлей в тот момент, когда появился вопрос."],
-      ["Получите ответ с источником", "Прочитайте короткий ответ и точный источник под ним."]
-    ],
-    useCases: [
-      "Менеджеры онлайн-школ",
-      "Туристические агенты",
-      "Администраторы клиник",
-      "Менеджеры автосервисов",
-      "Риелторы",
-      "B2B-команды продаж",
-      "Сотрудники поддержки",
-      "Фрилансеры и консультанты"
     ],
     pricing: [
       {
