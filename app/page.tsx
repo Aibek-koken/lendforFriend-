@@ -22,7 +22,7 @@ import { InteractiveFooter } from "../components/InteractiveFooter";
 import ProductMockup from "./components/ProductMockup";
 
 const navConfig = [
-  { id: "pricing", labelKey: "navPricing", url: "#pricing", icon: CreditCard },
+  { id: "download", labelKey: "navPricing", url: "#download", icon: CreditCard },
   { id: "faq", labelKey: "navFaq", url: "#faq", icon: HelpCircle },
 ] as const;
 
@@ -451,7 +451,7 @@ export default function HomePage() {
   }, [isMobileViewport, viewportReady]);
 
   useEffect(() => {
-    const sectionIds = ["pricing", "faq"];
+    const sectionIds = ["download", "faq"];
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -1522,38 +1522,53 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* CTA */}
-        <section className="bg-[#f5f5f7] px-4 py-20 sm:px-5 md:py-28" id="download">
-          <div className="mx-auto text-center" style={{ maxWidth: "min(640px, 100%)" }}>
-            <AnimateOnScroll
-              as="p"
-              delay={0}
-              className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]"
+        <section id="download" className="py-20 text-center">
+          <h2 className="mb-4 text-3xl font-bold">Download LiveAssist AI</h2>
+          <p className="mb-10 text-slate-500">
+            Available for Mac, Windows, and Linux. Free to try.
+          </p>
+
+          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <a
+              href="https://github.com/Aibek-koken/Friend/releases/download/v0.1.3/LiveAssist.AI-0.1.0-arm64.dmg"
+              className="flex w-64 items-center justify-center gap-3 rounded-2xl bg-slate-900 px-6 py-4 text-white transition-colors hover:bg-slate-700"
             >
-              {t("downloadLabel")}
-            </AnimateOnScroll>
-            <AnimateOnScroll
-              as="h2"
-              delay={0.08}
-              className="mb-7 text-[clamp(34px,4.2vw,50px)] font-[700] leading-[1.06] tracking-[-0.04em]"
+              <span className="text-2xl">🍎</span>
+              <div className="text-left">
+                <div className="text-xs text-slate-400">Download for</div>
+                <div className="font-semibold">Mac (Apple Silicon)</div>
+              </div>
+            </a>
+
+            <a
+              href="https://github.com/Aibek-koken/Friend/releases/download/v0.1.3/LiveAssist.AI.Setup.0.1.0.exe"
+              className="flex w-64 items-center justify-center gap-3 rounded-2xl bg-slate-900 px-6 py-4 text-white transition-colors hover:bg-slate-700"
             >
-              {t("downloadHeadline")}
-            </AnimateOnScroll>
-            <AnimateOnScroll
-              delay={0.16}
-              className="rounded-[28px] border border-[rgba(29,29,31,0.08)] bg-white px-6 py-8 shadow-[0_18px_42px_rgba(15,23,42,0.05)] sm:px-8"
+              <span className="text-2xl">🪟</span>
+              <div className="text-left">
+                <div className="text-xs text-slate-400">Download for</div>
+                <div className="font-semibold">Windows</div>
+              </div>
+            </a>
+
+            <a
+              href="https://github.com/Aibek-koken/Friend/releases/download/v0.1.3/LiveAssist.AI-0.1.0.AppImage"
+              className="flex w-64 items-center justify-center gap-3 rounded-2xl bg-slate-900 px-6 py-4 text-white transition-colors hover:bg-slate-700"
             >
-              <p className="text-[17px] font-[400] leading-[1.65] text-[#5a5a63]">
-                {t("downloadSub")}
-              </p>
-              <a
-                href="#download"
-                className="mx-auto mt-6 inline-flex min-h-[48px] items-center justify-center rounded-full bg-[#5e5ce6] px-8 text-[15px] font-[600] leading-none text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
-              >
-                {t("downloadCta")}
-              </a>
-            </AnimateOnScroll>
+              <span className="text-2xl">🐧</span>
+              <div className="text-left">
+                <div className="text-xs text-slate-400">Download for</div>
+                <div className="font-semibold">Linux</div>
+              </div>
+            </a>
           </div>
+
+          <p className="mt-6 text-sm text-slate-400">
+            ⚠️ Mac users: after install run in Terminal:
+            <code className="ml-1 rounded bg-slate-100 px-2 py-0.5 text-xs">
+              {"xattr -cr /Applications/LiveAssist\\ AI.app"}
+            </code>
+          </p>
         </section>
       </main>
 
