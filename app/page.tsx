@@ -1530,7 +1530,7 @@ export default function HomePage() {
 
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a
-              href="https://github.com/Aibek-koken/Friend/releases/download/v0.1.3/LiveAssist.AI-0.1.0-arm64.dmg"
+              href="https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI-0.1.0-arm64.dmg"
               className="flex w-64 items-center justify-center gap-3 rounded-2xl bg-slate-900 px-6 py-4 text-white transition-colors hover:bg-slate-700"
             >
               <span className="text-2xl">🍎</span>
@@ -1541,7 +1541,7 @@ export default function HomePage() {
             </a>
 
             <a
-              href="https://github.com/Aibek-koken/Friend/releases/download/v0.1.3/LiveAssist.AI.Setup.0.1.0.exe"
+              href="https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI.Setup.0.1.0.1.exe"
               className="flex w-64 items-center justify-center gap-3 rounded-2xl bg-slate-900 px-6 py-4 text-white transition-colors hover:bg-slate-700"
             >
               <span className="text-2xl">🪟</span>
@@ -1552,7 +1552,7 @@ export default function HomePage() {
             </a>
 
             <a
-              href="https://github.com/Aibek-koken/Friend/releases/download/v0.1.3/LiveAssist.AI-0.1.0.AppImage"
+              href="https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI-0.1.0.1.AppImage"
               className="flex w-64 items-center justify-center gap-3 rounded-2xl bg-slate-900 px-6 py-4 text-white transition-colors hover:bg-slate-700"
             >
               <span className="text-2xl">🐧</span>
