@@ -20,6 +20,7 @@ import { NavBar } from "@/components/ui/tubelight-navbar";
 import { AnimateOnScroll } from "../components/ui/animate-on-scroll";
 import { InteractiveFooter } from "../components/InteractiveFooter";
 import ProductMockup from "./components/ProductMockup";
+import { StatsBand } from "./components/StatsBand";
 
 const navConfig = [
   { id: "download", labelKey: "navPricing", url: "#download", icon: CreditCard },
@@ -139,7 +140,6 @@ export default function HomePage() {
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [viewportReady, setViewportReady] = useState(false);
-  const [mobileHeroPinState, setMobileHeroPinState] = useState<"before" | "pinned" | "after">("before");
   const scrollLockedRef = useRef(false);
 
   const t = (key: string) => {
@@ -415,42 +415,6 @@ export default function HomePage() {
   }, [isMobileViewport, prefersReducedMotion, viewportReady]);
 
   useEffect(() => {
-    if (!viewportReady || !isMobileViewport) {
-      setMobileHeroPinState("before");
-      return;
-    }
-
-    const handlePosition = () => {
-      const section = mobileHeroRef.current;
-      if (!section) return;
-
-      const rect = section.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-
-      if (rect.top >= 0) {
-        setMobileHeroPinState("before");
-        return;
-      }
-
-      if (rect.bottom > viewportHeight) {
-        setMobileHeroPinState("pinned");
-        return;
-      }
-
-      setMobileHeroPinState("after");
-    };
-
-    handlePosition();
-    window.addEventListener("scroll", handlePosition, { passive: true });
-    window.addEventListener("resize", handlePosition);
-
-    return () => {
-      window.removeEventListener("scroll", handlePosition);
-      window.removeEventListener("resize", handlePosition);
-    };
-  }, [isMobileViewport, viewportReady]);
-
-  useEffect(() => {
     const sectionIds = ["download", "faq"];
 
     const observer = new IntersectionObserver(
@@ -679,26 +643,6 @@ export default function HomePage() {
     heroPhase === "hints" && activeScrollHint ? activeScrollHint : "question";
   const activeMobileHintContent =
     scrollHintContent[activeMobileHintId as (typeof HINT_IDS)[number]];
-  const mobileHeroFrameStyle =
-    mobileHeroPinState === "pinned"
-      ? {
-          position: "fixed" as const,
-          inset: 0,
-          zIndex: 20,
-        }
-      : mobileHeroPinState === "after"
-        ? {
-            position: "absolute" as const,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }
-        : {
-            position: "absolute" as const,
-            left: 0,
-            right: 0,
-            top: 0,
-          };
 
   return (
     <>
@@ -869,9 +813,8 @@ export default function HomePage() {
           style={{ minHeight: "320vh" }}
         >
           <div
-            className="px-4 pb-6 pt-24"
+            className="sticky top-0 px-4 pb-6 pt-24"
             style={{
-              ...mobileHeroFrameStyle,
               minHeight: "100svh",
               background:
                 "linear-gradient(180deg, rgba(249,250,255,0.94) 0%, rgba(255,255,255,1) 100%)",
@@ -1149,7 +1092,7 @@ export default function HomePage() {
           ref={mobileScrollyRef}
           id="scrolly-mobile"
           className="relative bg-[linear-gradient(180deg,#ffffff_0%,#fafbff_100%)] md:hidden"
-          style={{ minHeight: "420vh" }}
+          style={{ minHeight: "260vh" }}
         >
           <div
             className="sticky top-0 flex items-center px-4 py-16"
@@ -1278,7 +1221,7 @@ export default function HomePage() {
           ref={scrollyRef}
           id="scrolly-desktop"
           className="relative hidden bg-white md:block"
-          style={{ minHeight: "500vh" }}
+          style={{ minHeight: "320vh" }}
         >
           <div
             className="sticky top-0 flex items-center bg-white"
@@ -1407,6 +1350,9 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* STATS BAND */}
+        <StatsBand lang={lang} />
+
         {/* FEATURES */}
         <section className="px-4 py-20 sm:px-5 md:py-28" id="features">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
@@ -1433,13 +1379,21 @@ export default function HomePage() {
                       boxShadow: "0 20px 40px -12px rgba(0,0,0,0.12)",
                       transition: { type: "spring", stiffness: 300, damping: 20 },
                     }}
-                    className="group relative rounded-[16px] border border-[#e5e5ea] bg-white p-7 cursor-default"
+                    className="group relative cursor-default overflow-hidden rounded-[18px] border border-[#e5e5ea] bg-white p-7 transition-[border-color,box-shadow] duration-300 hover:border-[rgba(94,92,230,0.28)] hover:shadow-[0_24px_48px_-16px_rgba(94,92,230,0.22)]"
                   >
-                    <div className="w-11 h-11 rounded-xl bg-[#f5f5f7] flex items-center justify-center text-[#5e5ce6] mb-5 transition-transform duration-300 group-hover:-translate-y-[3px]">
+                    <div
+                      aria-hidden="true"
+                      className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full opacity-0 blur-[44px] transition-opacity duration-500 group-hover:opacity-100"
+                      style={{ background: "radial-gradient(circle, rgba(94,92,230,0.22), transparent 70%)" }}
+                    />
+                    <span className="absolute right-6 top-6 text-[13px] font-[700] tabular-nums tracking-[0.04em] text-[#d4d4dd] transition-colors duration-300 group-hover:text-[#a9a7f0]">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <div className="relative mb-5 flex h-12 w-12 items-center justify-center rounded-[14px] bg-[#f5f5f7] text-[#5e5ce6] transition-all duration-300 group-hover:-translate-y-[3px] group-hover:bg-[linear-gradient(135deg,#5e5ce6_0%,#4846c9_100%)] group-hover:text-white group-hover:shadow-[0_10px_22px_rgba(94,92,230,0.32)]">
                       <IconComp size={22} aria-hidden="true" />
                     </div>
-                    <h3 className="mb-2 text-[18px] font-[700] tracking-[-0.02em]">{title}</h3>
-                    <p className="text-[16px] font-[400] leading-[1.6] text-[#6e6e73]">{body}</p>
+                    <h3 className="relative mb-2 text-[18px] font-[700] tracking-[-0.02em]">{title}</h3>
+                    <p className="relative text-[16px] font-[400] leading-[1.6] text-[#6e6e73]">{body}</p>
                   </AnimateOnScroll>
                 );
               })}
@@ -1522,53 +1476,82 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="download" className="py-20 text-center">
-          <h2 className="mb-4 text-3xl font-bold">Download LiveAssist AI</h2>
-          <p className="mb-10 text-slate-500">
-            Available for Mac, Windows, and Linux. Free to try.
-          </p>
+        <section id="download" className="px-4 py-20 text-center sm:px-5 md:py-28">
+          <div className="mx-auto" style={{ maxWidth: "min(900px, 100%)" }}>
+            <h2 className="text-[clamp(28px,4vw,46px)] font-[700] leading-[1.08] tracking-[-0.04em] text-[#1d1d1f]">
+              {lang === "ru" ? "Скачать LiveAssist AI" : "Download LiveAssist AI"}
+            </h2>
+            <p className="mx-auto mt-4 max-w-[52ch] text-[16px] font-[400] leading-[1.6] text-[#6e6e73] md:text-[17px]">
+              {lang === "ru"
+                ? "Доступно для Mac, Windows и Linux. Попробуйте бесплатно."
+                : "Available for Mac, Windows, and Linux. Free to try."}
+            </p>
 
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <a
-              href="https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI-0.1.0-arm64.dmg"
-              className="flex w-64 items-center justify-center gap-3 rounded-2xl bg-slate-900 px-6 py-4 text-white transition-colors hover:bg-slate-700"
-            >
-              <span className="text-2xl">🍎</span>
-              <div className="text-left">
-                <div className="text-xs text-slate-400">Download for</div>
-                <div className="font-semibold">Mac (Apple Silicon)</div>
-              </div>
-            </a>
+            <div className="mx-auto mt-10 grid max-w-[640px] gap-3 sm:grid-cols-3">
+              {[
+                {
+                  href: "https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI-0.1.0-arm64.dmg",
+                  label: "Mac",
+                  sub: "Apple Silicon",
+                  icon: (
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M17.05 12.04c-.03-2.85 2.33-4.22 2.44-4.29-1.33-1.95-3.4-2.22-4.14-2.25-1.76-.18-3.44 1.04-4.33 1.04-.89 0-2.27-1.02-3.74-.99-1.92.03-3.7 1.12-4.69 2.84-2 3.47-.51 8.6 1.43 11.42.95 1.38 2.08 2.93 3.56 2.87 1.43-.06 1.97-.92 3.7-.92 1.72 0 2.21.92 3.72.89 1.54-.03 2.51-1.4 3.45-2.79 1.09-1.6 1.54-3.15 1.56-3.23-.03-.01-2.99-1.15-3.02-4.56zM14.2 3.78c.79-.96 1.32-2.29 1.18-3.62-1.14.05-2.52.76-3.33 1.71-.73.85-1.37 2.21-1.2 3.51 1.27.1 2.57-.65 3.35-1.6z" />
+                    </svg>
+                  ),
+                },
+                {
+                  href: "https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI.Setup.0.1.0.1.exe",
+                  label: "Windows",
+                  sub: "Windows 10/11",
+                  icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M3 5.48l7.42-1.01v7.16H3V5.48zm0 13.04l7.42 1.01v-7.07H3v6.06zM11.27 4.35L21 3v8.63h-9.73V4.35zm0 15.3L21 21v-8.55h-9.73v7.2z" />
+                    </svg>
+                  ),
+                },
+                {
+                  href: "https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI-0.1.0.1.AppImage",
+                  label: "Linux",
+                  sub: "AppImage",
+                  icon: (
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M12.504 0c-.155 0-.315.008-.48.021-4.226.333-3.105 4.807-3.17 6.298-.076 1.092-.3 1.953-1.05 3.02-.885 1.051-2.127 2.75-2.716 4.521-.278.832-.41 1.684-.287 2.489a.424.424 0 00-.11.135c-.26.268-.45.6-.663.839-.199.199-.485.267-.797.4-.313.136-.658.269-.864.68-.09.189-.136.394-.132.602 0 .199.027.4.055.536.058.399.116.728.04.97-.249.68-.28 1.145-.106 1.484.174.334.535.47.94.601.81.2 1.91.135 2.774.6.926.466 1.866.67 2.616.47.526-.116.97-.464 1.208-.946.587-.003 1.23-.269 2.26-.334.699-.058 1.574.267 2.577.2.025.134.063.198.114.333l.003.003c.391.778 1.113 1.132 1.884 1.071.771-.06 1.592-.536 2.257-1.306.631-.765 1.683-1.084 2.378-1.503.348-.199.629-.469.649-.853.023-.4-.2-.811-.714-1.376v-.097l-.003-.003c-.17-.2-.25-.535-.338-.926-.085-.401-.182-.786-.492-1.046h-.003c-.059-.054-.123-.067-.188-.135a.357.357 0 00-.19-.064c.431-1.278.264-2.55-.173-3.694-.533-1.41-1.465-2.638-2.175-3.483-.796-1.005-1.576-1.957-1.56-3.368.026-2.152.236-6.133-3.544-6.139zm.529 3.405h.013c.213 0 .396.062.584.198.19.135.33.332.438.533.105.259.158.459.166.724 0-.02.006-.04.006-.06v.105a.086.086 0 01-.004-.021l-.004-.024a1.807 1.807 0 01-.15.706.953.953 0 01-.213.335.71.71 0 00-.088-.042c-.104-.045-.198-.064-.284-.133a1.312 1.312 0 00-.22-.066c.05-.06.146-.133.183-.198.053-.128.082-.264.088-.402v-.02a1.21 1.21 0 00-.061-.4c-.045-.134-.101-.2-.183-.333-.084-.066-.167-.132-.267-.132h-.016c-.093 0-.176.03-.262.132a.8.8 0 00-.205.334 1.18 1.18 0 00-.09.4v.019c.002.089.008.179.02.267-.193-.067-.438-.135-.607-.202a1.635 1.635 0 01-.018-.2v-.02a1.772 1.772 0 01.15-.768c.082-.22.232-.406.43-.533a.985.985 0 01.594-.2zm-2.962.059h.036c.142 0 .27.048.399.135.146.129.264.288.344.465.09.199.14.4.153.667v.004c.007.134.006.2-.002.266v.08c-.03.007-.056.018-.083.024-.152.055-.274.135-.393.2.012-.09.013-.18.003-.267v-.015c-.012-.133-.04-.2-.082-.333a.613.613 0 00-.166-.267.248.248 0 00-.183-.064h-.021c-.071.006-.13.04-.186.132a.552.552 0 00-.12.27.944.944 0 00-.023.33v.015c.012.135.037.2.08.334.046.134.098.2.166.268.01.009.02.018.034.024-.07.057-.117.07-.176.136a.304.304 0 01-.131.068 2.62 2.62 0 01-.275-.402 1.772 1.772 0 01-.155-.667 1.759 1.759 0 01.08-.668 1.43 1.43 0 01.283-.535c.128-.133.26-.2.418-.2zm1.37 1.706c.332 0 .733.065 1.216.399.293.2.523.269 1.052.468h.003c.255.136.405.266.478.399v-.131a.571.571 0 01.016.47c-.123.31-.516.643-1.063.842v.002c-.268.135-.501.333-.775.465-.276.135-.588.292-1.012.267a1.139 1.139 0 01-.448-.067 3.566 3.566 0 01-.322-.198c-.195-.135-.363-.332-.612-.465v-.005h-.005c-.4-.246-.616-.512-.686-.71-.07-.268-.005-.47.193-.6.224-.135.38-.271.483-.336.104-.074.143-.102.176-.131h.002v-.003c.169-.202.436-.47.918-.601.146-.036.292-.065.43-.065zm2.467 7.7c-.034.024-.063.04-.087.064-.13.135-.323.27-.553.401-.236.135-.58.27-.86.27-.32 0-.66-.135-.91-.27a3.196 3.196 0 01-.43-.27c-.135.067-.32.135-.52.2a4.44 4.44 0 00-.756.333 6.79 6.79 0 00-.78.534 8.34 8.34 0 00-.737.668 7.9 7.9 0 00-.6.668c.063.135.149.336.176.535.061.4.061.802-.07 1.114h.002c.04.04.092.07.151.135.06.067.13.135.222.2.184.135.426.2.66.2.318 0 .587-.07.798-.135a2.93 2.93 0 00.524-.2c.157-.069.28-.135.4-.2.118-.066.214-.135.34-.135.143 0 .258.07.34.135.083.066.158.135.23.2.146.135.302.27.564.337.26.067.578.067.927-.067.347-.135.683-.4.92-.668.236-.27.42-.6.42-.935 0-.336-.184-.6-.42-.802-.236-.2-.578-.4-.84-.667a4.434 4.434 0 01-.55-.668c-.16-.27-.27-.534-.34-.802z" />
+                    </svg>
+                  ),
+                },
+              ].map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className="group flex items-center gap-3 rounded-[18px] border border-[rgba(29,29,31,0.1)] bg-white px-4 py-3.5 text-left shadow-[0_10px_24px_rgba(15,23,42,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[rgba(94,92,230,0.32)] hover:shadow-[0_16px_32px_rgba(94,92,230,0.12)]"
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[13px] bg-[#f5f5f7] text-[#1d1d1f] transition-colors duration-200 group-hover:bg-[rgba(94,92,230,0.1)] group-hover:text-[#5e5ce6]">
+                    {item.icon}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[11px] font-[500] uppercase tracking-[0.08em] text-[#8a8a94]">
+                      {lang === "ru" ? "Скачать для" : "Download for"}
+                    </span>
+                    <span className="block text-[15px] font-[700] leading-tight tracking-[-0.01em] text-[#1d1d1f]">
+                      {item.label}
+                    </span>
+                    <span className="block text-[11px] font-[400] text-[#9ca3af]">
+                      {item.sub}
+                    </span>
+                  </span>
+                </a>
+              ))}
+            </div>
 
-            <a
-              href="https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI.Setup.0.1.0.1.exe"
-              className="flex w-64 items-center justify-center gap-3 rounded-2xl bg-slate-900 px-6 py-4 text-white transition-colors hover:bg-slate-700"
-            >
-              <span className="text-2xl">🪟</span>
-              <div className="text-left">
-                <div className="text-xs text-slate-400">Download for</div>
-                <div className="font-semibold">Windows</div>
-              </div>
-            </a>
-
-            <a
-              href="https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI-0.1.0.1.AppImage"
-              className="flex w-64 items-center justify-center gap-3 rounded-2xl bg-slate-900 px-6 py-4 text-white transition-colors hover:bg-slate-700"
-            >
-              <span className="text-2xl">🐧</span>
-              <div className="text-left">
-                <div className="text-xs text-slate-400">Download for</div>
-                <div className="font-semibold">Linux</div>
-              </div>
-            </a>
+            <p className="mx-auto mt-7 inline-flex max-w-[52ch] flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-[13px] leading-[1.5] text-[#8a8a94]">
+              {lang === "ru"
+                ? "Для Mac после установки выполните в Terminal:"
+                : "Mac users — after install, run in Terminal:"}
+              <code className="rounded-md bg-[#f5f5f7] px-2 py-0.5 text-[12px] text-[#3f3f46]">
+                {"xattr -cr /Applications/LiveAssist\\ AI.app"}
+              </code>
+            </p>
           </div>
-
-          <p className="mt-6 text-sm text-slate-400">
-            ⚠️ Mac users: after install run in Terminal:
-            <code className="ml-1 rounded bg-slate-100 px-2 py-0.5 text-xs">
-              {"xattr -cr /Applications/LiveAssist\\ AI.app"}
-            </code>
-          </p>
         </section>
       </main>
 
