@@ -42,7 +42,7 @@ export const strings = {
     featuresEyebrow: "Features",
     featuresTitle: "Designed for the exact second a rep needs help",
     featuresSub:
-      "Fast retrieval, cited answers, and a private overlay that stays out of the way until someone asks.",
+      "Cited answers in seconds — from an overlay only you can see.",
     pricingEyebrow: "Download",
     pricingTitle: "Download LiveAssist AI",
     pricingSub:
@@ -51,7 +51,6 @@ export const strings = {
     popular: "Most popular",
     faqEyebrow: "FAQ",
     faqTitle: "Clear answers before download",
-    faqSearchPlaceholder: "Search questions...",
     downloadLabel: "Download",
     downloadHeadline: "Download LiveAssist AI",
     downloadSub: "Available for Mac, Windows, and Linux. Free to try.",
@@ -223,7 +222,7 @@ export const strings = {
     featuresTitle:
       "Создан для той самой секунды, когда менеджеру нужен точный ответ",
     featuresSub:
-      "Быстрый поиск, ответы с источниками и приватный оверлей, который не мешает, пока помощь не понадобится.",
+      "Ответы с источниками за секунды — в оверлее, который видите только вы.",
     pricingEyebrow: "Скачать",
     pricingTitle: "Скачать LiveAssist AI",
     pricingSub:
@@ -232,7 +231,6 @@ export const strings = {
     popular: "Популярный выбор",
     faqEyebrow: "Вопросы",
     faqTitle: "Коротко перед скачиванием",
-    faqSearchPlaceholder: "Искать вопросы...",
     downloadLabel: "Скачать",
     downloadHeadline: "Скачать LiveAssist AI",
     downloadSub: "Доступно для Mac, Windows и Linux. Можно попробовать бесплатно.",

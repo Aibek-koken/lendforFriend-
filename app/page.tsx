@@ -174,37 +174,37 @@ export default function HomePage() {
       ? {
           question: {
             title: "Вопрос клиента",
-            body: "Менеджер нажимает хоткей в момент звонка. Вопрос уходит в overlay тихо и без переключения контекста.",
+            body: "Нажмите хоткей прямо в звонке — вопрос ловится без потери темпа.",
           },
           answer: {
             title: "Готовый ответ",
-            body: "AI возвращает короткую формулировку, которую можно сразу озвучить, без импровизации и пауз.",
+            body: "Короткая фраза, готовая к ответу. Без импровизации под давлением.",
           },
           confidence: {
             title: "Уверенность AI",
-            body: "Сигнал уверенности помогает понять, когда можно отвечать сразу, а когда лучше перепроверить.",
+            body: "Сигнал уверенности: отвечать сразу или быстро перепроверить.",
           },
           source: {
             title: "Источник ответа",
-            body: "Файл и страница остаются рядом с ответом, чтобы менеджер видел основание, а не просто догадку модели.",
+            body: "Файл и страница рядом с ответом — основание, а не догадка.",
           },
         }
       : {
           question: {
             title: "Customer question",
-            body: "The rep triggers the overlay mid-call. The question is captured without breaking the flow of the conversation.",
+            body: "Press the hotkey mid-call — the question is captured without breaking your flow.",
           },
           answer: {
             title: "Ready-to-say answer",
-            body: "AI returns a compact phrase the rep can use immediately instead of improvising under pressure.",
+            body: "A compact, ready-to-say phrase. No improvising under pressure.",
           },
           confidence: {
             title: "AI confidence",
-            body: "The confidence signal tells the rep when to answer directly and when to pause for a quick double-check.",
+            body: "A confidence signal: answer now, or pause for a quick check.",
           },
           source: {
             title: "Source document",
-            body: "The file and page stay attached to the answer so the rep sees evidence, not just a model guess.",
+            body: "The file and page stay attached — evidence, not a guess.",
           },
         };
 
@@ -278,7 +278,6 @@ export default function HomePage() {
     url: item.url,
     icon: item.icon,
   }));
-  const mobileNavItems = navItems.slice(0, 2);
 
   const heroFadeProgress = clamp01(heroScrollProgress / HERO_MORPH.heroFadeEnd);
   const heroMorphProgress = animComplete
@@ -1471,7 +1470,6 @@ export default function HomePage() {
               items={tFaqs()}
               defaultOpenFirst
               className="w-full max-w-3xl mx-auto"
-              searchPlaceholder={t("faqSearchPlaceholder")}
             />
           </div>
         </section>
