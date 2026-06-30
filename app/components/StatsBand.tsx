@@ -9,7 +9,7 @@ type Stat = {
   decimals?: number;
   prefix?: string;
   suffix?: string;
-  /** Non-numeric glyph shown instead of a counting number (e.g. ⌘J). */
+  /** Non-numeric text shown instead of a counting number (e.g. 3 OS). */
   display?: string;
   label: string;
 };
@@ -73,13 +73,13 @@ export function StatsBand({ lang }: { lang: Lang }) {
       ? [
           { value: 1.4, decimals: 1, suffix: " с", label: "среднее время ответа" },
           { value: 94, suffix: "%", label: "уверенность с источником" },
-          { display: "⌘J", value: 0, label: "одна горячая клавиша" },
+          { display: "3 ОС", value: 0, label: "хоткей для Mac, Windows и Linux" },
           { value: 0, label: "фоновой прослушки" },
         ]
       : [
           { value: 1.4, decimals: 1, suffix: "s", label: "average answer time" },
           { value: 94, suffix: "%", label: "source-backed confidence" },
-          { display: "⌘J", value: 0, label: "single hotkey to ask" },
+          { display: "3 OS", value: 0, label: "shortcut for Mac, Windows, and Linux" },
           { value: 0, label: "always-on listening" },
         ];
 

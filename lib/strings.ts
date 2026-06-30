@@ -1,8 +1,10 @@
 export const strings = {
   en: {
-    logo: "⌘ LiveAssist AI",
+    logo: "LiveAssist AI",
     navLabel: "Main navigation",
     navPricing: "Download",
+    navHow: "How it works",
+    navPricingNav: "Pricing",
     navFaq: "FAQ",
     switchToRu: "Switch language to Russian",
     switchToEn: "Switch language to English",
@@ -33,8 +35,8 @@ export const strings = {
     },
     scrollyStep1: "Upload your docs once.",
     scrollyStep2: "The client asks a hard question.",
-    scrollyKey: "⌘ J",
-    scrollyStep3: "Press ⌘J and ask.",
+    scrollyKey: "Shortcut",
+    scrollyStep3: "Press the shortcut and ask.",
     scrollyStep4: "Get a cited answer in 1–2 seconds.",
     scrollyStep5: "Stay calm. Keep the call moving.",
     scrollyStep5Sub:
@@ -93,7 +95,7 @@ export const strings = {
       ],
       [
         "Hotkey-first workflow",
-        "Press ⌘J, ask, answer, and return to the conversation without tab switching."
+        "Press Ctrl+J on Windows/Linux or ⌘J on Mac, ask, answer, and return to the conversation without tab switching."
       ],
       [
         "Voice or text input",
@@ -158,7 +160,7 @@ export const strings = {
     faqs: [
       [
         "Does LiveAssist AI listen all the time?",
-        "No. LiveAssist AI is hotkey-first and activates only when the rep asks for help. Nothing is recorded or processed until ⌘J is pressed."
+        "No. LiveAssist AI is hotkey-first and activates only when the rep asks for help. Nothing is recorded or processed until the shortcut is pressed: Ctrl+J on Windows/Linux or ⌘J on Mac."
       ],
       [
         "Where do answers come from?",
@@ -179,9 +181,11 @@ export const strings = {
     ]
   },
   ru: {
-    logo: "⌘ LiveAssist AI",
+    logo: "LiveAssist AI",
     navLabel: "Основная навигация",
     navPricing: "Скачать",
+    navHow: "Как это работает",
+    navPricingNav: "Цены",
     navFaq: "Вопросы",
     switchToRu: "Переключить язык на русский",
     switchToEn: "Переключить язык на английский",
@@ -212,8 +216,8 @@ export const strings = {
     },
     scrollyStep1: "Загрузите документы один раз.",
     scrollyStep2: "Клиент задаёт сложный вопрос.",
-    scrollyKey: "⌘ J",
-    scrollyStep3: "Нажмите ⌘J и спросите.",
+    scrollyKey: "Хоткей",
+    scrollyStep3: "Нажмите хоткей и спросите.",
     scrollyStep4: "Получите ответ с источником за 1–2 секунды.",
     scrollyStep5: "Оставайтесь спокойны. Ведите звонок дальше.",
     scrollyStep5Sub:
@@ -273,7 +277,7 @@ export const strings = {
       ],
       [
         "Работа через горячую клавишу",
-        "Нажмите ⌘J, задайте вопрос, получите ответ и сразу вернитесь к разговору без переключения вкладок."
+        "Нажмите Ctrl+J на Windows/Linux или ⌘J на Mac, задайте вопрос, получите ответ и сразу вернитесь к разговору без переключения вкладок."
       ],
       [
         "Голосовой или текстовый ввод",
@@ -338,7 +342,7 @@ export const strings = {
     faqs: [
       [
         "LiveAssist AI слушает всё время?",
-        "Нет. LiveAssist AI работает через горячую клавишу и включается только тогда, когда менеджер сам просит помощь. До нажатия ⌘J ничего не записывается и не обрабатывается."
+        "Нет. LiveAssist AI работает через горячую клавишу и включается только тогда, когда менеджер сам просит помощь. До нажатия хоткея ничего не записывается и не обрабатывается: Ctrl+J на Windows/Linux или ⌘J на Mac."
       ],
       [
         "Откуда берутся ответы?",

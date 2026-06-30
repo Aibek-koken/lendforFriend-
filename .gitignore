@@ -39,3 +39,6 @@ Thumbs.db
 # Coverage
 coverage/
 .gstack/
+
+# Raw demo video source (web-optimised versions live in public/)
+DEMO/

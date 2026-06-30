@@ -6,10 +6,10 @@ import {
   FileText,
   FileSearch,
   HelpCircle,
-  Layers,
   Keyboard,
-  Mic,
-  Shield,
+  Upload,
+  BadgeCheck,
+  PlayCircle,
   MessageSquareText,
   Headphones,
 } from "lucide-react";
@@ -22,7 +22,8 @@ import ProductMockup from "./components/ProductMockup";
 import { StatsBand } from "./components/StatsBand";
 
 const navConfig = [
-  { id: "download", labelKey: "navPricing", url: "#download", icon: CreditCard },
+  { id: "features", labelKey: "navHow", url: "#features", icon: PlayCircle },
+  { id: "pricing", labelKey: "navPricingNav", url: "#pricing", icon: CreditCard },
   { id: "faq", labelKey: "navFaq", url: "#faq", icon: HelpCircle },
 ] as const;
 
@@ -48,7 +49,7 @@ const INTER_UI_STACK =
 const SCROLL_DISPLAY_STYLE = {
   fontFamily: INTER_UI_STACK,
   fontSize: "clamp(42px, 5vw, 72px)",
-  fontWeight: 900,
+  fontWeight: 800,
   letterSpacing: "-2.5px",
   lineHeight: 1,
 } as const;
@@ -82,6 +83,58 @@ type MobileStoryStep = {
   title: string;
   body: string;
 };
+
+function ShortcutCue({ compact = false, label }: { compact?: boolean; label: string }) {
+  return (
+    <div
+      role="img"
+      aria-label={label}
+      className={[
+        "inline-flex items-center justify-center border border-[rgba(94,92,230,0.14)] bg-[rgba(255,255,255,0.86)] text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.86),0_18px_42px_rgba(94,92,230,0.12)] backdrop-blur-xl",
+        compact
+          ? "gap-3 rounded-[22px] px-4 py-3"
+          : "gap-4 rounded-[28px] px-5 py-4",
+      ].join(" ")}
+    >
+      <span
+        aria-hidden="true"
+        className={[
+          "relative flex shrink-0 items-center justify-center rounded-[18px] bg-[linear-gradient(135deg,rgba(94,92,230,0.12),rgba(34,211,238,0.10))] text-[#5e5ce6]",
+          compact ? "h-11 w-11" : "h-14 w-14",
+        ].join(" ")}
+      >
+        <span className="absolute inset-0 rounded-[18px] bg-[rgba(94,92,230,0.16)] motion-safe:animate-ping" />
+        <span className="relative flex h-[70%] w-[70%] items-center justify-center rounded-[14px] border border-[rgba(94,92,230,0.16)] bg-white shadow-[0_2px_0_rgba(29,29,31,0.08)] motion-safe:animate-pulse">
+          <Keyboard size={compact ? 18 : 22} strokeWidth={2.2} />
+        </span>
+      </span>
+
+      <span className="flex min-w-0 items-center gap-3">
+        <span
+          className={
+            compact
+              ? "text-[16px] font-[800] leading-none tracking-[-0.01em]"
+              : "text-[22px] font-[800] leading-none tracking-[-0.02em]"
+          }
+        >
+          {label}
+        </span>
+        <span aria-hidden="true" className="flex items-center gap-1.5">
+          {[0, 1, 2].map((index) => (
+            <span
+              key={index}
+              className={[
+                "rounded-full bg-[#5e5ce6] motion-safe:animate-pulse",
+                compact ? "h-1.5 w-1.5" : "h-2 w-2",
+              ].join(" ")}
+              style={{ animationDelay: `${index * 120}ms` }}
+            />
+          ))}
+        </span>
+      </span>
+    </div>
+  );
+}
 
 const MOBILE_HERO_MORPH = {
   heroFadeEnd: 0.18,
@@ -128,10 +181,15 @@ export default function HomePage() {
   const mobileHeroRef = useRef<HTMLElement>(null);
   const heroProgressRef = useRef(0);
   const heroTargetRef = useRef(0);
+  const heroExitRef = useRef(0);
+  const demoVideoRef = useRef<HTMLVideoElement>(null);
 
   // Hero scroll state
   const [heroPhase, setHeroPhase] = useState<"hero" | "transition" | "hints">("hero");
   const [heroScrollProgress, setHeroScrollProgress] = useState(0);
+  // 0 while the hero is pinned, ramps 0→1 as it scrolls past the last phase so
+  // the card can dissolve into the next section instead of leaving a gap.
+  const [heroExit, setHeroExit] = useState(0);
   const [activeScrollHint, setActiveScrollHint] = useState<string | null>(null);
   const [animComplete, setAnimComplete] = useState(false);
   const [skipAnim, setSkipAnim] = useState(false);
@@ -139,6 +197,11 @@ export default function HomePage() {
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [viewportReady, setViewportReady] = useState(false);
+  // Header auto-hide on scroll down / reveal on scroll up.
+  const [headerHidden, setHeaderHidden] = useState(false);
+  // True briefly while an anchor-link smooth scroll is in flight, so the
+  // scroll-snap is suppressed and the header stays visible during the jump.
+  const navigatingRef = useRef(false);
   const scrollLockedRef = useRef(false);
 
   const t = (key: string) => {
@@ -146,9 +209,6 @@ export default function HomePage() {
     return val as string;
   };
 
-  const tFeatures = (): [string, string][] => {
-    return (strings[lang] as Record<string, unknown>).features as [string, string][];
-  };
 
   const heroMetrics: HeroMetric[] =
     lang === "ru"
@@ -161,6 +221,43 @@ export default function HomePage() {
           { title: "Upload", lines: ["Docs stay ready", "for every call"] },
           { title: "Ask", lines: ["Use it live", "in the moment"] },
           { title: "Answer", lines: ["Source attached", "no awkward pause"] },
+        ];
+
+  const usageSteps =
+    lang === "ru"
+      ? [
+          {
+            icon: Upload,
+            title: "Загрузите документы",
+            body: "PDF, FAQ, регламенты и прайсы — загрузили один раз, и они готовы к каждому звонку.",
+          },
+          {
+            icon: Keyboard,
+            title: "Хоткей — и задаёте вопрос",
+            body: "Нажимаете Ctrl+J на Windows/Linux или ⌘J на Mac прямо в звонке — без переключения вкладок.",
+          },
+          {
+            icon: BadgeCheck,
+            title: "Ответ с доказательством",
+            body: "Мгновенный ответ с точным файлом и страницей — можете проверить сами.",
+          },
+        ]
+      : [
+          {
+            icon: Upload,
+            title: "Upload your documents",
+            body: "Drop in PDFs, FAQs, SOPs and pricing once — indexed and ready for every call.",
+          },
+          {
+            icon: Keyboard,
+            title: "Use the shortcut, ask anything",
+            body: "Press Ctrl+J on Windows/Linux or ⌘J on Mac mid-call — no tab switching.",
+          },
+          {
+            icon: BadgeCheck,
+            title: "A cited answer you can trust",
+            body: "An instant answer with the exact file and page attached — verify it yourself.",
+          },
         ];
 
   const heroHeadlineLines =
@@ -413,7 +510,7 @@ export default function HomePage() {
   }, [isMobileViewport, prefersReducedMotion, viewportReady]);
 
   useEffect(() => {
-    const sectionIds = ["download", "faq"];
+    const sectionIds = ["features", "pricing", "faq"];
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -610,17 +707,28 @@ export default function HomePage() {
     let rafId: number;
 
     const onScroll = () => {
-      heroTargetRef.current = readSectionScrollProgress(section);
+      const rect = section.getBoundingClientRect();
+      const total = section.offsetHeight - window.innerHeight;
+      const raw = total > 0 ? -rect.top / total : 0;
+      heroTargetRef.current = clamp01(raw);
+      // Past raw === 1 the card is un-pinning and scrolling away: ramp the exit
+      // fade so it dissolves before the next section reaches centre.
+      const exit = clamp01((raw - 1) / 0.3);
+      if (exit !== heroExitRef.current) {
+        heroExitRef.current = exit;
+        setHeroExit(exit);
+      }
     };
 
     const initialProgress = readSectionScrollProgress(section);
-    heroTargetRef.current = initialProgress;
     heroProgressRef.current = initialProgress;
+    onScroll();
     updateHeroScrollState(initialProgress);
 
     const tick = () => {
       heroProgressRef.current +=
-        (heroTargetRef.current - heroProgressRef.current) * 0.1;
+        (heroTargetRef.current - heroProgressRef.current) *
+        (isMobileViewport ? 0.1 : 0.22);
       const p = heroProgressRef.current;
       updateHeroScrollState(p);
 
@@ -636,7 +744,159 @@ export default function HomePage() {
     };
   }, [animComplete, isMobileViewport, prefersReducedMotion, readSectionScrollProgress, updateHeroScrollState]);
 
-  const featureIcons = [FileText, FileSearch, Layers, Keyboard, Mic, Shield];
+  // Magnetically lock the hero → onboarding scroll to phases so it can never
+  // rest between them. Uses native CSS scroll-snap (light, no hijacking) and is
+  // enabled ONLY while this section owns the viewport, so the rest of the page
+  // keeps scrolling freely. Snap targets are the HERO_SNAP_MARKERS below.
+  // (Desktop pointer devices only.)
+  useEffect(() => {
+    const root = document.documentElement;
+    const disable = () => {
+      if (root.style.scrollSnapType) root.style.scrollSnapType = "";
+      if (root.style.scrollBehavior) root.style.scrollBehavior = "";
+    };
+
+    if (!animComplete || isMobileViewport || prefersReducedMotion) {
+      disable();
+      return;
+    }
+    const section = heroRef.current;
+    if (!section) return;
+
+    let active = false;
+    const update = () => {
+      // While an anchor jump is animating, keep snap off so the smooth scroll
+      // isn't trapped at the hero phases.
+      if (navigatingRef.current) {
+        if (active) {
+          active = false;
+          root.style.scrollSnapType = "";
+          root.style.scrollBehavior = "";
+        }
+        return;
+      }
+      const rect = section.getBoundingClientRect();
+      const total = section.offsetHeight - window.innerHeight;
+      const p = total > 0 ? -rect.top / total : 0;
+      // Pinned and not yet at the very bottom edge — keep the exit frictionless.
+      const next =
+        rect.top <= 0 && rect.bottom >= window.innerHeight && p < 0.97;
+      if (next === active) return;
+      active = next;
+      // Hard snap while pinned: drop the global `scroll-behavior: smooth` so the
+      // snap grabs firmly. The card/hints still glide smoothly because their
+      // motion is driven by the rAF easing, not the scroll position itself.
+      root.style.scrollSnapType = active ? "y mandatory" : "";
+      root.style.scrollBehavior = active ? "auto" : "";
+    };
+
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+      disable();
+    };
+  }, [animComplete, isMobileViewport, prefersReducedMotion]);
+
+  // Intercept every in-page anchor link so it scrolls smoothly with a fixed
+  // offset for the sticky header AND with scroll-snap suppressed (otherwise the
+  // hero phase locks would trap the jump halfway). Catches all `#…` links at
+  // once, so every button lands on the right section without hanging.
+  useEffect(() => {
+    const root = document.documentElement;
+    let releaseTimer = 0;
+    const HEADER_OFFSET = 92;
+
+    const onClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const target = event.target as Element | null;
+      const link = target?.closest?.('a[href^="#"]') as HTMLAnchorElement | null;
+      if (!link) return;
+      const hash = link.getAttribute("href");
+      if (!hash || hash === "#") return;
+      const el = document.getElementById(hash.slice(1));
+      if (!el) return;
+
+      event.preventDefault();
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const behavior: ScrollBehavior = reduce ? "auto" : "smooth";
+      navigatingRef.current = true;
+      setHeaderHidden(false);
+      root.style.scrollSnapType = "none";
+      root.style.scrollBehavior = behavior;
+      const y = Math.max(
+        0,
+        window.scrollY + el.getBoundingClientRect().top - HEADER_OFFSET
+      );
+      window.scrollTo({ top: y, behavior });
+
+      window.clearTimeout(releaseTimer);
+      releaseTimer = window.setTimeout(
+        () => {
+          navigatingRef.current = false;
+          // Hand scroll-snap / behaviour back to the hero snap controller.
+          root.style.scrollSnapType = "";
+          root.style.scrollBehavior = "";
+        },
+        reduce ? 60 : 900
+      );
+    };
+
+    document.addEventListener("click", onClick);
+    return () => {
+      document.removeEventListener("click", onClick);
+      window.clearTimeout(releaseTimer);
+    };
+  }, []);
+
+  // Hide the header when scrolling down, reveal it when scrolling up (and always
+  // show it near the top or during an anchor jump).
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const delta = y - lastY;
+        if (navigatingRef.current || y < 80) {
+          setHeaderHidden(false);
+        } else if (delta > 6) {
+          setHeaderHidden(true);
+        } else if (delta < -6) {
+          setHeaderHidden(false);
+        }
+        lastY = y;
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Play the demo video only while it is on screen (muted autoplay loop), and
+  // pause it otherwise to save CPU/battery.
+  useEffect(() => {
+    const video = demoVideoRef.current;
+    if (!video) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.35 }
+    );
+    io.observe(video);
+    return () => io.disconnect();
+  }, []);
+
   const activeMobileHintId =
     heroPhase === "hints" && activeScrollHint ? activeScrollHint : "question";
   const activeMobileHintContent =
@@ -646,7 +906,13 @@ export default function HomePage() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-180 ease-out">
+      <header
+        className="fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ease-out"
+        style={{
+          transform: headerHidden ? "translateY(-130%)" : "translateY(0)",
+          willChange: "transform",
+        }}
+      >
         <nav
           className="mx-auto w-full px-4 pt-4 pb-3 sm:px-5 sm:pt-7 sm:pb-3"
           style={{ maxWidth: "min(1180px, calc(100% - 40px))" }}
@@ -1054,7 +1320,7 @@ export default function HomePage() {
                       0,
                       hintsRevealProgress
                     )}px)`,
-                    opacity: hintsRevealProgress,
+                    opacity: hintsRevealProgress * (1 - heroExit),
                     filter: `blur(${mix(10, 0, hintsRevealProgress)}px)`,
                     pointerEvents: "none",
                     zIndex: 10,
@@ -1108,10 +1374,11 @@ export default function HomePage() {
                 className="absolute top-1/2"
                 style={{
                   left: cardLeft,
-                  transform: `translate(-50%, -50%) scale(${cardScale})`,
+                  transform: `translate(-50%, calc(-50% - ${heroExit * 36}px)) scale(${cardScale * (1 - heroExit * 0.05)})`,
+                  opacity: 1 - heroExit,
                   transition: "none",
                   transformOrigin: "center center",
-                  willChange: "transform, left",
+                  willChange: "transform, left, opacity",
                 }}
               >
                 <div
@@ -1148,6 +1415,28 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+
+          {/* Invisible scroll-snap anchors — one per phase (hero, question,
+              answer, confidence, source). top % = progress * 2/3 because the
+              300vh section pins for 200vh, so progress p sits at p*200vh. */}
+          {[0, 0.4, 0.575, 0.745, 0.95].map((p) => (
+            <div
+              key={p}
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                top: `${((p * 2) / 3) * 100}%`,
+                left: 0,
+                width: 1,
+                height: 1,
+                pointerEvents: "none",
+                scrollSnapAlign: "start",
+                // Force a hard stop on every phase — the scroll can't skip past
+                // a phase or coast to rest between them.
+                scrollSnapStop: "always",
+              }}
+            />
+          ))}
         </section>
 
         <section
@@ -1219,11 +1508,8 @@ export default function HomePage() {
                   pointerEvents: scrollyStep === 2 ? "auto" : "none",
                 }}
               >
-                <div
-                  className="mb-6 inline-flex items-center justify-center rounded-[22px] bg-[#f5f5f7] px-6 py-5 text-[#5e5ce6] shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(0,0,0,0.06)]"
-                  style={{ minWidth: 128 }}
-                >
-                  <span className="text-[34px] font-[700] leading-none">{t("scrollyKey")}</span>
+                <div className="mb-6">
+                  <ShortcutCue compact label={lang === "ru" ? "Хоткей" : "Shortcut"} />
                 </div>
                 <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
                   {mobileStorySteps[2].title}
@@ -1282,11 +1568,18 @@ export default function HomePage() {
         <section
           ref={scrollyRef}
           id="scrolly-desktop"
-          className="relative hidden bg-white md:block"
-          style={{ minHeight: "320vh" }}
+          // Transparent + pulled up: its content cross-fades in over the hero's
+          // dissolving card (which fades via heroExit), so there is no empty gap
+          // and no opaque block covering the still-pinned card. Body is white, so
+          // the deeper steps still read on white.
+          className="relative hidden md:block"
+          // minHeight = pace of the step effect (taller = more scroll per step,
+          // so the text lingers longer). marginTop = how far it's pulled up into
+          // the hero handoff (less negative = text sits a little lower).
+          style={{ minHeight: "440vh", marginTop: "-44vh" }}
         >
           <div
-            className="sticky top-0 flex items-center bg-white"
+            className="sticky top-0 flex items-center"
             style={{ minHeight: "100svh", padding: "112px 20px" }}
           >
             <div className="relative w-full mx-auto" style={{ maxWidth: "min(700px, 100%)", minHeight: 320 }}>
@@ -1352,20 +1645,15 @@ export default function HomePage() {
                 }}
               >
                 <div
-                  className="mb-8 inline-flex items-center justify-center rounded-2xl bg-[#f5f5f7] text-[#5e5ce6] font-[700]"
+                  className="mb-8 inline-flex"
                   style={{
-                    minWidth: 100,
-                    minHeight: 72,
-                    fontSize: "clamp(28px, 3.5vw, 42px)",
-                    padding: "0 24px",
-                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8), 0 4px 12px rgba(0,0,0,0.06)",
                     transition: "transform 350ms cubic-bezier(0.4, 0, 0.2, 1), opacity 350ms cubic-bezier(0.4, 0, 0.2, 1)",
                     transitionDelay: scrollyStep === 2 ? "100ms" : "0ms",
                     transform: scrollyStep === 2 ? "scale(1)" : "scale(0.8)",
                     opacity: scrollyStep === 2 ? 1 : 0,
                   }}
                 >
-                  {"\u2318J"}
+                  <ShortcutCue label={lang === "ru" ? "Хоткей" : "Shortcut"} />
                 </div>
                 <p className="text-[#1d1d1f]" style={SCROLL_DISPLAY_STYLE}>
                   {t("scrollyStep3")}
@@ -1420,7 +1708,7 @@ export default function HomePage() {
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
             <AnimateOnScroll delay={0} className="mb-10 max-w-3xl md:mb-12">
               <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
-                {t("featuresEyebrow")}
+                {lang === "ru" ? "Как это работает" : "How it works"}
               </p>
               <h2 className="mb-5 text-[clamp(34px,4vw,54px)] font-[700] leading-[1.06] tracking-[-0.04em]">
                 {t("featuresTitle")}
@@ -1429,36 +1717,74 @@ export default function HomePage() {
                 {t("featuresSub")}
               </p>
             </AnimateOnScroll>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {tFeatures().map(([title, body], i) => {
-                const IconComp = featureIcons[i];
-                return (
-                  <AnimateOnScroll
-                    key={title}
-                    delay={(i + 1) * 0.05}
-                    whileHover={{
-                      y: -6,
-                      boxShadow: "0 20px 40px -12px rgba(0,0,0,0.12)",
-                      transition: { type: "spring", stiffness: 300, damping: 20 },
-                    }}
-                    className="group relative cursor-default overflow-hidden rounded-[18px] border border-[#e5e5ea] bg-white p-7 transition-[border-color,box-shadow] duration-300 hover:border-[rgba(94,92,230,0.28)] hover:shadow-[0_24px_48px_-16px_rgba(94,92,230,0.22)]"
-                  >
-                    <div
-                      aria-hidden="true"
-                      className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full opacity-0 blur-[44px] transition-opacity duration-500 group-hover:opacity-100"
-                      style={{ background: "radial-gradient(circle, rgba(94,92,230,0.22), transparent 70%)" }}
-                    />
-                    <span className="absolute right-6 top-6 text-[13px] font-[700] tabular-nums tracking-[0.04em] text-[#d4d4dd] transition-colors duration-300 group-hover:text-[#a9a7f0]">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <div className="relative mb-5 flex h-12 w-12 items-center justify-center rounded-[14px] bg-[#f5f5f7] text-[#5e5ce6] transition-all duration-300 group-hover:-translate-y-[3px] group-hover:bg-[linear-gradient(135deg,#5e5ce6_0%,#4846c9_100%)] group-hover:text-white group-hover:shadow-[0_10px_22px_rgba(94,92,230,0.32)]">
-                      <IconComp size={22} aria-hidden="true" />
-                    </div>
-                    <h3 className="relative mb-2 text-[18px] font-[700] tracking-[-0.02em]">{title}</h3>
-                    <p className="relative text-[16px] font-[400] leading-[1.6] text-[#6e6e73]">{body}</p>
-                  </AnimateOnScroll>
-                );
-              })}
+            <div className="grid items-center gap-10 lg:grid-cols-[1.04fr_0.96fr] lg:gap-14">
+              {/* LEFT — demo video */}
+              <AnimateOnScroll delay={0.08} className="relative">
+                {/* Soft brand glow behind the player */}
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -inset-x-6 -top-8 bottom-4 rounded-[40px] opacity-80 blur-[56px]"
+                  style={{
+                    background:
+                      "radial-gradient(60% 60% at 50% 0%, rgba(94,92,230,0.20), transparent 72%)",
+                  }}
+                />
+                <div className="relative overflow-hidden rounded-[24px] border border-[rgba(94,92,230,0.16)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(247,248,255,0.96)_100%)] p-2 shadow-[0_40px_90px_-36px_rgba(48,46,120,0.42)] backdrop-blur-xl">
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-x-10 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.95),transparent)]"
+                  />
+                  <div className="relative overflow-hidden rounded-[16px] border border-[rgba(255,255,255,0.65)] bg-[#0c0c12]">
+                    <video
+                      ref={demoVideoRef}
+                      className="block aspect-[16/10] w-full object-cover"
+                      poster="/demo-poster.jpg"
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      aria-label={t("featuresTitle")}
+                    >
+                      <source src="/demo.webm" type="video/webm" />
+                      <source src="/demo.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                </div>
+              </AnimateOnScroll>
+
+              {/* RIGHT — 3-step usage plan */}
+              <AnimateOnScroll delay={0.16}>
+                <ol className="relative space-y-7">
+                  {usageSteps.map((step, i) => {
+                    const StepIcon = step.icon;
+                    const isLast = i === usageSteps.length - 1;
+                    return (
+                      <li key={step.title} className="relative flex gap-5">
+                        {!isLast && (
+                          <span
+                            aria-hidden="true"
+                            className="absolute left-[23px] top-[54px] -bottom-7 w-px bg-[linear-gradient(180deg,rgba(94,92,230,0.35),rgba(94,92,230,0.07))]"
+                          />
+                        )}
+                        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-[15px] border border-[rgba(94,92,230,0.16)] bg-[linear-gradient(135deg,rgba(245,245,255,0.92),rgba(255,255,255,0.96))] text-[#5e5ce6] shadow-[0_8px_18px_-8px_rgba(94,92,230,0.4)]">
+                          <StepIcon size={22} aria-hidden="true" />
+                        </div>
+                        <div className="pt-0.5">
+                          <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#a9a7f0]">
+                            {String(i + 1).padStart(2, "0")}
+                          </p>
+                          <h3 className="mt-1 text-[19px] font-[700] leading-[1.25] tracking-[-0.02em] text-[#1d1d1f]">
+                            {step.title}
+                          </h3>
+                          <p className="mt-1.5 text-[15px] font-[400] leading-[1.6] text-[#6e6e73]">
+                            {step.body}
+                          </p>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </AnimateOnScroll>
             </div>
           </div>
         </section>
