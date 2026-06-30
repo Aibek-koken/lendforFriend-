@@ -12,7 +12,6 @@ import {
   Shield,
   MessageSquareText,
   Headphones,
-  LockKeyhole,
 } from "lucide-react";
 import { strings, type Lang } from "../lib/strings";
 import { FaqPro, type FaqProItem } from "@/components/ui/faq-pro";
@@ -154,20 +153,20 @@ export default function HomePage() {
   const heroMetrics: HeroMetric[] =
     lang === "ru"
       ? [
-          { title: "1 кнопка", lines: ["Нажал —", "получил ответ"] },
-          { title: "Только ты", lines: ["Оверлей видишь", "только ты"] },
-          { title: "Твои файлы", lines: ["Прайс, FAQ,", "условия — всё тут"] },
+          { title: "Загрузил", lines: ["Документы готовы", "к каждому звонку"] },
+          { title: "Спросил", lines: ["Вопрос задаёшь", "прямо в моменте"] },
+          { title: "Ответил", lines: ["Источник рядом", "и паузы нет"] },
         ]
       : [
-          { title: "1 hotkey", lines: ["Press once and", "get the answer"] },
-          { title: "Only you", lines: ["The overlay stays", "visible only to you"] },
-          { title: "Your files", lines: ["Pricing, FAQ,", "terms stay attached"] },
+          { title: "Upload", lines: ["Docs stay ready", "for every call"] },
+          { title: "Ask", lines: ["Use it live", "in the moment"] },
+          { title: "Answer", lines: ["Source attached", "no awkward pause"] },
         ];
 
   const heroHeadlineLines =
     lang === "ru"
-      ? ["Знай ответ.", "До того, как", "они договорят."]
-      : ["Know the answer.", "Before they finish asking."];
+      ? ["Больше не теряйся", "на звонке с клиентом."]
+      : ["Never freeze", "on a client call again."];
 
   const scrollHintContent: Record<(typeof HINT_IDS)[number], HintStory> =
     lang === "ru"
@@ -213,41 +212,41 @@ export default function HomePage() {
       ? [
           {
             step: "01",
-            icon: Headphones,
+            icon: FileText,
             title: t("scrollyStep1"),
-            body: "Разговор уже идёт. Нельзя терять темп и уходить в поиск по вкладкам.",
+            body: "Один раз добавьте прайсы, FAQ, условия и внутренние документы, чтобы не искать их заново.",
           },
           {
             step: "02",
             icon: MessageSquareText,
             title: t("scrollyStep2"),
-            body: "Вопрос звучит внезапно, и ответ нужен в ту же секунду, а не после паузы.",
+            body: "Когда клиент задаёт сложный вопрос, не нужно ставить разговор на паузу и вспоминать всё вручную.",
           },
           {
             step: "03",
             icon: Keyboard,
             title: t("scrollyStep3"),
-            body: "Один хоткей открывает приватный слой поверх звонка, CRM или браузера.",
+            body: "Хоткей открывает приватный слой поверх звонка, CRM или браузера и сохраняет темп разговора.",
           },
           {
             step: "04",
-            icon: LockKeyhole,
+            icon: FileSearch,
             title: t("scrollyStep4"),
-            body: "Ответ, уверенность и источник приходят вместе, чтобы менеджер говорил спокойно и точно.",
+            body: "Ответ, уверенность и источник приходят вместе, чтобы вы ответили спокойно и точно.",
           },
         ]
       : [
           {
             step: "01",
-            icon: Headphones,
+            icon: FileText,
             title: t("scrollyStep1"),
-            body: "The call is already moving. There is no time to hunt through tabs or docs.",
+            body: "Upload pricing, FAQ, terms, and internal docs once so they are ready every time a call starts.",
           },
           {
             step: "02",
             icon: MessageSquareText,
             title: t("scrollyStep2"),
-            body: "The question lands unexpectedly, and the answer has to show up in the same moment.",
+            body: "When the client asks a hard question, you should not need to stall and dig through tabs.",
           },
           {
             step: "03",
@@ -257,9 +256,9 @@ export default function HomePage() {
           },
           {
             step: "04",
-            icon: LockKeyhole,
+            icon: FileSearch,
             title: t("scrollyStep4"),
-            body: "Answer, confidence, and source arrive together so the rep can respond with control.",
+            body: "Answer, confidence, and source arrive together so you can respond with control.",
           },
         ];
 
@@ -642,6 +641,8 @@ export default function HomePage() {
     heroPhase === "hints" && activeScrollHint ? activeScrollHint : "question";
   const activeMobileHintContent =
     scrollHintContent[activeMobileHintId as (typeof HINT_IDS)[number]];
+  const MobileStepOneIcon = mobileStorySteps[0].icon;
+  const MobileStepFourIcon = mobileStorySteps[3].icon;
 
   return (
     <>
@@ -739,25 +740,37 @@ export default function HomePage() {
       </header>
 
       <main id="top">
-        <section className="relative overflow-hidden px-4 pb-10 pt-28 md:hidden">
+        <section className="relative overflow-hidden px-4 pb-12 pt-24 md:hidden">
           <div
             className="absolute inset-0"
             aria-hidden="true"
             style={{
               background:
-                "radial-gradient(circle at 18% 14%, rgba(94,92,230,0.18), transparent 30%), radial-gradient(circle at 82% 18%, rgba(33,168,154,0.14), transparent 28%), linear-gradient(180deg, #ffffff 0%, #fbfbff 52%, #f5f7ff 100%)",
+                "radial-gradient(circle at 18% 12%, rgba(124,92,255,0.14), transparent 28%), radial-gradient(circle at 82% 16%, rgba(34,211,238,0.12), transparent 24%), linear-gradient(180deg, #ffffff 0%, #fbfbff 58%, #f5f7ff 100%)",
             }}
           />
+          <div
+            className="absolute inset-x-[-12%] bottom-[-12%] h-[34%] rounded-[100%] border border-[rgba(123,116,255,0.12)] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.9)_0%,rgba(245,247,255,0.68)_55%,rgba(245,247,255,0)_100%)]"
+            aria-hidden="true"
+          />
+          <div
+            className="absolute inset-x-[-18%] bottom-[-18%] h-[38%] rounded-[100%] border border-[rgba(148,163,184,0.12)] opacity-70"
+            aria-hidden="true"
+          />
+          <div
+            className="absolute inset-x-[-28%] bottom-[-24%] h-[44%] rounded-[100%] border border-[rgba(148,163,184,0.09)] opacity-55"
+            aria-hidden="true"
+          />
           <div className="relative mx-auto max-w-[430px]">
-            <p className="inline-flex items-center gap-2 rounded-full border border-[rgba(94,92,230,0.12)] bg-[rgba(255,255,255,0.82)] px-3 py-2 text-[12px] font-[700] uppercase tracking-[0.14em] text-[#645FDE] shadow-[0_12px_30px_rgba(94,92,230,0.08)] backdrop-blur-sm">
+            <p className="inline-flex items-center gap-2 rounded-full border border-[rgba(124,92,255,0.12)] bg-[rgba(255,255,255,0.78)] px-3 py-2 text-[12px] font-[700] uppercase tracking-[0.14em] text-[#645FDE] shadow-[0_12px_30px_rgba(94,92,230,0.08)] backdrop-blur-sm">
               <span className="h-2 w-2 rounded-full bg-[#5E5CE6]" aria-hidden="true" />
               {t("heroEyebrow")}
             </p>
             <h1
-              className="mt-5 text-[#111111]"
+              className="mt-6 max-w-[11ch] text-[#111111]"
               style={{
                 ...UI_DISPLAY_STYLE,
-                fontSize: "clamp(42px, 13vw, 58px)",
+                fontSize: "clamp(46px, 14vw, 60px)",
                 lineHeight: 0.92,
               }}
             >
@@ -767,35 +780,33 @@ export default function HomePage() {
                 </span>
               ))}
             </h1>
-            <p className="mt-5 max-w-[32ch] text-[16px] font-[400] leading-[1.62] text-[#5a5a63]">
+            <p className="mt-5 max-w-[31ch] text-[16px] font-[400] leading-[1.62] text-[#575866]">
               {t("heroSub")}
             </p>
             <div className="mt-8 grid gap-3">
               <a
                 href="#download"
-                className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full border border-[rgba(72,70,201,0.34)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-6 text-[15px] font-[600] leading-none text-white shadow-[0_20px_40px_rgba(94,92,230,0.22)]"
+                className="inline-flex min-h-[54px] items-center justify-center gap-2 rounded-full border border-[rgba(72,70,201,0.26)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-6 text-[15px] font-[600] leading-none text-white shadow-[0_20px_40px_rgba(94,92,230,0.18)] transition-transform duration-150 ease-out active:translate-y-px"
               >
                 {t("heroPrimary")}
               </a>
               <a
-                href="#hero-mobile-demo"
-                className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.8)] px-6 text-[15px] font-[600] leading-none text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]"
+                href="#scrolly-mobile"
+                className="inline-flex min-h-[54px] items-center justify-center gap-2 rounded-full border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.76)] px-6 text-[15px] font-[600] leading-none text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-sm"
               >
                 {t("heroSecondary")}
               </a>
             </div>
-            <div className="mt-8 grid grid-cols-2 gap-3">
-              {heroMetrics.map((metric, index) => (
+            <div className="mt-8 grid gap-3">
+              {heroMetrics.map((metric) => (
                 <div
                   key={metric.title}
-                  className={`rounded-[22px] border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.84)] p-4 shadow-[0_14px_32px_rgba(15,23,42,0.05)] ${
-                    index === heroMetrics.length - 1 ? "col-span-2" : ""
-                  }`}
+                  className="rounded-[24px] border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.8)] p-4 shadow-[0_14px_32px_rgba(15,23,42,0.05)] backdrop-blur-sm"
                 >
-                  <p className="text-[18px] font-[700] leading-none text-[#5B54D6]">
+                  <p className="text-[17px] font-[700] leading-none text-[#5B54D6]">
                     {metric.title}
                   </p>
-                  <p className="mt-2 text-[14px] font-[400] leading-[1.45] text-[#7d7d88]">
+                  <p className="mt-2 text-[14px] font-[400] leading-[1.5] text-[#737481]">
                     <span className="block">{metric.lines[0]}</span>
                     <span className="block">{metric.lines[1]}</span>
                   </p>
@@ -812,15 +823,27 @@ export default function HomePage() {
           style={{ minHeight: "320vh" }}
         >
           <div
-            className="sticky top-0 px-4 pb-6 pt-24"
+            className="sticky top-0 overflow-hidden px-4 pb-6 pt-24"
             style={{
               minHeight: "100svh",
               background:
-                "linear-gradient(180deg, rgba(249,250,255,0.94) 0%, rgba(255,255,255,1) 100%)",
+                "linear-gradient(180deg, rgba(251,251,255,0.98) 0%, rgba(255,255,255,1) 100%)",
             }}
           >
             <div
-              className="mx-auto flex max-w-[430px] items-center justify-center"
+              className="absolute inset-0"
+              aria-hidden="true"
+              style={{
+                background:
+                  "radial-gradient(circle at 16% 12%, rgba(124,92,255,0.12), transparent 26%), radial-gradient(circle at 82% 22%, rgba(34,211,238,0.12), transparent 24%)",
+              }}
+            />
+            <div
+              className="absolute inset-x-[-14%] bottom-[-14%] h-[30%] rounded-[100%] border border-[rgba(123,116,255,0.12)] opacity-70"
+              aria-hidden="true"
+            />
+            <div
+              className="relative mx-auto flex max-w-[430px] items-center justify-center"
               style={{
                 minHeight: "calc(100svh - 120px)",
               }}
@@ -843,8 +866,9 @@ export default function HomePage() {
                       opacity: mobileCardGlowOpacity,
                     }}
                   />
-                  <div className="relative rounded-[28px] border border-[rgba(94,92,230,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.94)_0%,rgba(244,246,255,0.99)_100%)] p-2.5 shadow-[0_24px_52px_rgba(94,92,230,0.12)]">
-                    <div className="rounded-[24px] bg-[linear-gradient(180deg,rgba(248,249,255,0.98)_0%,rgba(255,255,255,1)_100%)] p-1.5">
+                  <div className="relative rounded-[30px] border border-[rgba(94,92,230,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(247,248,255,0.94)_100%)] p-3 shadow-[0_24px_52px_rgba(94,92,230,0.1)] backdrop-blur-xl">
+                    <div className="absolute inset-x-8 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.92),transparent)]" />
+                    <div className="rounded-[24px] border border-[rgba(255,255,255,0.75)] bg-[linear-gradient(180deg,rgba(248,249,255,0.98)_0%,rgba(255,255,255,1)_100%)] p-1.5">
                       <ProductMockup
                         copy={strings[lang].mockup}
                         lang={lang}
@@ -908,9 +932,29 @@ export default function HomePage() {
               minHeight: "100svh",
               padding: "132px clamp(20px, 4vw, 40px) 88px",
               background:
-                "radial-gradient(circle at 82% 22%, rgba(94,92,230,0.12), transparent 30%), linear-gradient(180deg, #ffffff 0%, #fbfbfd 78%, #f5f5f7 100%)",
+                "linear-gradient(180deg, #fdfdff 0%, #f8f9ff 54%, #f2f4ff 100%)",
             }}
           >
+            <div
+              className="absolute inset-0"
+              aria-hidden="true"
+              style={{
+                background:
+                  "radial-gradient(circle at 16% 18%, rgba(124,92,255,0.16), transparent 26%), radial-gradient(circle at 84% 16%, rgba(34,211,238,0.16), transparent 24%), radial-gradient(circle at 48% 58%, rgba(255,255,255,0.74), transparent 26%)",
+              }}
+            />
+            <div
+              className="absolute inset-x-[-8%] bottom-[-14%] h-[32%] rounded-[100%] border border-[rgba(115,108,255,0.14)] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.92)_0%,rgba(243,246,255,0.62)_58%,rgba(243,246,255,0)_100%)]"
+              aria-hidden="true"
+            />
+            <div
+              className="absolute inset-x-[-16%] bottom-[-23%] h-[42%] rounded-[100%] border border-[rgba(148,163,184,0.14)] opacity-70"
+              aria-hidden="true"
+            />
+            <div
+              className="absolute inset-x-[-26%] bottom-[-32%] h-[50%] rounded-[100%] border border-[rgba(148,163,184,0.1)] opacity-55"
+              aria-hidden="true"
+            />
             <div
               className="w-full mx-auto relative md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center"
               style={{
@@ -937,17 +981,18 @@ export default function HomePage() {
                 <AnimateOnScroll
                   as="p"
                   delay={0}
-                  className="mb-5 text-[13px] font-[600] uppercase tracking-[0.18em] text-[#6B65CC]"
+                  className="mb-5 inline-flex items-center gap-2 rounded-full border border-[rgba(124,92,255,0.12)] bg-[rgba(255,255,255,0.78)] px-4 py-2 text-[12px] font-[700] uppercase tracking-[0.16em] text-[#645FDE] shadow-[0_12px_30px_rgba(94,92,230,0.08)] backdrop-blur-sm"
                 >
+                  <span className="h-2 w-2 rounded-full bg-[#5E5CE6]" aria-hidden="true" />
                   {t("heroEyebrow")}
                 </AnimateOnScroll>
                 <AnimateOnScroll
                   as="h1"
                   delay={0.08}
-                  className="mb-6 max-w-[700px] leading-[0.96] text-[#111111]"
+                  className="mb-5 max-w-[640px] leading-[0.95] text-[#111111]"
                   style={{
                     ...UI_DISPLAY_STYLE,
-                    fontSize: "clamp(40px, 4.5vw, 62px)",
+                    fontSize: "clamp(42px, 4.5vw, 64px)",
                   }}
                 >
                   {heroHeadlineLines.map((line) => (
@@ -959,20 +1004,37 @@ export default function HomePage() {
                 <AnimateOnScroll
                   as="p"
                   delay={0.16}
-                  className="mb-8 max-w-[420px] text-[16px] font-[400] leading-[1.62] text-[#5a5a63] md:max-w-[360px] md:text-[17px]"
+                  className="mb-8 max-w-[420px] text-[16px] font-[400] leading-[1.62] text-[#5a5d68] md:max-w-[380px] md:text-[17px]"
                 >
                   {t("heroSub")}
                 </AnimateOnScroll>
                 <AnimateOnScroll
                   delay={0.22}
+                  className="mb-7 flex flex-wrap gap-3"
+                >
+                  <a
+                    href="#download"
+                    className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[rgba(72,70,201,0.26)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-6 text-[15px] font-[600] leading-none text-white shadow-[0_20px_40px_rgba(94,92,230,0.18)] transition-transform duration-150 ease-out hover:-translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e5ce6] focus-visible:ring-offset-2"
+                  >
+                    {t("heroPrimary")}
+                  </a>
+                  <a
+                    href="#scrolly-desktop"
+                    className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.78)] px-6 text-[15px] font-[600] leading-none text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e5ce6] focus-visible:ring-offset-2"
+                  >
+                    {t("heroSecondary")}
+                  </a>
+                </AnimateOnScroll>
+                <AnimateOnScroll
+                  delay={0.26}
                   className="flex flex-wrap gap-x-8 gap-y-5"
                 >
                   {heroMetrics.map((metric) => (
-                    <div key={metric.title} className="min-w-[132px]">
+                    <div key={metric.title} className="min-w-[136px]">
                       <p className="text-[18px] font-[700] leading-none text-[#5B54D6] md:text-[20px]">
                         {metric.title}
                       </p>
-                      <p className="mt-2 text-[15px] font-[400] leading-[1.45] text-[#8a8a94] md:text-[16px]">
+                      <p className="mt-2 text-[15px] font-[400] leading-[1.45] text-[#868895] md:text-[16px]">
                         <span className="block">{metric.lines[0]}</span>
                         <span className="block">{metric.lines[1]}</span>
                       </p>
@@ -1006,9 +1068,8 @@ export default function HomePage() {
                     }}
                   >
                     <p className="mb-5 text-[13px] font-[600] uppercase tracking-[0.16em] text-[#6e6e73]">
-                      {lang === "ru" ? "Разберём по частям" : "Let's break it down"}
+                      {lang === "ru" ? "Разберём по шагам" : "Let's break it down"}
                     </p>
-
                     {activeScrollHint ? (
                       <div>
                         <h2
@@ -1026,7 +1087,6 @@ export default function HomePage() {
                         </p>
                       </div>
                     ) : null}
-
                     <div className="mt-8 flex gap-2">
                       {HINT_IDS.map((id) => (
                         <div
@@ -1035,8 +1095,7 @@ export default function HomePage() {
                           style={{
                             width: activeScrollHint === id ? 28 : 6,
                             height: 6,
-                            backgroundColor:
-                              activeScrollHint === id ? "#5e5ce6" : "#d1d1d6",
+                            backgroundColor: activeScrollHint === id ? "#5e5ce6" : "#d1d1d6",
                           }}
                         />
                       ))}
@@ -1065,23 +1124,27 @@ export default function HomePage() {
                     left: "50%",
                     transform: "translate(-50%, -50%)",
                     background:
-                      "radial-gradient(circle, rgba(94,92,230,0.18), transparent 62%), radial-gradient(circle at 32% 28%, rgba(33,168,154,0.16), transparent 38%)",
-                    filter: "blur(10px)",
+                      "radial-gradient(circle, rgba(124,92,255,0.18), transparent 62%), radial-gradient(circle at 32% 28%, rgba(34,211,238,0.14), transparent 38%)",
+                    filter: "blur(12px)",
                     opacity: cardGlowOpacity,
                   }}
                 />
-
-                <ProductMockup
-                  copy={strings[lang].mockup}
-                  lang={lang}
-                  onboarding={animComplete}
-                  staticState={animComplete}
-                  large
-                  scrollActiveHintId={heroPhase === "hints" ? activeScrollHint : null}
-                  onAnimationComplete={() => setAnimComplete(true)}
-                  skipAnimation={skipAnim}
-                  skipAnimationInstant={skipAnimInstant}
-                />
+                <div className="relative rounded-[32px] border border-[rgba(94,92,230,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(247,248,255,0.94)_100%)] p-3 shadow-[0_30px_70px_rgba(94,92,230,0.1)] backdrop-blur-xl">
+                  <div className="absolute inset-x-10 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.94),transparent)]" />
+                  <div className="rounded-[28px] border border-[rgba(255,255,255,0.74)] bg-[linear-gradient(180deg,rgba(249,250,255,0.98)_0%,rgba(255,255,255,1)_100%)] p-2">
+                    <ProductMockup
+                      copy={strings[lang].mockup}
+                      lang={lang}
+                      onboarding={animComplete}
+                      staticState={animComplete}
+                      large
+                      scrollActiveHintId={heroPhase === "hints" ? activeScrollHint : null}
+                      onAnimationComplete={() => setAnimComplete(true)}
+                      skipAnimation={skipAnim}
+                      skipAnimationInstant={skipAnimInstant}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1113,7 +1176,7 @@ export default function HomePage() {
                 }}
               >
                 <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(94,92,230,0.1)] text-[#5e5ce6]">
-                  <Headphones size={24} aria-hidden="true" />
+                  <MobileStepOneIcon size={24} aria-hidden="true" />
                 </div>
                 <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
                   {mobileStorySteps[0].title}
@@ -1182,7 +1245,7 @@ export default function HomePage() {
                 }}
               >
                 <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(33,168,154,0.12)] text-[#1f9d63]">
-                  <LockKeyhole size={24} aria-hidden="true" />
+                  <MobileStepFourIcon size={24} aria-hidden="true" />
                 </div>
                 <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
                   {mobileStorySteps[3].title}
@@ -1246,7 +1309,7 @@ export default function HomePage() {
                   }}
                   aria-hidden="true"
                 >
-                  <Headphones size={32} />
+                  <MobileStepOneIcon size={32} />
                 </div>
                 <p className="text-[#1d1d1f]" style={SCROLL_DISPLAY_STYLE}>
                   {t("scrollyStep1")}

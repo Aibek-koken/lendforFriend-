@@ -11,9 +11,9 @@ export const strings = {
     joinWaitlist: "Download",
     heroEyebrow: "Private desktop overlay",
     heroHeadline:
-      "Know the answer. Before they finish asking.",
+      "Never freeze on a client call again.",
     heroSub:
-      "LiveAssist AI gives your team instant, source-backed answers from your own documents — without leaving the call.",
+      "Upload your docs once, ask in the moment, and answer with proof before the silence gets awkward.",
     heroPrimary: "Download",
     heroSecondary: "See how it works",
     mockup: {
@@ -31,14 +31,14 @@ export const strings = {
       answeredIn: "Answered in 1.4s",
       openingFile: "Opening file..."
     },
-    scrollyStep1: "Your rep is on a live call.",
-    scrollyStep2: "The customer asks something specific.",
+    scrollyStep1: "Upload your docs once.",
+    scrollyStep2: "The client asks a hard question.",
     scrollyKey: "⌘ J",
-    scrollyStep3: "They press ⌘J",
-    scrollyStep4: "Answer in 1–2 seconds. Source included.",
-    scrollyStep5: "Stay in the call. Keep the answer.",
+    scrollyStep3: "Press ⌘J and ask.",
+    scrollyStep4: "Get a cited answer in 1–2 seconds.",
+    scrollyStep5: "Stay calm. Keep the call moving.",
     scrollyStep5Sub:
-      "Give every rep a private assistant trained on your company docs.",
+      "LiveAssist keeps pricing, FAQ, terms, and product details one hotkey away.",
     featuresEyebrow: "Features",
     featuresTitle: "Designed for the exact second a rep needs help",
     featuresSub:
@@ -190,9 +190,9 @@ export const strings = {
     joinWaitlist: "Скачать",
     heroEyebrow: "Приватный оверлей на рабочем столе",
     heroHeadline:
-      "Знай ответ. До того, как они договорят.",
+      "Больше не теряйся на звонке с клиентом.",
     heroSub:
-      "LiveAssist AI мгновенно находит ответы в документах вашей компании прямо во время разговора — без переключения вкладок и без выхода из звонка.",
+      "Загрузите документы один раз, задайте вопрос в нужный момент и отвечайте с источником без неловкой паузы.",
     heroPrimary: "Скачать",
     heroSecondary: "Посмотреть как работает",
     mockup: {
@@ -210,14 +210,14 @@ export const strings = {
       answeredIn: "Ответ за 1,4 с",
       openingFile: "Открываем файл..."
     },
-    scrollyStep1: "Ваш менеджер уже на живом звонке.",
-    scrollyStep2: "Клиент задает конкретный вопрос.",
+    scrollyStep1: "Загрузите документы один раз.",
+    scrollyStep2: "Клиент задаёт сложный вопрос.",
     scrollyKey: "⌘ J",
-    scrollyStep3: "Менеджер нажимает ⌘J",
-    scrollyStep4: "Ответ за 1–2 секунды. Источник приложен.",
-    scrollyStep5: "Оставайтесь в разговоре. Держите ответ под рукой.",
+    scrollyStep3: "Нажмите ⌘J и спросите.",
+    scrollyStep4: "Получите ответ с источником за 1–2 секунды.",
+    scrollyStep5: "Оставайтесь спокойны. Ведите звонок дальше.",
     scrollyStep5Sub:
-      "Дайте каждому менеджеру приватного ассистента, обученного на документах компании.",
+      "LiveAssist держит прайс, FAQ, условия и детали продукта в одном хоткее от вас.",
     featuresEyebrow: "Возможности",
     featuresTitle:
       "Создан для той самой секунды, когда менеджеру нужен точный ответ",
