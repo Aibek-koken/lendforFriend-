@@ -48,8 +48,8 @@ export function FaqPro({
                 }}
                 className={`overflow-hidden rounded-[16px] border bg-white transition-[border-color,box-shadow] duration-300 ${
                   isOpen
-                    ? 'border-[rgba(94,92,230,0.32)] shadow-[0_18px_40px_-18px_rgba(94,92,230,0.3)]'
-                    : 'border-[#e5e5ea] hover:border-[rgba(94,92,230,0.2)]'
+                    ? 'border-[rgba(37,133,255,0.32)] shadow-[0_18px_40px_-18px_rgba(37,133,255,0.3)]'
+                    : 'border-[#e5e5ea] hover:border-[rgba(37,133,255,0.2)]'
                 }`}
               >
                 <button
@@ -64,7 +64,7 @@ export function FaqPro({
                     animate={{ rotate: isOpen ? 180 : 0 }}
                     transition={{ duration: 0.3, ease: EASE }}
                     className={`flex h-7 w-7 flex-none items-center justify-center rounded-full transition-colors duration-300 ${
-                      isOpen ? 'bg-[rgba(94,92,230,0.1)] text-[#5e5ce6]' : 'bg-[#f5f5f7] text-[#6e6e73]'
+                      isOpen ? 'bg-[rgba(37,133,255,0.1)] text-[#2585ff]' : 'bg-[#f5f5f7] text-[#6e6e73]'
                     }`}
                     aria-hidden="true"
                   >

@@ -298,14 +298,14 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                   <div className="rounded-[10px] bg-white/[0.06] p-4 text-base leading-[1.45] text-white/[0.78]">
                           {text.transcriptOne}
                         </div>
-                  <div className="ml-8 rounded-[10px] bg-[#5e5ce6]/[0.18] p-4 text-base leading-[1.45] text-white/[0.86]">
+                  <div className="ml-8 rounded-[10px] bg-[#2585ff]/[0.18] p-4 text-base leading-[1.45] text-white/[0.86]">
                           {text.transcriptTwo}
                         </div>
                       </div>
                     </div>
 
                     <div
-              className="relative rounded-[16px] border border-[#5e5ce6]/[0.34] bg-[#171a2c]/[0.92] p-8 shadow-[0_24px_70px_rgba(94,92,230,0.24)]"
+              className="relative rounded-[16px] border border-[#2585ff]/[0.34] bg-[#171a2c]/[0.92] p-8 shadow-[0_24px_70px_rgba(37,133,255,0.24)]"
                       style={{ transform: 'translateZ(72px)' }}
                     >
                 <div className="mb-5 flex items-start justify-between gap-5">
@@ -369,7 +369,7 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                         transition={{ duration: prefersReducedMotion ? 0 : 0.18, ease: [0, 0, 0.2, 1] }}
                 className="rounded-[14px] border border-white/[0.14] bg-[#f7f8ff] p-5 text-[#17181d] shadow-[0_18px_46px_rgba(0,0,0,0.28)]"
                       >
-                <p className="text-xs font-[700] uppercase tracking-[0.13em] text-[#5e5ce6]">
+                <p className="text-xs font-[700] uppercase tracking-[0.13em] text-[#2585ff]">
                           {activeMoment.label}
                         </p>
                 <p className="mt-2 text-lg font-[700] leading-[1.25] tracking-[-0.02em]">{activeMoment.title}</p>
@@ -460,15 +460,15 @@ export function InteractiveFooter({ copy }: { copy: FooterCopy }) {
           <span className="text-[14px] text-[#6e6e73]">{copy.tagline}</span>
           </div>
         <div className="flex flex-wrap gap-3 text-[14px] text-[#6e6e73]">
-          <a href="#" className="transition-colors hover:text-[#1d1d1f] focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[rgba(94,92,230,0.42)]">
+          <a href="#" className="transition-colors hover:text-[#1d1d1f] focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[rgba(37,133,255,0.42)]">
               {copy.privacy}
             </a>
-          <a href="#" className="transition-colors hover:text-[#1d1d1f] focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[rgba(94,92,230,0.42)]">
+          <a href="#" className="transition-colors hover:text-[#1d1d1f] focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[rgba(37,133,255,0.42)]">
               {copy.terms}
             </a>
             <a
               href="mailto:zarylkasynajbek92@gmail.com"
-            className="transition-colors hover:text-[#1d1d1f] focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[rgba(94,92,230,0.42)]"
+            className="transition-colors hover:text-[#1d1d1f] focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[rgba(37,133,255,0.42)]"
             >
               {copy.contact}
             </a>

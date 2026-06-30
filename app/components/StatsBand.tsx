@@ -87,14 +87,14 @@ export function StatsBand({ lang }: { lang: Lang }) {
     <section className="px-4 py-14 sm:px-5 md:py-20">
       <div
         ref={ref}
-        className="relative mx-auto overflow-hidden rounded-[28px] border border-[rgba(94,92,230,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(244,246,255,0.92)_100%)] px-5 py-9 shadow-[0_24px_60px_rgba(94,92,230,0.08)] sm:px-10 sm:py-12"
+        className="relative mx-auto overflow-hidden rounded-[28px] border border-[rgba(37,133,255,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(244,246,255,0.92)_100%)] px-5 py-9 shadow-[0_24px_60px_rgba(37,133,255,0.08)] sm:px-10 sm:py-12"
         style={{ maxWidth: "min(1080px, 100%)" }}
       >
         {/* soft floating orbs */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -left-16 -top-20 h-56 w-56 rounded-full blur-[60px]"
-          style={{ background: "radial-gradient(circle, rgba(94,92,230,0.18), transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, rgba(37,133,255,0.18), transparent 70%)" }}
         />
         <div
           aria-hidden="true"
@@ -117,7 +117,7 @@ export function StatsBand({ lang }: { lang: Lang }) {
                 className="bg-clip-text text-[clamp(34px,6vw,52px)] font-[800] leading-none tracking-[-0.03em] text-transparent"
                 style={{
                   backgroundImage:
-                    "linear-gradient(135deg, #5e5ce6 0%, #4846c9 55%, #1f9d9a 120%)",
+                    "linear-gradient(135deg, #2585ff 0%, #125be8 55%, #1f9d9a 120%)",
                 }}
               >
                 {stat.display ? (

@@ -7,6 +7,7 @@ import {
   FileSearch,
   HelpCircle,
   Keyboard,
+  CornerDownLeft,
   Upload,
   BadgeCheck,
   PlayCircle,
@@ -16,6 +17,7 @@ import {
 import { strings, type Lang } from "../lib/strings";
 import { FaqPro, type FaqProItem } from "@/components/ui/faq-pro";
 import { NavBar } from "@/components/ui/tubelight-navbar";
+import { OriginLink } from "@/components/ui/origin-button";
 import { AnimateOnScroll } from "../components/ui/animate-on-scroll";
 import { InteractiveFooter } from "../components/InteractiveFooter";
 import ProductMockup from "./components/ProductMockup";
@@ -90,47 +92,55 @@ function ShortcutCue({ compact = false, label }: { compact?: boolean; label: str
       role="img"
       aria-label={label}
       className={[
-        "inline-flex items-center justify-center border border-[rgba(94,92,230,0.14)] bg-[rgba(255,255,255,0.86)] text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.86),0_18px_42px_rgba(94,92,230,0.12)] backdrop-blur-xl",
-        compact
-          ? "gap-3 rounded-[22px] px-4 py-3"
-          : "gap-4 rounded-[28px] px-5 py-4",
+        "relative inline-flex items-center justify-center overflow-visible",
+        compact ? "h-[92px] min-w-[190px]" : "h-[122px] min-w-[270px]",
       ].join(" ")}
     >
       <span
         aria-hidden="true"
         className={[
-          "relative flex shrink-0 items-center justify-center rounded-[18px] bg-[linear-gradient(135deg,rgba(94,92,230,0.12),rgba(34,211,238,0.10))] text-[#5e5ce6]",
-          compact ? "h-11 w-11" : "h-14 w-14",
+          "absolute rounded-[26px] border border-white/70 bg-[linear-gradient(145deg,#f8fbff_0%,#e7f1ff_52%,#cfe4ff_100%)] text-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.92),inset_0_-18px_26px_rgba(37,99,235,0.14),0_24px_54px_rgba(37,133,255,0.24)] motion-safe:animate-[shortcut-key-float_3.8s_ease-in-out_infinite]",
+          compact ? "left-0 top-0 h-14 w-14" : "left-0 top-1 h-[76px] w-[76px]",
         ].join(" ")}
       >
-        <span className="absolute inset-0 rounded-[18px] bg-[rgba(94,92,230,0.16)] motion-safe:animate-ping" />
-        <span className="relative flex h-[70%] w-[70%] items-center justify-center rounded-[14px] border border-[rgba(94,92,230,0.16)] bg-white shadow-[0_2px_0_rgba(29,29,31,0.08)] motion-safe:animate-pulse">
-          <Keyboard size={compact ? 18 : 22} strokeWidth={2.2} />
-        </span>
+        <span className="absolute inset-2 rounded-[20px] bg-[radial-gradient(circle_at_35%_22%,rgba(255,255,255,0.94),rgba(255,255,255,0.08)_58%,rgba(37,133,255,0.14)_100%)]" />
+        <Keyboard
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_0_14px_rgba(255,255,255,0.96)]"
+          size={compact ? 24 : 32}
+          strokeWidth={2.3}
+        />
       </span>
 
-      <span className="flex min-w-0 items-center gap-3">
+      <span
+        aria-hidden="true"
+        className={[
+          "absolute rounded-[24px] border border-white/65 bg-[linear-gradient(145deg,#f9fbff_0%,#edf4ff_50%,#d8e8ff_100%)] text-[#9aa8bd] shadow-[inset_0_2px_5px_rgba(255,255,255,0.88),inset_0_-16px_26px_rgba(15,23,42,0.08),0_22px_48px_rgba(30,90,180,0.18)] motion-safe:animate-[shortcut-key-float-alt_4.2s_ease-in-out_infinite]",
+          compact ? "right-1 bottom-1 h-12 w-12" : "right-0 bottom-2 h-[68px] w-[68px]",
+        ].join(" ")}
+      >
+        <CornerDownLeft
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+          size={compact ? 22 : 30}
+          strokeWidth={2.4}
+        />
+      </span>
+
+      <span
+        className={[
+          "relative isolate inline-flex items-center justify-center overflow-hidden rounded-full border border-white/35 bg-[linear-gradient(180deg,#5fb8ff_0%,#2585ff_54%,#125be8_100%)] font-[800] leading-none text-white shadow-[inset_0_2px_0_rgba(255,255,255,0.34),inset_0_-18px_28px_rgba(18,91,232,0.36),0_24px_54px_rgba(37,133,255,0.34)]",
+          compact ? "gap-2 px-5 py-3 text-[16px]" : "gap-3 px-7 py-4 text-[24px]",
+        ].join(" ")}
+      >
         <span
-          className={
-            compact
-              ? "text-[16px] font-[800] leading-none tracking-[-0.01em]"
-              : "text-[22px] font-[800] leading-none tracking-[-0.02em]"
-          }
-        >
-          {label}
-        </span>
-        <span aria-hidden="true" className="flex items-center gap-1.5">
-          {[0, 1, 2].map((index) => (
-            <span
-              key={index}
-              className={[
-                "rounded-full bg-[#5e5ce6] motion-safe:animate-pulse",
-                compact ? "h-1.5 w-1.5" : "h-2 w-2",
-              ].join(" ")}
-              style={{ animationDelay: `${index * 120}ms` }}
-            />
-          ))}
-        </span>
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-5 top-1 h-1/2 rounded-full bg-white/22 blur-[2px]"
+        />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-white/25 blur-md motion-safe:animate-[shortcut-sheen_2.8s_ease-in-out_infinite]"
+        />
+        <Keyboard size={compact ? 17 : 22} strokeWidth={2.2} className="relative" />
+        <span className="relative">{label}</span>
       </span>
     </div>
   );
@@ -924,15 +934,12 @@ export default function HomePage() {
                 {t("logo")}
               </span>
               <div className="flex shrink-0 items-center gap-1.5">
-                <a
-                  href="#download"
-                  className="inline-flex min-h-[32px] items-center justify-center rounded-full border border-[rgba(72,70,201,0.24)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-3 text-[11px] font-[700] leading-none text-white shadow-[0_10px_18px_rgba(94,92,230,0.16),inset_0_1px_0_rgba(255,255,255,0.18)] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e5ce6] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
-                >
+                <OriginLink href="#download" size="xs">
                   {t("navPricing")}
-                </a>
+                </OriginLink>
                 <button
                   onClick={() => setMenuOpen((current) => !current)}
-                  className="inline-flex min-h-[32px] min-w-[32px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.1)] bg-white/88 text-[16px] font-[700] leading-none text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e5ce6] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                  className="inline-flex min-h-[32px] min-w-[32px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.1)] bg-white/88 text-[16px] font-[700] leading-none text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2585ff] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                   aria-label={menuOpen ? t("closeMenuLabel") : t("openMenuLabel")}
                   aria-expanded={menuOpen}
                 >
@@ -952,7 +959,7 @@ export default function HomePage() {
                         setActiveTab(item.id as (typeof navConfig)[number]["id"]);
                         setMenuOpen(false);
                       }}
-                      className="inline-flex min-h-[36px] items-center rounded-full px-3 text-[13px] font-[600] text-[#3f3f46] transition-colors duration-150 hover:bg-[rgba(94,92,230,0.08)] hover:text-[#5e5ce6]"
+                      className="inline-flex min-h-[36px] items-center rounded-full px-3 text-[13px] font-[600] text-[#3f3f46] transition-colors duration-150 hover:bg-[rgba(37,133,255,0.08)] hover:text-[#2585ff]"
                     >
                       {item.name}
                     </a>
@@ -962,10 +969,10 @@ export default function HomePage() {
                       setLang(lang === "en" ? "ru" : "en");
                       setMenuOpen(false);
                     }}
-                    className="inline-flex min-h-[36px] items-center justify-between rounded-full px-3 text-[13px] font-[700] text-[#1d1d1f] transition-colors duration-150 hover:bg-[rgba(94,92,230,0.08)]"
+                    className="inline-flex min-h-[36px] items-center justify-between rounded-full px-3 text-[13px] font-[700] text-[#1d1d1f] transition-colors duration-150 hover:bg-[rgba(37,133,255,0.08)]"
                   >
                     <span>{lang === "en" ? "Russian" : "English"}</span>
-                    <span className="text-[#5e5ce6]">{lang === "en" ? "RU" : "EN"}</span>
+                    <span className="text-[#2585ff]">{lang === "en" ? "RU" : "EN"}</span>
                   </button>
                 </div>
               </div>
@@ -989,17 +996,14 @@ export default function HomePage() {
             <div className="flex items-center justify-end gap-[10px]">
               <button
                 onClick={() => setLang(lang === "en" ? "ru" : "en")}
-                className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(244,246,255,0.92)_100%)] px-3 text-[13px] font-[500] text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] transition-all duration-150 hover:border-[rgba(99,91,255,0.22)] hover:bg-[linear-gradient(180deg,rgba(255,255,255,1)_0%,rgba(238,242,255,0.96)_100%)]"
+                className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(244,246,255,0.92)_100%)] px-3 text-[13px] font-[500] text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] transition-all duration-150 hover:border-[rgba(37,133,255,0.22)] hover:bg-[linear-gradient(180deg,rgba(255,255,255,1)_0%,rgba(238,242,255,0.96)_100%)]"
                 aria-label={lang === "en" ? t("switchToRu") : t("switchToEn")}
               >
                 {lang === "en" ? "RU" : "EN"}
               </button>
-              <a
-                href="#download"
-                className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-[rgba(72,70,201,0.34)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-5 text-[15px] font-[600] leading-none text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] transition-all duration-150 hover:border-[rgba(72,70,201,0.42)] hover:bg-[linear-gradient(180deg,rgba(103,96,247,1)_0%,rgba(72,70,201,1)_100%)] hover:-translate-y-px"
-              >
+              <OriginLink href="#download" size="sm">
                 {t("joinWaitlist")}
-              </a>
+              </OriginLink>
             </div>
           </div>
         </nav>
@@ -1012,11 +1016,11 @@ export default function HomePage() {
             aria-hidden="true"
             style={{
               background:
-                "radial-gradient(circle at 18% 12%, rgba(124,92,255,0.14), transparent 28%), radial-gradient(circle at 82% 16%, rgba(34,211,238,0.12), transparent 24%), linear-gradient(180deg, #ffffff 0%, #fbfbff 58%, #f5f7ff 100%)",
+                "radial-gradient(circle at 18% 12%, rgba(37,133,255,0.14), transparent 28%), radial-gradient(circle at 82% 16%, rgba(34,211,238,0.12), transparent 24%), linear-gradient(180deg, #ffffff 0%, #fbfbff 58%, #f5f7ff 100%)",
             }}
           />
           <div
-            className="absolute inset-x-[-12%] bottom-[-12%] h-[34%] rounded-[100%] border border-[rgba(123,116,255,0.12)] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.9)_0%,rgba(245,247,255,0.68)_55%,rgba(245,247,255,0)_100%)]"
+            className="absolute inset-x-[-12%] bottom-[-12%] h-[34%] rounded-[100%] border border-[rgba(37,133,255,0.12)] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.9)_0%,rgba(245,247,255,0.68)_55%,rgba(245,247,255,0)_100%)]"
             aria-hidden="true"
           />
           <div
@@ -1028,8 +1032,8 @@ export default function HomePage() {
             aria-hidden="true"
           />
           <div className="relative mx-auto max-w-[430px]">
-            <p className="inline-flex items-center gap-2 rounded-full border border-[rgba(124,92,255,0.12)] bg-[rgba(255,255,255,0.78)] px-3 py-2 text-[12px] font-[700] uppercase tracking-[0.14em] text-[#645FDE] shadow-[0_12px_30px_rgba(94,92,230,0.08)] backdrop-blur-sm">
-              <span className="h-2 w-2 rounded-full bg-[#5E5CE6]" aria-hidden="true" />
+            <p className="inline-flex items-center gap-2 rounded-full border border-[rgba(37,133,255,0.16)] bg-[rgba(232,244,255,0.72)] px-3 py-2 text-[12px] font-[800] uppercase tracking-[0.14em] text-[#125be8] shadow-[0_12px_30px_rgba(37,133,255,0.08)] backdrop-blur-sm">
+              <span className="h-2 w-2 rounded-full bg-[#2585ff]" aria-hidden="true" />
               {t("heroEyebrow")}
             </p>
             <h1
@@ -1050,12 +1054,9 @@ export default function HomePage() {
               {t("heroSub")}
             </p>
             <div className="mt-8 grid gap-3">
-              <a
-                href="#download"
-                className="inline-flex min-h-[54px] items-center justify-center gap-2 rounded-full border border-[rgba(72,70,201,0.26)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-6 text-[15px] font-[600] leading-none text-white shadow-[0_20px_40px_rgba(94,92,230,0.18)] transition-transform duration-150 ease-out active:translate-y-px"
-              >
+              <OriginLink href="#download" size="lg" className="w-full">
                 {t("heroPrimary")}
-              </a>
+              </OriginLink>
               <a
                 href="#scrolly-mobile"
                 className="inline-flex min-h-[54px] items-center justify-center gap-2 rounded-full border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.76)] px-6 text-[15px] font-[600] leading-none text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-sm"
@@ -1069,7 +1070,7 @@ export default function HomePage() {
                   key={metric.title}
                   className="rounded-[24px] border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.8)] p-4 shadow-[0_14px_32px_rgba(15,23,42,0.05)] backdrop-blur-sm"
                 >
-                  <p className="text-[17px] font-[700] leading-none text-[#5B54D6]">
+                  <p className="text-[17px] font-[800] leading-none text-[#125be8]">
                     {metric.title}
                   </p>
                   <p className="mt-2 text-[14px] font-[400] leading-[1.5] text-[#737481]">
@@ -1101,11 +1102,11 @@ export default function HomePage() {
               aria-hidden="true"
               style={{
                 background:
-                  "radial-gradient(circle at 16% 12%, rgba(124,92,255,0.12), transparent 26%), radial-gradient(circle at 82% 22%, rgba(34,211,238,0.12), transparent 24%)",
+                  "radial-gradient(circle at 16% 12%, rgba(37,133,255,0.12), transparent 26%), radial-gradient(circle at 82% 22%, rgba(34,211,238,0.12), transparent 24%)",
               }}
             />
             <div
-              className="absolute inset-x-[-14%] bottom-[-14%] h-[30%] rounded-[100%] border border-[rgba(123,116,255,0.12)] opacity-70"
+              className="absolute inset-x-[-14%] bottom-[-14%] h-[30%] rounded-[100%] border border-[rgba(37,133,255,0.12)] opacity-70"
               aria-hidden="true"
             />
             <div
@@ -1128,11 +1129,11 @@ export default function HomePage() {
                     aria-hidden="true"
                     style={{
                       background:
-                        "radial-gradient(circle, rgba(94,92,230,0.18), transparent 62%), radial-gradient(circle at 36% 28%, rgba(33,168,154,0.14), transparent 38%)",
+                        "radial-gradient(circle, rgba(37,133,255,0.18), transparent 62%), radial-gradient(circle at 36% 28%, rgba(33,168,154,0.14), transparent 38%)",
                       opacity: mobileCardGlowOpacity,
                     }}
                   />
-                  <div className="relative rounded-[30px] border border-[rgba(94,92,230,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(247,248,255,0.94)_100%)] p-3 shadow-[0_24px_52px_rgba(94,92,230,0.1)] backdrop-blur-xl">
+                  <div className="relative rounded-[30px] border border-[rgba(37,133,255,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(247,248,255,0.94)_100%)] p-3 shadow-[0_24px_52px_rgba(37,133,255,0.1)] backdrop-blur-xl">
                     <div className="absolute inset-x-8 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.92),transparent)]" />
                     <div className="rounded-[24px] border border-[rgba(255,255,255,0.75)] bg-[linear-gradient(180deg,rgba(248,249,255,0.98)_0%,rgba(255,255,255,1)_100%)] p-1.5">
                       <ProductMockup
@@ -1156,7 +1157,7 @@ export default function HomePage() {
                   }}
                 >
                   <div className="rounded-[26px] border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.96)] px-5 py-4 shadow-[0_18px_44px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-                    <p className="text-[11px] font-[700] uppercase tracking-[0.15em] text-[#6B65CC]">
+                    <p className="text-[11px] font-[800] uppercase tracking-[0.15em] text-[#125be8]">
                       {lang === "ru" ? "Разберём по частям" : "Let's break it down"}
                     </p>
                     <h2 className="mt-2.5 text-[20px] font-[700] leading-[1] tracking-[-0.04em] text-[#111111]">
@@ -1173,7 +1174,7 @@ export default function HomePage() {
                           style={{
                             width: activeScrollHint === id ? 22 : 6,
                             height: 6,
-                            backgroundColor: activeScrollHint === id ? "#5e5ce6" : "#d1d1d6",
+                            backgroundColor: activeScrollHint === id ? "#2585ff" : "#d1d1d6",
                           }}
                         />
                       ))}
@@ -1206,11 +1207,11 @@ export default function HomePage() {
               aria-hidden="true"
               style={{
                 background:
-                  "radial-gradient(circle at 16% 18%, rgba(124,92,255,0.16), transparent 26%), radial-gradient(circle at 84% 16%, rgba(34,211,238,0.16), transparent 24%), radial-gradient(circle at 48% 58%, rgba(255,255,255,0.74), transparent 26%)",
+                  "radial-gradient(circle at 16% 18%, rgba(37,133,255,0.16), transparent 26%), radial-gradient(circle at 84% 16%, rgba(34,211,238,0.16), transparent 24%), radial-gradient(circle at 48% 58%, rgba(255,255,255,0.74), transparent 26%)",
               }}
             />
             <div
-              className="absolute inset-x-[-8%] bottom-[-14%] h-[32%] rounded-[100%] border border-[rgba(115,108,255,0.14)] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.92)_0%,rgba(243,246,255,0.62)_58%,rgba(243,246,255,0)_100%)]"
+              className="absolute inset-x-[-8%] bottom-[-14%] h-[32%] rounded-[100%] border border-[rgba(37,133,255,0.14)] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.92)_0%,rgba(243,246,255,0.62)_58%,rgba(243,246,255,0)_100%)]"
               aria-hidden="true"
             />
             <div
@@ -1247,9 +1248,9 @@ export default function HomePage() {
                 <AnimateOnScroll
                   as="p"
                   delay={0}
-                  className="mb-5 inline-flex items-center gap-2 rounded-full border border-[rgba(124,92,255,0.12)] bg-[rgba(255,255,255,0.78)] px-4 py-2 text-[12px] font-[700] uppercase tracking-[0.16em] text-[#645FDE] shadow-[0_12px_30px_rgba(94,92,230,0.08)] backdrop-blur-sm"
+                  className="mb-5 inline-flex items-center gap-2 rounded-full border border-[rgba(37,133,255,0.16)] bg-[rgba(232,244,255,0.72)] px-4 py-2 text-[12px] font-[800] uppercase tracking-[0.16em] text-[#125be8] shadow-[0_12px_30px_rgba(37,133,255,0.08)] backdrop-blur-sm"
                 >
-                  <span className="h-2 w-2 rounded-full bg-[#5E5CE6]" aria-hidden="true" />
+                  <span className="h-2 w-2 rounded-full bg-[#2585ff]" aria-hidden="true" />
                   {t("heroEyebrow")}
                 </AnimateOnScroll>
                 <AnimateOnScroll
@@ -1278,15 +1279,12 @@ export default function HomePage() {
                   delay={0.22}
                   className="mb-7 flex flex-wrap gap-3"
                 >
-                  <a
-                    href="#download"
-                    className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[rgba(72,70,201,0.26)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-6 text-[15px] font-[600] leading-none text-white shadow-[0_20px_40px_rgba(94,92,230,0.18)] transition-transform duration-150 ease-out hover:-translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e5ce6] focus-visible:ring-offset-2"
-                  >
+                  <OriginLink href="#download" size="lg">
                     {t("heroPrimary")}
-                  </a>
+                  </OriginLink>
                   <a
                     href="#scrolly-desktop"
-                    className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.78)] px-6 text-[15px] font-[600] leading-none text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e5ce6] focus-visible:ring-offset-2"
+                    className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.78)] px-6 text-[15px] font-[600] leading-none text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2585ff] focus-visible:ring-offset-2"
                   >
                     {t("heroSecondary")}
                   </a>
@@ -1297,7 +1295,7 @@ export default function HomePage() {
                 >
                   {heroMetrics.map((metric) => (
                     <div key={metric.title} className="min-w-[136px]">
-                      <p className="text-[18px] font-[700] leading-none text-[#5B54D6] md:text-[20px]">
+                      <p className="text-[18px] font-[800] leading-none text-[#125be8] md:text-[20px]">
                         {metric.title}
                       </p>
                       <p className="mt-2 text-[15px] font-[400] leading-[1.45] text-[#868895] md:text-[16px]">
@@ -1361,7 +1359,7 @@ export default function HomePage() {
                           style={{
                             width: activeScrollHint === id ? 28 : 6,
                             height: 6,
-                            backgroundColor: activeScrollHint === id ? "#5e5ce6" : "#d1d1d6",
+                            backgroundColor: activeScrollHint === id ? "#2585ff" : "#d1d1d6",
                           }}
                         />
                       ))}
@@ -1391,12 +1389,12 @@ export default function HomePage() {
                     left: "50%",
                     transform: "translate(-50%, -50%)",
                     background:
-                      "radial-gradient(circle, rgba(124,92,255,0.18), transparent 62%), radial-gradient(circle at 32% 28%, rgba(34,211,238,0.14), transparent 38%)",
+                      "radial-gradient(circle, rgba(37,133,255,0.18), transparent 62%), radial-gradient(circle at 32% 28%, rgba(34,211,238,0.14), transparent 38%)",
                     filter: "blur(12px)",
                     opacity: cardGlowOpacity,
                   }}
                 />
-                <div className="relative rounded-[32px] border border-[rgba(94,92,230,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(247,248,255,0.94)_100%)] p-3 shadow-[0_30px_70px_rgba(94,92,230,0.1)] backdrop-blur-xl">
+                <div className="relative rounded-[32px] border border-[rgba(37,133,255,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(247,248,255,0.94)_100%)] p-3 shadow-[0_30px_70px_rgba(37,133,255,0.1)] backdrop-blur-xl">
                   <div className="absolute inset-x-10 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.94),transparent)]" />
                   <div className="rounded-[28px] border border-[rgba(255,255,255,0.74)] bg-[linear-gradient(180deg,rgba(249,250,255,0.98)_0%,rgba(255,255,255,1)_100%)] p-2">
                     <ProductMockup
@@ -1464,7 +1462,7 @@ export default function HomePage() {
                   pointerEvents: scrollyStep === 0 ? "auto" : "none",
                 }}
               >
-                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(94,92,230,0.1)] text-[#5e5ce6]">
+                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(37,133,255,0.1)] text-[#2585ff]">
                   <MobileStepOneIcon size={24} aria-hidden="true" />
                 </div>
                 <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
@@ -1486,7 +1484,7 @@ export default function HomePage() {
                   pointerEvents: scrollyStep === 1 ? "auto" : "none",
                 }}
               >
-                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(94,92,230,0.1)] text-[#5e5ce6]">
+                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(37,133,255,0.1)] text-[#2585ff]">
                   <MessageSquareText size={24} aria-hidden="true" />
                 </div>
                 <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
@@ -1553,12 +1551,9 @@ export default function HomePage() {
                 <p className="mx-auto mt-5 max-w-[28ch] text-[15px] leading-[1.6] text-[#666670]">
                   {t("scrollyStep5Sub")}
                 </p>
-                <a
-                  href="#download"
-                  className="mt-7 inline-flex min-h-[52px] w-full items-center justify-center rounded-full bg-[#1d1d1f] px-6 text-[15px] font-[600] leading-none text-white shadow-[0_16px_30px_rgba(29,29,31,0.16)]"
-                >
+                <OriginLink href="#download" size="lg" className="mt-7 w-full">
                   {t("joinWaitlist")}
-                </a>
+                </OriginLink>
               </div>
             </div>
           </div>
@@ -1593,7 +1588,7 @@ export default function HomePage() {
                 }}
               >
                 <div
-                  className="mb-8 inline-flex text-[#5e5ce6]"
+                  className="mb-8 inline-flex text-[#2585ff]"
                   style={{
                     transition: "transform 350ms cubic-bezier(0.4, 0, 0.2, 1), opacity 350ms cubic-bezier(0.4, 0, 0.2, 1)",
                     transitionDelay: scrollyStep === 0 ? "100ms" : "0ms",
@@ -1619,7 +1614,7 @@ export default function HomePage() {
                 }}
               >
                 <div
-                  className="mb-8 inline-flex text-[#5e5ce6]"
+                  className="mb-8 inline-flex text-[#2585ff]"
                   style={{
                     transition: "transform 350ms cubic-bezier(0.4, 0, 0.2, 1), opacity 350ms cubic-bezier(0.4, 0, 0.2, 1)",
                     transitionDelay: scrollyStep === 1 ? "100ms" : "0ms",
@@ -1689,12 +1684,9 @@ export default function HomePage() {
                 <p className="mx-auto mb-7 max-w-[560px] text-[16px] font-[400] leading-[1.58] text-[#6e6e73] md:text-[17px]">
                   {t("scrollyStep5Sub")}
                 </p>
-                <a
-                  href="#download"
-                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[600] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
-                >
+                <OriginLink href="#download" size="sm">
                   {t("heroPrimary")}
-                </a>
+                </OriginLink>
               </div>
             </div>
           </div>
@@ -1726,10 +1718,10 @@ export default function HomePage() {
                   className="pointer-events-none absolute -inset-x-6 -top-8 bottom-4 rounded-[40px] opacity-80 blur-[56px]"
                   style={{
                     background:
-                      "radial-gradient(60% 60% at 50% 0%, rgba(94,92,230,0.20), transparent 72%)",
+                      "radial-gradient(60% 60% at 50% 0%, rgba(37,133,255,0.20), transparent 72%)",
                   }}
                 />
-                <div className="relative overflow-hidden rounded-[24px] border border-[rgba(94,92,230,0.16)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(247,248,255,0.96)_100%)] p-2 shadow-[0_40px_90px_-36px_rgba(48,46,120,0.42)] backdrop-blur-xl">
+                <div className="relative overflow-hidden rounded-[24px] border border-[rgba(37,133,255,0.16)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(247,248,255,0.96)_100%)] p-2 shadow-[0_40px_90px_-36px_rgba(48,46,120,0.42)] backdrop-blur-xl">
                   <div
                     aria-hidden="true"
                     className="absolute inset-x-10 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.95),transparent)]"
@@ -1763,14 +1755,14 @@ export default function HomePage() {
                         {!isLast && (
                           <span
                             aria-hidden="true"
-                            className="absolute left-[23px] top-[54px] -bottom-7 w-px bg-[linear-gradient(180deg,rgba(94,92,230,0.35),rgba(94,92,230,0.07))]"
+                            className="absolute left-[23px] top-[54px] -bottom-7 w-px bg-[linear-gradient(180deg,rgba(37,133,255,0.35),rgba(37,133,255,0.07))]"
                           />
                         )}
-                        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-[15px] border border-[rgba(94,92,230,0.16)] bg-[linear-gradient(135deg,rgba(245,245,255,0.92),rgba(255,255,255,0.96))] text-[#5e5ce6] shadow-[0_8px_18px_-8px_rgba(94,92,230,0.4)]">
+                        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-[15px] border border-[rgba(37,133,255,0.16)] bg-[linear-gradient(135deg,rgba(245,245,255,0.92),rgba(255,255,255,0.96))] text-[#2585ff] shadow-[0_8px_18px_-8px_rgba(37,133,255,0.4)]">
                           <StepIcon size={22} aria-hidden="true" />
                         </div>
                         <div className="pt-0.5">
-                          <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#a9a7f0]">
+                          <p className="text-[12px] font-[800] uppercase tracking-[0.16em] text-[#168ecf]">
                             {String(i + 1).padStart(2, "0")}
                           </p>
                           <h3 className="mt-1 text-[19px] font-[700] leading-[1.25] tracking-[-0.02em] text-[#1d1d1f]">
@@ -1790,7 +1782,7 @@ export default function HomePage() {
         </section>
 
         {/* PRICING */}
-        <section className="bg-[#f5f5f7] px-4 py-20 sm:px-5 md:py-28" id="pricing">
+        <section className="bg-[linear-gradient(180deg,#f8fbff_0%,#edf6ff_100%)] px-4 py-20 sm:px-5 md:py-28" id="pricing">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
             <AnimateOnScroll delay={0} className="mb-10 max-w-3xl md:mb-12">
               <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
@@ -1812,7 +1804,7 @@ export default function HomePage() {
             >
               <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
                 <div>
-                  <p className="text-[13px] font-[700] uppercase tracking-[0.16em] text-[#645FDE]">
+                  <p className="text-[13px] font-[800] uppercase tracking-[0.16em] text-[#125be8]">
                     {t("downloadCardLabel")}
                   </p>
                   <h3 className="mt-3 text-[clamp(28px,3vw,40px)] font-[700] leading-[1.05] tracking-[-0.04em] text-[#1d1d1f]">
@@ -1822,7 +1814,7 @@ export default function HomePage() {
                     {t("downloadCardBody")}
                   </p>
                 </div>
-                <div className="rounded-[24px] border border-[rgba(94,92,230,0.12)] bg-[rgba(255,255,255,0.88)] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+                <div className="rounded-[24px] border border-[rgba(37,133,255,0.12)] bg-[rgba(255,255,255,0.88)] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
                   <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#8a8a94]">
                     {t("downloadCardStatusLabel")}
                   </p>
@@ -1832,12 +1824,9 @@ export default function HomePage() {
                   <p className="mt-4 text-[15px] font-[400] leading-[1.6] text-[#6e6e73]">
                     {t("downloadCardNote")}
                   </p>
-                  <a
-                    href="#download"
-                    className="mt-6 inline-flex min-h-[48px] w-full items-center justify-center rounded-full bg-[#5e5ce6] px-6 text-[15px] font-[600] leading-none text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
-                  >
+                  <OriginLink href="#download" size="md" className="mt-6 w-full">
                     {t("downloadCta")}
-                  </a>
+                  </OriginLink>
                 </div>
               </div>
             </AnimateOnScroll>
@@ -1863,7 +1852,10 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="download" className="px-4 py-20 text-center sm:px-5 md:py-28">
+        <section
+          id="download"
+          className="border-y border-[rgba(37,133,255,0.12)] bg-[linear-gradient(180deg,#ffffff_0%,#f1f8ff_54%,#eaf5ff_100%)] px-4 py-20 text-center sm:px-5 md:py-28"
+        >
           <div className="mx-auto" style={{ maxWidth: "min(900px, 100%)" }}>
             <h2 className="text-[clamp(28px,4vw,46px)] font-[700] leading-[1.08] tracking-[-0.04em] text-[#1d1d1f]">
               {lang === "ru" ? "Скачать LiveAssist AI" : "Download LiveAssist AI"}
@@ -1907,26 +1899,27 @@ export default function HomePage() {
                   ),
                 },
               ].map((item) => (
-                <a
+                <OriginLink
                   key={item.label}
                   href={item.href}
-                  className="group flex items-center gap-3 rounded-[18px] border border-[rgba(29,29,31,0.1)] bg-white px-4 py-3.5 text-left shadow-[0_10px_24px_rgba(15,23,42,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[rgba(94,92,230,0.32)] hover:shadow-[0_16px_32px_rgba(94,92,230,0.12)]"
+                  variant="platform"
+                  contentClassName="flex min-w-0 items-center gap-3"
                 >
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[13px] bg-[#f5f5f7] text-[#1d1d1f] transition-colors duration-200 group-hover:bg-[rgba(94,92,230,0.1)] group-hover:text-[#5e5ce6]">
+                  <span className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-white/18 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.24)]">
                     {item.icon}
                   </span>
-                  <span className="min-w-0">
-                    <span className="block text-[11px] font-[500] uppercase tracking-[0.08em] text-[#8a8a94]">
+                  <span className="relative z-10 min-w-0">
+                    <span className="block text-[11px] font-[600] uppercase tracking-[0.08em] text-white/68">
                       {lang === "ru" ? "Скачать для" : "Download for"}
                     </span>
-                    <span className="block text-[15px] font-[700] leading-tight tracking-[-0.01em] text-[#1d1d1f]">
+                    <span className="block text-[15px] font-[800] leading-tight tracking-[-0.01em] text-white">
                       {item.label}
                     </span>
-                    <span className="block text-[11px] font-[400] text-[#9ca3af]">
+                    <span className="block text-[11px] font-[500] text-white/68">
                       {item.sub}
                     </span>
                   </span>
-                </a>
+                </OriginLink>
               ))}
             </div>
 

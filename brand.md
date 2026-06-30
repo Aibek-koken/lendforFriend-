@@ -6,11 +6,11 @@ LiveAssist AI is a private real-time knowledge assistant for customer-facing tea
 
 ## Visual Direction
 
-- Dark B2B SaaS interface inspired by Linear, Raycast, Cursor, and Superhuman.
-- Violet/indigo is the primary accent for intent and product identity.
-- Cyan is the secondary accent for speed, source-backed confidence, and system feedback.
-- Use restrained glass surfaces, subtle borders, soft glow, and generous negative space.
-- Avoid spyware framing, surveillance language, and "secret listening" implications.
+- Light premium desktop-product interface with soft 3D depth, glassy surfaces, and generous negative space.
+- Electric blue is the primary accent for the hotkey workflow and primary calls to action: `#2585FF` with deeper pressed states around `#125BE8`.
+- Ice blue and cyan are supporting accents for glow, source-backed confidence, and system feedback.
+- Use glossy pill buttons, soft 3D keycaps, subtle borders, cool shadows, and restrained motion.
+- Avoid dominant violet/purple styling, generic SaaS gradients, spyware framing, surveillance language, and "secret listening" implications.
 
 ## Voice
 

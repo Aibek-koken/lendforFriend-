@@ -33,14 +33,14 @@ export function NavBar({
               key={item.id}
               href={item.url}
               onClick={() => setActiveTab(item.id)}
-              className={`relative isolate inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-[14px] text-[13px] font-[500] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e5ce6] focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
-                isActive ? 'text-[#5e5ce6]' : 'text-[#6e6e73] hover:text-[#5e5ce6]'
+              className={`relative isolate inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-[14px] text-[13px] font-[500] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2585ff] focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
+                isActive ? 'text-[#2585ff]' : 'text-[#6e6e73] hover:text-[#2585ff]'
               }`}
             >
               {isActive ? (
                 <motion.span
                   layoutId="tubelight-active-tab"
-                  className="absolute inset-0 -z-10 rounded-full border border-[rgba(99,91,255,0.18)] bg-[linear-gradient(180deg,rgba(240,243,255,0.98)_0%,rgba(228,234,255,0.9)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.82)]"
+                  className="absolute inset-0 -z-10 rounded-full border border-[rgba(37,133,255,0.18)] bg-[linear-gradient(180deg,rgba(240,243,255,0.98)_0%,rgba(228,234,255,0.9)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.82)]"
                   transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                 />
               ) : null}

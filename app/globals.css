@@ -31,11 +31,11 @@ body {
 }
 
 ::-moz-selection {
-  background: rgba(94, 92, 230, 0.18);
+  background: rgba(37, 133, 255, 0.18);
 }
 
 ::selection {
-  background: rgba(94, 92, 230, 0.18);
+  background: rgba(37, 133, 255, 0.18);
 }
 
 @keyframes float {
@@ -98,4 +98,20 @@ body {
 @keyframes wave-pulse {
   0%, 100% { opacity: 0.2; }
   50% { opacity: 0.7; }
+}
+
+@keyframes shortcut-key-float {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-10deg); }
+  50% { transform: translate3d(0, -8px, 0) rotate(-6deg); }
+}
+
+@keyframes shortcut-key-float-alt {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(10deg); }
+  50% { transform: translate3d(0, 7px, 0) rotate(6deg); }
+}
+
+@keyframes shortcut-sheen {
+  0%, 24% { transform: translateX(-160%) rotate(14deg); opacity: 0; }
+  34% { opacity: 0.8; }
+  58%, 100% { transform: translateX(260%) rotate(14deg); opacity: 0; }
 }
