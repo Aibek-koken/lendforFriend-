@@ -72,11 +72,14 @@ const sizeClassName = {
   xl: "min-h-[58px] px-8 text-[17px]",
 } as const;
 
+// Crystalline gold CTA: soft light-honey gradient with a glassy top highlight and
+// a warm inner depth. Uses dark warm text (light gold needs dark text for
+// contrast). Tender/"crystalline" feel to match the brand logo tone.
 const primaryClassName =
-  "rounded-full border-white/45 bg-[linear-gradient(180deg,#62bdff_0%,#2585ff_50%,#125be8_100%)] text-center shadow-[inset_0_2px_0_rgba(255,255,255,0.36),inset_0_-18px_28px_rgba(18,91,232,0.36),0_18px_36px_rgba(37,133,255,0.26)]";
+  "rounded-2xl border-[rgba(255,255,255,0.55)] bg-[linear-gradient(160deg,#fff0c4_0%,#ffd27a_45%,#f5b23f_100%)] text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.85),inset_0_-8px_16px_rgba(214,148,24,0.25),0_10px_24px_rgba(240,180,40,0.30)]";
 
 const platformClassName =
-  "min-h-[78px] w-full justify-start rounded-[26px] border-white/45 bg-[linear-gradient(180deg,#62bdff_0%,#2585ff_52%,#125be8_100%)] px-4 py-3.5 text-left shadow-[inset_0_2px_0_rgba(255,255,255,0.34),inset_0_-22px_34px_rgba(18,91,232,0.34),0_22px_46px_rgba(37,133,255,0.25)]";
+  "min-h-[78px] w-full justify-start rounded-[20px] border-[rgba(255,255,255,0.55)] bg-[linear-gradient(160deg,#fff0c4_0%,#ffd27a_45%,#f5b23f_100%)] px-4 py-3.5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-10px_20px_rgba(214,148,24,0.24),0_12px_28px_rgba(240,180,40,0.28)]";
 
 function useOriginInteraction<T extends HTMLElement>(
   disabled: boolean,
@@ -191,18 +194,18 @@ function RootVisual({
     <>
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute -z-10 rounded-full bg-[radial-gradient(circle_at_center,#9ee6ff_0%,#49a8ff_34%,#166cff_66%,#0d48c7_100%)]"
+        className="pointer-events-none absolute -z-10 rounded-full bg-[radial-gradient(circle_at_center,#fff6db_0%,#ffe3a0_38%,#ffcf6a_66%,#fff0cc_86%,#f2b23f_100%)]"
         style={fillStyle}
       />
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-4 top-1 -z-10 h-1/2 rounded-full bg-white/24 blur-[2px]"
+        className="pointer-events-none absolute inset-x-4 top-1 -z-10 h-1/2 rounded-full bg-white/30 blur-[2px]"
       />
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-[linear-gradient(180deg,transparent,rgba(9,68,185,0.2))]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-[linear-gradient(180deg,transparent,rgba(180,120,20,0.16))]"
       />
-      <span className={cx("relative z-10 inline-flex min-w-0 items-center justify-center gap-2", contentClassName)}>
+      <span className={cx("relative z-10 inline-flex min-w-0 items-center justify-center gap-2 [text-shadow:0_1px_0_rgba(255,255,255,0.45)]", contentClassName)}>
         {children}
       </span>
     </>
@@ -253,9 +256,9 @@ const OriginLink = React.forwardRef<HTMLAnchorElement, OriginLinkProps>(
         aria-busy={loading || undefined}
         aria-disabled={loading || undefined}
         className={cx(
-          "relative isolate inline-flex cursor-pointer touch-manipulation select-none items-center justify-center overflow-hidden border font-[800] leading-none text-white",
+          "relative isolate inline-flex cursor-pointer touch-manipulation select-none items-center justify-center overflow-hidden border font-[800] leading-none text-[#4a2f08]",
           "motion-safe:transition-[transform,filter] motion-safe:duration-150 motion-safe:ease-out motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-px",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2585ff] focus-visible:ring-offset-2 focus-visible:ring-offset-white",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c9820f] focus-visible:ring-offset-2 focus-visible:ring-offset-white",
           loading && "pointer-events-none opacity-70",
           variant === "primary" && primaryClassName,
           variant === "primary" && sizeClassName[size],
@@ -369,9 +372,9 @@ const OriginButton = React.forwardRef<HTMLButtonElement, OriginButtonProps>(
         {...props}
         aria-busy={loading || undefined}
         className={cx(
-          "relative isolate inline-flex cursor-pointer touch-manipulation select-none items-center justify-center overflow-hidden border font-[800] leading-none text-white",
+          "relative isolate inline-flex cursor-pointer touch-manipulation select-none items-center justify-center overflow-hidden border font-[800] leading-none text-[#4a2f08]",
           "motion-safe:transition-[transform,filter] motion-safe:duration-150 motion-safe:ease-out motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-px",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2585ff] focus-visible:ring-offset-2 focus-visible:ring-offset-white",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c9820f] focus-visible:ring-offset-2 focus-visible:ring-offset-white",
           "disabled:pointer-events-none disabled:opacity-70",
           variant === "primary" && primaryClassName,
           variant === "primary" && sizeClassName[size],

@@ -4,6 +4,30 @@
 
 :root {
   color-scheme: light;
+
+  /*
+   * Canonical palette — warm editorial off-white, with a calm COOL-BLUE accent
+   * used sparingly (primary CTA, links, a few key highlights). Source of truth
+   * for every color on the landing. Backgrounds are warm neutrals — never a
+   * blue/lavender wash. Do not introduce teal/mint/violet.
+   */
+
+  /* Cool-blue accent — used sparingly */
+  --blue: #2563eb;          /* primary accent (CTA/links) */
+  --blue-strong: #1d4ed8;   /* pressed / deeper */
+  --blue-soft: #eef2fd;     /* faint accent fill (chips) */
+
+  /* Text on warm surfaces (warm grays) */
+  --text: #1a1917;          /* warm near-black */
+  --muted: #6b665e;         /* standard secondary text */
+  --muted-strong: #423d36;  /* emphasized secondary text */
+
+  /* Warm surfaces */
+  --bg: #faf8f5;            /* page base (warm off-white) */
+  --surface: #ffffff;       /* cards / raised surfaces */
+  --surface-1: #f6f2ec;     /* soft warm tint */
+  --surface-2: #efe9e0;     /* deeper warm tint */
+  --line: #e9e3da;          /* warm hairline / border */
 }
 
 * {
@@ -22,8 +46,8 @@ html {
 
 body {
   margin: 0;
-  background: #ffffff;
-  color: #1d1d1f;
+  background: #faf8f5;
+  color: #1a1917;
   font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;

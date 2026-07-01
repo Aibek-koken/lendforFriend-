@@ -48,23 +48,23 @@ export function FaqPro({
                 }}
                 className={`overflow-hidden rounded-[16px] border bg-white transition-[border-color,box-shadow] duration-300 ${
                   isOpen
-                    ? 'border-[rgba(37,133,255,0.32)] shadow-[0_18px_40px_-18px_rgba(37,133,255,0.3)]'
-                    : 'border-[#e5e5ea] hover:border-[rgba(37,133,255,0.2)]'
+                    ? 'border-[rgba(217,152,30,0.32)] shadow-[0_18px_40px_-18px_rgba(217,152,30,0.3)]'
+                    : 'border-[#eae5e5] hover:border-[rgba(217,152,30,0.2)]'
                 }`}
               >
                 <button
                   type="button"
                   onClick={() => setOpenId(isOpen ? null : item.id)}
-                  className="flex w-full items-center justify-between gap-4 p-5 text-left text-[16px] font-[600] transition-colors hover:bg-[#fafaff]"
+                  className="flex w-full items-center justify-between gap-4 p-5 text-left text-[16px] font-[600] transition-colors hover:bg-[#fffafa]"
                   aria-expanded={isOpen}
                   aria-controls={`faq-pro-panel-${item.id}`}
                 >
-                  <span className={isOpen ? 'text-[#1d1d1f]' : ''}>{item.question}</span>
+                  <span className={isOpen ? 'text-[#1a1917]' : ''}>{item.question}</span>
                   <motion.span
                     animate={{ rotate: isOpen ? 180 : 0 }}
                     transition={{ duration: 0.3, ease: EASE }}
                     className={`flex h-7 w-7 flex-none items-center justify-center rounded-full transition-colors duration-300 ${
-                      isOpen ? 'bg-[rgba(37,133,255,0.1)] text-[#2585ff]' : 'bg-[#f5f5f7] text-[#6e6e73]'
+                      isOpen ? 'bg-[rgba(217,152,30,0.1)] text-[#a35707]' : 'bg-[#f7f5f5] text-[#6b665e]'
                     }`}
                     aria-hidden="true"
                   >
@@ -89,7 +89,7 @@ export function FaqPro({
                         initial={prefersReduced ? false : { y: -6, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ duration: 0.3, ease: EASE, delay: 0.04 }}
-                        className="px-5 pb-5 text-[16px] font-[400] leading-[1.6] text-[#6e6e73]"
+                        className="px-5 pb-5 text-[16px] font-[400] leading-[1.6] text-[#6b665e]"
                       >
                         {item.answer}
                       </motion.div>

@@ -20,6 +20,7 @@ import { NavBar } from "@/components/ui/tubelight-navbar";
 import { OriginLink } from "@/components/ui/origin-button";
 import { AnimateOnScroll } from "../components/ui/animate-on-scroll";
 import { InteractiveFooter } from "../components/InteractiveFooter";
+import { getLandingVisitorId, trackLandingEvent } from "../lib/clientAnalytics";
 import ProductMockup from "./components/ProductMockup";
 import { StatsBand } from "./components/StatsBand";
 
@@ -86,24 +87,44 @@ type MobileStoryStep = {
   body: string;
 };
 
-function ShortcutCue({ compact = false, label }: { compact?: boolean; label: string }) {
+type DownloadPlatform = "mac-arm64" | "windows" | "linux";
+
+function ShortcutCue({
+  compact = false,
+  label,
+  active = false,
+}: {
+  compact?: boolean;
+  label: string;
+  active?: boolean;
+}) {
   return (
     <div
       role="img"
       aria-label={label}
       className={[
-        "relative inline-flex items-center justify-center overflow-visible",
+        "relative inline-flex items-center justify-center overflow-visible motion-safe:transition-[transform,opacity,filter] motion-safe:duration-[360ms] motion-safe:ease-out",
         compact ? "h-[92px] min-w-[190px]" : "h-[122px] min-w-[270px]",
       ].join(" ")}
+      style={{
+        transform: active ? "translateY(0) scale(1)" : "translateY(14px) scale(0.94)",
+        opacity: active ? 1 : 0.78,
+        filter: active ? "drop-shadow(0 22px 42px rgba(217,152,30,0.22))" : "none",
+      }}
     >
       <span
         aria-hidden="true"
+        className="pointer-events-none absolute inset-x-[16%] top-[14%] h-[58%] rounded-full bg-[radial-gradient(circle,rgba(210,194,172,0.32)_0%,rgba(255,255,255,0.18)_48%,rgba(255,255,255,0)_76%)] blur-2xl motion-safe:transition-opacity motion-safe:duration-[320ms]"
+        style={{ opacity: active ? 1 : 0 }}
+      />
+      <span
+        aria-hidden="true"
         className={[
-          "absolute rounded-[26px] border border-white/70 bg-[linear-gradient(145deg,#f8fbff_0%,#e7f1ff_52%,#cfe4ff_100%)] text-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.92),inset_0_-18px_26px_rgba(37,99,235,0.14),0_24px_54px_rgba(37,133,255,0.24)] motion-safe:animate-[shortcut-key-float_3.8s_ease-in-out_infinite]",
+          "absolute rounded-[26px] border border-white/70 bg-[linear-gradient(145deg,#fffbf8_0%,#fff1e7_52%,#ffe4cf_100%)] text-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.92),inset_0_-18px_26px_rgba(217,152,30,0.14),0_24px_54px_rgba(217,152,30,0.24)] motion-safe:animate-[shortcut-key-float_3.8s_ease-in-out_infinite]",
           compact ? "left-0 top-0 h-14 w-14" : "left-0 top-1 h-[76px] w-[76px]",
         ].join(" ")}
       >
-        <span className="absolute inset-2 rounded-[20px] bg-[radial-gradient(circle_at_35%_22%,rgba(255,255,255,0.94),rgba(255,255,255,0.08)_58%,rgba(37,133,255,0.14)_100%)]" />
+        <span className="absolute inset-2 rounded-[20px] bg-[radial-gradient(circle_at_35%_22%,rgba(255,255,255,0.94),rgba(255,255,255,0.08)_58%,rgba(217,152,30,0.14)_100%)]" />
         <Keyboard
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_0_14px_rgba(255,255,255,0.96)]"
           size={compact ? 24 : 32}
@@ -114,7 +135,7 @@ function ShortcutCue({ compact = false, label }: { compact?: boolean; label: str
       <span
         aria-hidden="true"
         className={[
-          "absolute rounded-[24px] border border-white/65 bg-[linear-gradient(145deg,#f9fbff_0%,#edf4ff_50%,#d8e8ff_100%)] text-[#9aa8bd] shadow-[inset_0_2px_5px_rgba(255,255,255,0.88),inset_0_-16px_26px_rgba(15,23,42,0.08),0_22px_48px_rgba(30,90,180,0.18)] motion-safe:animate-[shortcut-key-float-alt_4.2s_ease-in-out_infinite]",
+          "absolute rounded-[24px] border border-white/65 bg-[linear-gradient(145deg,#fffbf9_0%,#fff4ed_50%,#ffe8d8_100%)] text-[#6b665e] shadow-[inset_0_2px_5px_rgba(255,255,255,0.88),inset_0_-16px_26px_rgba(15,23,42,0.08),0_22px_48px_rgba(30,90,180,0.18)] motion-safe:animate-[shortcut-key-float-alt_4.2s_ease-in-out_infinite]",
           compact ? "right-1 bottom-1 h-12 w-12" : "right-0 bottom-2 h-[68px] w-[68px]",
         ].join(" ")}
       >
@@ -127,7 +148,7 @@ function ShortcutCue({ compact = false, label }: { compact?: boolean; label: str
 
       <span
         className={[
-          "relative isolate inline-flex items-center justify-center overflow-hidden rounded-full border border-white/35 bg-[linear-gradient(180deg,#5fb8ff_0%,#2585ff_54%,#125be8_100%)] font-[800] leading-none text-white shadow-[inset_0_2px_0_rgba(255,255,255,0.34),inset_0_-18px_28px_rgba(18,91,232,0.36),0_24px_54px_rgba(37,133,255,0.34)]",
+          "relative isolate inline-flex items-center justify-center overflow-hidden rounded-full border border-white/35 bg-[linear-gradient(180deg,#e0a92e_0%,#c9820f_54%,#c9820f_100%)] font-[800] leading-none text-white shadow-[inset_0_2px_0_rgba(255,255,255,0.34),inset_0_-18px_28px_rgba(180,120,20,0.36),0_24px_54px_rgba(217,152,30,0.34)]",
           compact ? "gap-2 px-5 py-3 text-[16px]" : "gap-3 px-7 py-4 text-[24px]",
         ].join(" ")}
       >
@@ -193,6 +214,7 @@ export default function HomePage() {
   const heroTargetRef = useRef(0);
   const heroExitRef = useRef(0);
   const demoVideoRef = useRef<HTMLVideoElement>(null);
+  const landingViewTrackedRef = useRef(false);
 
   // Hero scroll state
   const [heroPhase, setHeroPhase] = useState<"hero" | "transition" | "hints">("hero");
@@ -207,6 +229,7 @@ export default function HomePage() {
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [viewportReady, setViewportReady] = useState(false);
+  const [landingVisitorId, setLandingVisitorId] = useState("");
   // Header auto-hide on scroll down / reveal on scroll up.
   const [headerHidden, setHeaderHidden] = useState(false);
   // True briefly while an anchor-link smooth scroll is in flight, so the
@@ -218,6 +241,33 @@ export default function HomePage() {
     const val = (strings[lang] as Record<string, unknown>)[key];
     return val as string;
   };
+
+  const getDownloadHref = useCallback(
+    (platform: DownloadPlatform) => {
+      const baseHref = `/api/download/${platform}`;
+      return landingVisitorId
+        ? `${baseHref}?visitor_id=${encodeURIComponent(landingVisitorId)}`
+        : baseHref;
+    },
+    [landingVisitorId]
+  );
+
+  const trackDownloadClick = useCallback(
+    (platform: DownloadPlatform) => {
+      trackLandingEvent(
+        "download_clicked",
+        {
+          download_platform: platform,
+          language: lang,
+          path: window.location.pathname,
+          platform,
+          source: "landing_download_button",
+        },
+        landingVisitorId || undefined
+      );
+    },
+    [landingVisitorId, lang]
+  );
 
 
   const heroMetrics: HeroMetric[] =
@@ -484,6 +534,24 @@ export default function HomePage() {
     const saved = localStorage.getItem("liveassist-lang") as Lang | null;
     if (saved === "en" || saved === "ru") setLang(saved);
   }, []);
+
+  useEffect(() => {
+    if (landingViewTrackedRef.current) return;
+
+    landingViewTrackedRef.current = true;
+    const visitorId = getLandingVisitorId();
+    const savedLang = localStorage.getItem("liveassist-lang");
+    setLandingVisitorId(visitorId);
+    trackLandingEvent(
+      "landing_viewed",
+      {
+        language: savedLang === "ru" ? "ru" : lang,
+        path: window.location.pathname,
+        source: "landing_page",
+      },
+      visitorId
+    );
+  }, [lang]);
 
   useEffect(() => {
     localStorage.setItem("liveassist-lang", lang);
@@ -928,9 +996,9 @@ export default function HomePage() {
           style={{ maxWidth: "min(1180px, calc(100% - 40px))" }}
           aria-label={t("navLabel")}
         >
-          <div className="relative md:hidden rounded-[20px] border border-[rgba(29,29,31,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.94)_0%,rgba(246,248,255,0.9)_100%)] px-3 py-2 shadow-[0_14px_32px_rgba(15,23,42,0.06),inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-md">
+          <div className="relative md:hidden rounded-[20px] border border-[rgba(29,29,31,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.94)_0%,rgba(255, 248, 246,0.9)_100%)] px-3 py-2 shadow-[0_14px_32px_rgba(15,23,42,0.06),inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-md">
             <div className="flex min-h-[40px] items-center justify-between gap-2">
-              <span className="inline-flex min-w-0 flex-1 select-none items-center gap-2 overflow-hidden whitespace-nowrap text-[13px] font-[700] text-[#1d1d1f]">
+              <span className="inline-flex min-w-0 flex-1 select-none items-center gap-2 overflow-hidden whitespace-nowrap text-[13px] font-[700] text-[#1a1917]">
                 {t("logo")}
               </span>
               <div className="flex shrink-0 items-center gap-1.5">
@@ -939,7 +1007,7 @@ export default function HomePage() {
                 </OriginLink>
                 <button
                   onClick={() => setMenuOpen((current) => !current)}
-                  className="inline-flex min-h-[32px] min-w-[32px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.1)] bg-white/88 text-[16px] font-[700] leading-none text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2585ff] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                  className="inline-flex min-h-[32px] min-w-[32px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.1)] bg-white/88 text-[16px] font-[700] leading-none text-[#1a1917] shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c9820f] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                   aria-label={menuOpen ? t("closeMenuLabel") : t("openMenuLabel")}
                   aria-expanded={menuOpen}
                 >
@@ -959,7 +1027,7 @@ export default function HomePage() {
                         setActiveTab(item.id as (typeof navConfig)[number]["id"]);
                         setMenuOpen(false);
                       }}
-                      className="inline-flex min-h-[36px] items-center rounded-full px-3 text-[13px] font-[600] text-[#3f3f46] transition-colors duration-150 hover:bg-[rgba(37,133,255,0.08)] hover:text-[#2585ff]"
+                      className="inline-flex min-h-[36px] items-center rounded-full px-3 text-[13px] font-[600] text-[#423d36] transition-colors duration-150 hover:bg-[rgba(217,152,30,0.08)] hover:text-[#a35707]"
                     >
                       {item.name}
                     </a>
@@ -969,10 +1037,10 @@ export default function HomePage() {
                       setLang(lang === "en" ? "ru" : "en");
                       setMenuOpen(false);
                     }}
-                    className="inline-flex min-h-[36px] items-center justify-between rounded-full px-3 text-[13px] font-[700] text-[#1d1d1f] transition-colors duration-150 hover:bg-[rgba(37,133,255,0.08)]"
+                    className="inline-flex min-h-[36px] items-center justify-between rounded-full px-3 text-[13px] font-[700] text-[#1a1917] transition-colors duration-150 hover:bg-[rgba(217,152,30,0.08)]"
                   >
                     <span>{lang === "en" ? "Russian" : "English"}</span>
-                    <span className="text-[#2585ff]">{lang === "en" ? "RU" : "EN"}</span>
+                    <span className="text-[#a35707]">{lang === "en" ? "RU" : "EN"}</span>
                   </button>
                 </div>
               </div>
@@ -980,7 +1048,7 @@ export default function HomePage() {
           </div>
 
           <div className="hidden md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-3">
-            <span className="inline-flex min-h-10 select-none items-center gap-2 text-[15px] font-[700] text-[#1d1d1f]">
+            <span className="inline-flex min-h-10 select-none items-center gap-2 text-[15px] font-[700] text-[#1a1917]">
               {t("logo")}
             </span>
 
@@ -996,7 +1064,7 @@ export default function HomePage() {
             <div className="flex items-center justify-end gap-[10px]">
               <button
                 onClick={() => setLang(lang === "en" ? "ru" : "en")}
-                className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(244,246,255,0.92)_100%)] px-3 text-[13px] font-[500] text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] transition-all duration-150 hover:border-[rgba(37,133,255,0.22)] hover:bg-[linear-gradient(180deg,rgba(255,255,255,1)_0%,rgba(238,242,255,0.96)_100%)]"
+                className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(255, 246, 244,0.92)_100%)] px-3 text-[13px] font-[500] text-[#1a1917] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] transition-all duration-150 hover:border-[rgba(217,152,30,0.22)] hover:bg-[linear-gradient(180deg,rgba(255,255,255,1)_0%,rgba(255, 242, 238,0.96)_100%)]"
                 aria-label={lang === "en" ? t("switchToRu") : t("switchToEn")}
               >
                 {lang === "en" ? "RU" : "EN"}
@@ -1016,28 +1084,28 @@ export default function HomePage() {
             aria-hidden="true"
             style={{
               background:
-                "radial-gradient(circle at 18% 12%, rgba(37,133,255,0.14), transparent 28%), radial-gradient(circle at 82% 16%, rgba(34,211,238,0.12), transparent 24%), linear-gradient(180deg, #ffffff 0%, #fbfbff 58%, #f5f7ff 100%)",
+                "radial-gradient(circle at 18% 12%, rgba(217,152,30,0.06), transparent 28%), radial-gradient(circle at 82% 16%, rgba(210,194,172,0.12), transparent 24%), linear-gradient(180deg, #ffffff 0%, #fffaf7 58%, #fff4ee 100%)",
             }}
           />
           <div
-            className="absolute inset-x-[-12%] bottom-[-12%] h-[34%] rounded-[100%] border border-[rgba(37,133,255,0.12)] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.9)_0%,rgba(245,247,255,0.68)_55%,rgba(245,247,255,0)_100%)]"
+            className="absolute inset-x-[-12%] bottom-[-12%] h-[34%] rounded-[100%] border border-[rgba(217,152,30,0.12)] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.9)_0%,rgba(255, 247, 245,0.68)_55%,rgba(255, 247, 245,0)_100%)]"
             aria-hidden="true"
           />
           <div
-            className="absolute inset-x-[-18%] bottom-[-18%] h-[38%] rounded-[100%] border border-[rgba(148,163,184,0.12)] opacity-70"
+            className="absolute inset-x-[-18%] bottom-[-18%] h-[38%] rounded-[100%] border border-[rgba(150,140,124,0.12)] opacity-70"
             aria-hidden="true"
           />
           <div
-            className="absolute inset-x-[-28%] bottom-[-24%] h-[44%] rounded-[100%] border border-[rgba(148,163,184,0.09)] opacity-55"
+            className="absolute inset-x-[-28%] bottom-[-24%] h-[44%] rounded-[100%] border border-[rgba(150,140,124,0.09)] opacity-55"
             aria-hidden="true"
           />
           <div className="relative mx-auto max-w-[430px]">
-            <p className="inline-flex items-center gap-2 rounded-full border border-[rgba(37,133,255,0.16)] bg-[rgba(232,244,255,0.72)] px-3 py-2 text-[12px] font-[800] uppercase tracking-[0.14em] text-[#125be8] shadow-[0_12px_30px_rgba(37,133,255,0.08)] backdrop-blur-sm">
-              <span className="h-2 w-2 rounded-full bg-[#2585ff]" aria-hidden="true" />
+            <p className="inline-flex items-center gap-2 rounded-full border border-[rgba(217,152,30,0.16)] bg-[rgba(255, 244, 232,0.72)] px-3 py-2 text-[12px] font-[800] uppercase tracking-[0.14em] text-[#a35707] shadow-[0_12px_30px_rgba(217,152,30,0.08)] backdrop-blur-sm">
+              <span className="h-2 w-2 rounded-full bg-[#c9820f]" aria-hidden="true" />
               {t("heroEyebrow")}
             </p>
             <h1
-              className="mt-6 max-w-[11ch] text-[#111111]"
+              className="mt-6 max-w-[11ch] text-[#1a1917]"
               style={{
                 ...UI_DISPLAY_STYLE,
                 fontSize: "clamp(46px, 14vw, 60px)",
@@ -1050,7 +1118,7 @@ export default function HomePage() {
                 </span>
               ))}
             </h1>
-            <p className="mt-5 max-w-[31ch] text-[16px] font-[400] leading-[1.62] text-[#575866]">
+            <p className="mt-5 max-w-[31ch] text-[16px] font-[400] leading-[1.62] text-[#6b665e]">
               {t("heroSub")}
             </p>
             <div className="mt-8 grid gap-3">
@@ -1059,7 +1127,7 @@ export default function HomePage() {
               </OriginLink>
               <a
                 href="#scrolly-mobile"
-                className="inline-flex min-h-[54px] items-center justify-center gap-2 rounded-full border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.76)] px-6 text-[15px] font-[600] leading-none text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-sm"
+                className="inline-flex min-h-[54px] items-center justify-center gap-2 rounded-full border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.76)] px-6 text-[15px] font-[600] leading-none text-[#1a1917] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-sm"
               >
                 {t("heroSecondary")}
               </a>
@@ -1070,10 +1138,10 @@ export default function HomePage() {
                   key={metric.title}
                   className="rounded-[24px] border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.8)] p-4 shadow-[0_14px_32px_rgba(15,23,42,0.05)] backdrop-blur-sm"
                 >
-                  <p className="text-[17px] font-[800] leading-none text-[#125be8]">
+                  <p className="text-[17px] font-[800] leading-none text-[#a35707]">
                     {metric.title}
                   </p>
-                  <p className="mt-2 text-[14px] font-[400] leading-[1.5] text-[#737481]">
+                  <p className="mt-2 text-[14px] font-[400] leading-[1.5] text-[#6b665e]">
                     <span className="block">{metric.lines[0]}</span>
                     <span className="block">{metric.lines[1]}</span>
                   </p>
@@ -1094,7 +1162,7 @@ export default function HomePage() {
             style={{
               minHeight: "100svh",
               background:
-                "linear-gradient(180deg, rgba(251,251,255,0.98) 0%, rgba(255,255,255,1) 100%)",
+                "linear-gradient(180deg, rgba(255, 251, 251,0.98) 0%, rgba(255,255,255,1) 100%)",
             }}
           >
             <div
@@ -1102,11 +1170,11 @@ export default function HomePage() {
               aria-hidden="true"
               style={{
                 background:
-                  "radial-gradient(circle at 16% 12%, rgba(37,133,255,0.12), transparent 26%), radial-gradient(circle at 82% 22%, rgba(34,211,238,0.12), transparent 24%)",
+                  "radial-gradient(circle at 16% 12%, rgba(217,152,30,0.05), transparent 26%), radial-gradient(circle at 82% 22%, rgba(210,194,172,0.12), transparent 24%)",
               }}
             />
             <div
-              className="absolute inset-x-[-14%] bottom-[-14%] h-[30%] rounded-[100%] border border-[rgba(37,133,255,0.12)] opacity-70"
+              className="absolute inset-x-[-14%] bottom-[-14%] h-[30%] rounded-[100%] border border-[rgba(217,152,30,0.12)] opacity-70"
               aria-hidden="true"
             />
             <div
@@ -1129,13 +1197,13 @@ export default function HomePage() {
                     aria-hidden="true"
                     style={{
                       background:
-                        "radial-gradient(circle, rgba(37,133,255,0.18), transparent 62%), radial-gradient(circle at 36% 28%, rgba(33,168,154,0.14), transparent 38%)",
+                        "radial-gradient(circle, rgba(217,152,30,0.18), transparent 62%), radial-gradient(circle at 36% 28%, rgba(210,194,172,0.14), transparent 38%)",
                       opacity: mobileCardGlowOpacity,
                     }}
                   />
-                  <div className="relative rounded-[30px] border border-[rgba(37,133,255,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(247,248,255,0.94)_100%)] p-3 shadow-[0_24px_52px_rgba(37,133,255,0.1)] backdrop-blur-xl">
+                  <div className="relative rounded-[30px] border border-[rgba(217,152,30,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(255, 248, 247,0.94)_100%)] p-3 shadow-[0_24px_52px_rgba(217,152,30,0.1)] backdrop-blur-xl">
                     <div className="absolute inset-x-8 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.92),transparent)]" />
-                    <div className="rounded-[24px] border border-[rgba(255,255,255,0.75)] bg-[linear-gradient(180deg,rgba(248,249,255,0.98)_0%,rgba(255,255,255,1)_100%)] p-1.5">
+                    <div className="rounded-[24px] border border-[rgba(255,255,255,0.75)] bg-[linear-gradient(180deg,rgba(255, 249, 248,0.98)_0%,rgba(255,255,255,1)_100%)] p-1.5">
                       <ProductMockup
                         copy={strings[lang].mockup}
                         lang={lang}
@@ -1157,13 +1225,13 @@ export default function HomePage() {
                   }}
                 >
                   <div className="rounded-[26px] border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.96)] px-5 py-4 shadow-[0_18px_44px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-                    <p className="text-[11px] font-[800] uppercase tracking-[0.15em] text-[#125be8]">
+                    <p className="text-[11px] font-[800] uppercase tracking-[0.15em] text-[#a35707]">
                       {lang === "ru" ? "Разберём по частям" : "Let's break it down"}
                     </p>
-                    <h2 className="mt-2.5 text-[20px] font-[700] leading-[1] tracking-[-0.04em] text-[#111111]">
+                    <h2 className="mt-2.5 text-[20px] font-[700] leading-[1] tracking-[-0.04em] text-[#1a1917]">
                       {activeMobileHintContent.title}
                     </h2>
-                    <p className="mt-2.5 text-[12px] leading-[1.45] text-[#61616a]">
+                    <p className="mt-2.5 text-[12px] leading-[1.45] text-[#6b665e]">
                       {activeMobileHintContent.body}
                     </p>
                     <div className="mt-4 flex gap-2">
@@ -1174,7 +1242,7 @@ export default function HomePage() {
                           style={{
                             width: activeScrollHint === id ? 22 : 6,
                             height: 6,
-                            backgroundColor: activeScrollHint === id ? "#2585ff" : "#d1d1d6",
+                            backgroundColor: activeScrollHint === id ? "#c9820f" : "#d6d1d1",
                           }}
                         />
                       ))}
@@ -1198,8 +1266,11 @@ export default function HomePage() {
             style={{
               minHeight: "100svh",
               padding: "132px clamp(20px, 4vw, 40px) 88px",
+              // Bottom fades to transparent (not solid #fff4ee) so the panel has
+              // no hard bottom edge — the blue dissolves into the section below
+              // instead of cutting a visible seam at the hero→scrolly handoff.
               background:
-                "linear-gradient(180deg, #fdfdff 0%, #f8f9ff 54%, #f2f4ff 100%)",
+                "linear-gradient(180deg, #ffffff 0%, #fffaf7 48%, #fff4ee 84%, rgba(255, 244, 238,0) 100%)",
             }}
           >
             <div
@@ -1207,19 +1278,30 @@ export default function HomePage() {
               aria-hidden="true"
               style={{
                 background:
-                  "radial-gradient(circle at 16% 18%, rgba(37,133,255,0.16), transparent 26%), radial-gradient(circle at 84% 16%, rgba(34,211,238,0.16), transparent 24%), radial-gradient(circle at 48% 58%, rgba(255,255,255,0.74), transparent 26%)",
+                  "radial-gradient(circle at 16% 18%, rgba(217,152,30,0.06), transparent 26%), radial-gradient(circle at 84% 16%, rgba(210,194,172,0.16), transparent 24%), radial-gradient(circle at 48% 58%, rgba(255,255,255,0.74), transparent 26%)",
               }}
             />
             <div
-              className="absolute inset-x-[-8%] bottom-[-14%] h-[32%] rounded-[100%] border border-[rgba(37,133,255,0.14)] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.92)_0%,rgba(243,246,255,0.62)_58%,rgba(243,246,255,0)_100%)]"
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-[48vh] blur-2xl"
+              aria-hidden="true"
+              style={{
+                // Soft blue "cloud" that glows in the lower panel then dissipates
+                // back to transparent BEFORE the bottom edge, so it never stacks a
+                // hard bluish band at the seam — it just melts away.
+                background:
+                  "linear-gradient(180deg, rgba(255, 244, 240,0) 0%, rgba(255, 242, 232,0.32) 44%, rgba(255, 244, 234,0.4) 70%, rgba(255, 245, 238,0) 100%)",
+              }}
+            />
+            <div
+              className="absolute inset-x-[-8%] bottom-[-14%] h-[32%] rounded-[100%] border border-[rgba(217,152,30,0.26)] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.92)_0%,rgba(255, 246, 243,0.62)_58%,rgba(255, 246, 243,0)_100%)]"
               aria-hidden="true"
             />
             <div
-              className="absolute inset-x-[-16%] bottom-[-23%] h-[42%] rounded-[100%] border border-[rgba(148,163,184,0.14)] opacity-70"
+              className="absolute inset-x-[-16%] bottom-[-23%] h-[42%] rounded-[100%] border border-[rgba(150,140,124,0.22)] opacity-80"
               aria-hidden="true"
             />
             <div
-              className="absolute inset-x-[-26%] bottom-[-32%] h-[50%] rounded-[100%] border border-[rgba(148,163,184,0.1)] opacity-55"
+              className="absolute inset-x-[-26%] bottom-[-32%] h-[50%] rounded-[100%] border border-[rgba(150,140,124,0.16)] opacity-70"
               aria-hidden="true"
             />
             <div
@@ -1245,18 +1327,19 @@ export default function HomePage() {
                   willChange: "transform, opacity, filter",
                 }}
               >
+                <div className="rounded-[28px] bg-[rgba(255,253,250,0.62)] p-7 shadow-[0_28px_64px_-30px_rgba(26,25,23,0.28)] backdrop-blur-xl">
                 <AnimateOnScroll
                   as="p"
                   delay={0}
-                  className="mb-5 inline-flex items-center gap-2 rounded-full border border-[rgba(37,133,255,0.16)] bg-[rgba(232,244,255,0.72)] px-4 py-2 text-[12px] font-[800] uppercase tracking-[0.16em] text-[#125be8] shadow-[0_12px_30px_rgba(37,133,255,0.08)] backdrop-blur-sm"
+                  className="mb-5 inline-flex items-center gap-2 rounded-full border border-[rgba(217,152,30,0.16)] bg-[rgba(255, 244, 232,0.72)] px-4 py-2 text-[12px] font-[800] uppercase tracking-[0.16em] text-[#a35707] shadow-[0_12px_30px_rgba(217,152,30,0.08)] backdrop-blur-sm"
                 >
-                  <span className="h-2 w-2 rounded-full bg-[#2585ff]" aria-hidden="true" />
+                  <span className="h-2 w-2 rounded-full bg-[#c9820f]" aria-hidden="true" />
                   {t("heroEyebrow")}
                 </AnimateOnScroll>
                 <AnimateOnScroll
                   as="h1"
                   delay={0.08}
-                  className="mb-5 max-w-[640px] leading-[0.95] text-[#111111]"
+                  className="mb-5 max-w-[640px] leading-[0.95] text-[#1a1917]"
                   style={{
                     ...UI_DISPLAY_STYLE,
                     fontSize: "clamp(42px, 4.5vw, 64px)",
@@ -1271,7 +1354,7 @@ export default function HomePage() {
                 <AnimateOnScroll
                   as="p"
                   delay={0.16}
-                  className="mb-8 max-w-[420px] text-[16px] font-[400] leading-[1.62] text-[#5a5d68] md:max-w-[380px] md:text-[17px]"
+                  className="mb-8 max-w-[420px] text-[16px] font-[400] leading-[1.62] text-[#6b665e] md:max-w-[380px] md:text-[17px]"
                 >
                   {t("heroSub")}
                 </AnimateOnScroll>
@@ -1284,7 +1367,7 @@ export default function HomePage() {
                   </OriginLink>
                   <a
                     href="#scrolly-desktop"
-                    className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.78)] px-6 text-[15px] font-[600] leading-none text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2585ff] focus-visible:ring-offset-2"
+                    className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.78)] px-6 text-[15px] font-[600] leading-none text-[#1a1917] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c9820f] focus-visible:ring-offset-2"
                   >
                     {t("heroSecondary")}
                   </a>
@@ -1295,16 +1378,17 @@ export default function HomePage() {
                 >
                   {heroMetrics.map((metric) => (
                     <div key={metric.title} className="min-w-[136px]">
-                      <p className="text-[18px] font-[800] leading-none text-[#125be8] md:text-[20px]">
+                      <p className="text-[18px] font-[800] leading-none text-[#a35707] md:text-[20px]">
                         {metric.title}
                       </p>
-                      <p className="mt-2 text-[15px] font-[400] leading-[1.45] text-[#868895] md:text-[16px]">
+                      <p className="mt-2 text-[15px] font-[400] leading-[1.45] text-[#6b665e] md:text-[16px]">
                         <span className="block">{metric.lines[0]}</span>
                         <span className="block">{metric.lines[1]}</span>
                       </p>
                     </div>
                   ))}
                 </AnimateOnScroll>
+                </div>
               </div>
 
               {animComplete && (
@@ -1328,10 +1412,10 @@ export default function HomePage() {
                   <div
                     style={{
                       paddingLeft: 28,
-                      borderLeft: "1px solid rgba(209,209,214,0.9)",
+                      borderLeft: "1px solid rgba(214, 209, 209,0.9)",
                     }}
                   >
-                    <p className="mb-5 text-[13px] font-[600] uppercase tracking-[0.16em] text-[#6e6e73]">
+                    <p className="mb-5 text-[13px] font-[600] uppercase tracking-[0.16em] text-[#6b665e]">
                       {lang === "ru" ? "Разберём по шагам" : "Let's break it down"}
                     </p>
                     {activeScrollHint ? (
@@ -1341,12 +1425,12 @@ export default function HomePage() {
                           style={{
                             ...UI_DISPLAY_STYLE,
                             fontSize: "clamp(30px, 3vw, 44px)",
-                            color: "#1d1d1f",
+                            color: "#1a1917",
                           }}
                         >
                           {scrollHintContent[activeScrollHint as (typeof HINT_IDS)[number]]?.title}
                         </h2>
-                        <p className="text-[16px] font-[400] leading-[1.62] text-[#6e6e73] md:text-[17px]">
+                        <p className="text-[16px] font-[400] leading-[1.62] text-[#6b665e] md:text-[17px]">
                           {scrollHintContent[activeScrollHint as (typeof HINT_IDS)[number]]?.body}
                         </p>
                       </div>
@@ -1359,7 +1443,7 @@ export default function HomePage() {
                           style={{
                             width: activeScrollHint === id ? 28 : 6,
                             height: 6,
-                            backgroundColor: activeScrollHint === id ? "#2585ff" : "#d1d1d6",
+                            backgroundColor: activeScrollHint === id ? "#c9820f" : "#d6d1d1",
                           }}
                         />
                       ))}
@@ -1389,14 +1473,14 @@ export default function HomePage() {
                     left: "50%",
                     transform: "translate(-50%, -50%)",
                     background:
-                      "radial-gradient(circle, rgba(37,133,255,0.18), transparent 62%), radial-gradient(circle at 32% 28%, rgba(34,211,238,0.14), transparent 38%)",
+                      "radial-gradient(circle, rgba(217,152,30,0.18), transparent 62%), radial-gradient(circle at 32% 28%, rgba(210,194,172,0.14), transparent 38%)",
                     filter: "blur(12px)",
                     opacity: cardGlowOpacity,
                   }}
                 />
-                <div className="relative rounded-[32px] border border-[rgba(37,133,255,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(247,248,255,0.94)_100%)] p-3 shadow-[0_30px_70px_rgba(37,133,255,0.1)] backdrop-blur-xl">
+                <div className="relative rounded-[32px] border border-[rgba(217,152,30,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(255, 248, 247,0.94)_100%)] p-3 shadow-[0_30px_70px_rgba(217,152,30,0.1)] backdrop-blur-xl">
                   <div className="absolute inset-x-10 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.94),transparent)]" />
-                  <div className="rounded-[28px] border border-[rgba(255,255,255,0.74)] bg-[linear-gradient(180deg,rgba(249,250,255,0.98)_0%,rgba(255,255,255,1)_100%)] p-2">
+                  <div className="rounded-[28px] border border-[rgba(255,255,255,0.74)] bg-[linear-gradient(180deg,rgba(255, 250, 249,0.98)_0%,rgba(255,255,255,1)_100%)] p-2">
                     <ProductMockup
                       copy={strings[lang].mockup}
                       lang={lang}
@@ -1440,7 +1524,7 @@ export default function HomePage() {
         <section
           ref={mobileScrollyRef}
           id="scrolly-mobile"
-          className="relative bg-[linear-gradient(180deg,#ffffff_0%,#fafbff_100%)] md:hidden"
+          className="relative bg-[linear-gradient(180deg,#fff4ee_0%,#ffffff_38%,#fffaf7_100%)] md:hidden"
           style={{ minHeight: "260vh" }}
         >
           <div
@@ -1462,10 +1546,10 @@ export default function HomePage() {
                   pointerEvents: scrollyStep === 0 ? "auto" : "none",
                 }}
               >
-                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(37,133,255,0.1)] text-[#2585ff]">
+                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(217,152,30,0.1)] text-[#a35707]">
                   <MobileStepOneIcon size={24} aria-hidden="true" />
                 </div>
-                <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
+                <p className="mt-4 text-[#1a1917]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
                   {mobileStorySteps[0].title}
                 </p>
               </div>
@@ -1484,10 +1568,10 @@ export default function HomePage() {
                   pointerEvents: scrollyStep === 1 ? "auto" : "none",
                 }}
               >
-                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(37,133,255,0.1)] text-[#2585ff]">
+                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(217,152,30,0.1)] text-[#a35707]">
                   <MessageSquareText size={24} aria-hidden="true" />
                 </div>
-                <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
+                <p className="mt-4 text-[#1a1917]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
                   {mobileStorySteps[1].title}
                 </p>
               </div>
@@ -1507,9 +1591,14 @@ export default function HomePage() {
                 }}
               >
                 <div className="mb-6">
-                  <ShortcutCue compact label={lang === "ru" ? "Хоткей" : "Shortcut"} />
+                  <ShortcutCue
+                    key={`mobile-shortcut-${lang}-${scrollyStep === 2 ? "active" : "idle"}`}
+                    compact
+                    active={scrollyStep === 2}
+                    label={lang === "ru" ? "Хоткей" : "Shortcut"}
+                  />
                 </div>
-                <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
+                <p className="mt-4 text-[#1a1917]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
                   {mobileStorySteps[2].title}
                 </p>
               </div>
@@ -1528,10 +1617,10 @@ export default function HomePage() {
                   pointerEvents: scrollyStep === 3 ? "auto" : "none",
                 }}
               >
-                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(33,168,154,0.12)] text-[#1f9d63]">
+                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(217,152,30,0.12)] text-[#a35707]">
                   <MobileStepFourIcon size={24} aria-hidden="true" />
                 </div>
-                <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
+                <p className="mt-4 text-[#1a1917]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
                   {mobileStorySteps[3].title}
                 </p>
               </div>
@@ -1545,10 +1634,10 @@ export default function HomePage() {
                   pointerEvents: scrollyStep === 4 ? "auto" : "none",
                 }}
               >
-                <p className="text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
+                <p className="text-[#1a1917]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
                   {t("scrollyStep5")}
                 </p>
-                <p className="mx-auto mt-5 max-w-[28ch] text-[15px] leading-[1.6] text-[#666670]">
+                <p className="mx-auto mt-5 max-w-[28ch] text-[15px] leading-[1.6] text-[#6b665e]">
                   {t("scrollyStep5Sub")}
                 </p>
                 <OriginLink href="#download" size="lg" className="mt-7 w-full">
@@ -1563,16 +1652,38 @@ export default function HomePage() {
         <section
           ref={scrollyRef}
           id="scrolly-desktop"
-          // Transparent + pulled up: its content cross-fades in over the hero's
-          // dissolving card (which fades via heroExit), so there is no empty gap
-          // and no opaque block covering the still-pinned card. Body is white, so
-          // the deeper steps still read on white.
+          // The top remains partially transparent because this section is pulled
+          // into the hero handoff; then it fades to white so the background seam
+          // does not cut sharply across the scrolly transition.
+          // NOTE: overflow-hidden must NOT live on this section — it is the sticky
+          // child's parent, and a scroll-container ancestor breaks position:sticky
+          // (the steps would scroll away instead of pinning). The decorative orbs
+          // are clipped by their own inner overflow-hidden wrapper below instead.
           className="relative hidden md:block"
           // minHeight = pace of the step effect (taller = more scroll per step,
           // so the text lingers longer). marginTop = how far it's pulled up into
           // the hero handoff (less negative = text sits a little lower).
-          style={{ minHeight: "440vh", marginTop: "-44vh" }}
+          style={{
+            minHeight: "440vh",
+            marginTop: "-44vh",
+            background:
+              "linear-gradient(180deg, rgba(255, 250, 246,0) 0%, rgba(255, 249, 244,0.18) 22%, rgba(255, 251, 248,0.62) 48%, rgba(255,255,255,0.94) 72%, #ffffff 100%)",
+          }}
         >
+          {/* Seam glow removed: the bright water orbs that used to sit at the top
+              of this section only ever rendered during the hero→scrolly handoff,
+              where they washed a white/blue veil over the still-fading mockup.
+              The section background gradient + hero bottom glow carry the seam. */}
+          <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 h-[22vh]"
+            aria-hidden="true"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(255, 244, 235,0.14) 0%, rgba(255,255,255,0.03) 46%, rgba(255,255,255,0) 100%)",
+            }}
+          />
+          </div>
           <div
             className="sticky top-0 flex items-center"
             style={{ minHeight: "100svh", padding: "112px 20px" }}
@@ -1588,7 +1699,7 @@ export default function HomePage() {
                 }}
               >
                 <div
-                  className="mb-8 inline-flex text-[#2585ff]"
+                  className="mb-8 inline-flex text-[#a35707]"
                   style={{
                     transition: "transform 350ms cubic-bezier(0.4, 0, 0.2, 1), opacity 350ms cubic-bezier(0.4, 0, 0.2, 1)",
                     transitionDelay: scrollyStep === 0 ? "100ms" : "0ms",
@@ -1599,7 +1710,7 @@ export default function HomePage() {
                 >
                   <MobileStepOneIcon size={32} />
                 </div>
-                <p className="text-[#1d1d1f]" style={SCROLL_DISPLAY_STYLE}>
+                <p className="text-[#1a1917]" style={SCROLL_DISPLAY_STYLE}>
                   {t("scrollyStep1")}
                 </p>
               </div>
@@ -1614,7 +1725,7 @@ export default function HomePage() {
                 }}
               >
                 <div
-                  className="mb-8 inline-flex text-[#2585ff]"
+                  className="mb-8 inline-flex text-[#a35707]"
                   style={{
                     transition: "transform 350ms cubic-bezier(0.4, 0, 0.2, 1), opacity 350ms cubic-bezier(0.4, 0, 0.2, 1)",
                     transitionDelay: scrollyStep === 1 ? "100ms" : "0ms",
@@ -1625,7 +1736,7 @@ export default function HomePage() {
                 >
                   <MessageSquareText size={32} />
                 </div>
-                <p className="text-[#1d1d1f]" style={SCROLL_DISPLAY_STYLE}>
+                <p className="text-[#1a1917]" style={SCROLL_DISPLAY_STYLE}>
                   {t("scrollyStep2")}
                 </p>
               </div>
@@ -1648,9 +1759,13 @@ export default function HomePage() {
                     opacity: scrollyStep === 2 ? 1 : 0,
                   }}
                 >
-                  <ShortcutCue label={lang === "ru" ? "Хоткей" : "Shortcut"} />
+                  <ShortcutCue
+                    key={`desktop-shortcut-${lang}-${scrollyStep === 2 ? "active" : "idle"}`}
+                    active={scrollyStep === 2}
+                    label={lang === "ru" ? "Хоткей" : "Shortcut"}
+                  />
                 </div>
-                <p className="text-[#1d1d1f]" style={SCROLL_DISPLAY_STYLE}>
+                <p className="text-[#1a1917]" style={SCROLL_DISPLAY_STYLE}>
                   {t("scrollyStep3")}
                 </p>
               </div>
@@ -1664,7 +1779,7 @@ export default function HomePage() {
                   transitionTimingFunction: scrollyStep === 3 ? "cubic-bezier(0.4, 0, 0.2, 1)" : "cubic-bezier(0.4, 0, 1, 1)",
                 }}
               >
-                <p className="text-[#1d1d1f]" style={SCROLL_DISPLAY_STYLE}>
+                <p className="text-[#1a1917]" style={SCROLL_DISPLAY_STYLE}>
                   {t("scrollyStep4")}
                 </p>
               </div>
@@ -1678,10 +1793,10 @@ export default function HomePage() {
                   transitionTimingFunction: scrollyStep === 4 ? "cubic-bezier(0.4, 0, 0.2, 1)" : "cubic-bezier(0.4, 0, 1, 1)",
                 }}
               >
-                <p className="mb-6 text-[#1d1d1f]" style={SCROLL_DISPLAY_STYLE}>
+                <p className="mb-6 text-[#1a1917]" style={SCROLL_DISPLAY_STYLE}>
                   {t("scrollyStep5")}
                 </p>
-                <p className="mx-auto mb-7 max-w-[560px] text-[16px] font-[400] leading-[1.58] text-[#6e6e73] md:text-[17px]">
+                <p className="mx-auto mb-7 max-w-[560px] text-[16px] font-[400] leading-[1.58] text-[#6b665e] md:text-[17px]">
                   {t("scrollyStep5Sub")}
                 </p>
                 <OriginLink href="#download" size="sm">
@@ -1699,13 +1814,13 @@ export default function HomePage() {
         <section className="px-4 py-20 sm:px-5 md:py-28" id="features">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
             <AnimateOnScroll delay={0} className="mb-10 max-w-3xl md:mb-12">
-              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
+              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6b665e]">
                 {lang === "ru" ? "Как это работает" : "How it works"}
               </p>
               <h2 className="mb-5 text-[clamp(34px,4vw,54px)] font-[700] leading-[1.06] tracking-[-0.04em]">
                 {t("featuresTitle")}
               </h2>
-              <p className="max-w-[640px] text-[16px] font-[400] leading-[1.65] text-[#6e6e73] md:text-[17px]">
+              <p className="max-w-[640px] text-[16px] font-[400] leading-[1.65] text-[#6b665e] md:text-[17px]">
                 {t("featuresSub")}
               </p>
             </AnimateOnScroll>
@@ -1718,10 +1833,10 @@ export default function HomePage() {
                   className="pointer-events-none absolute -inset-x-6 -top-8 bottom-4 rounded-[40px] opacity-80 blur-[56px]"
                   style={{
                     background:
-                      "radial-gradient(60% 60% at 50% 0%, rgba(37,133,255,0.20), transparent 72%)",
+                      "radial-gradient(60% 60% at 50% 0%, rgba(217,152,30,0.20), transparent 72%)",
                   }}
                 />
-                <div className="relative overflow-hidden rounded-[24px] border border-[rgba(37,133,255,0.16)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(247,248,255,0.96)_100%)] p-2 shadow-[0_40px_90px_-36px_rgba(48,46,120,0.42)] backdrop-blur-xl">
+                <div className="relative overflow-hidden rounded-[24px] border border-[rgba(217,152,30,0.16)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(255, 248, 247,0.96)_100%)] p-2 shadow-[0_40px_90px_-36px_rgba(217,152,30,0.28)] backdrop-blur-xl">
                   <div
                     aria-hidden="true"
                     className="absolute inset-x-10 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.95),transparent)]"
@@ -1755,20 +1870,20 @@ export default function HomePage() {
                         {!isLast && (
                           <span
                             aria-hidden="true"
-                            className="absolute left-[23px] top-[54px] -bottom-7 w-px bg-[linear-gradient(180deg,rgba(37,133,255,0.35),rgba(37,133,255,0.07))]"
+                            className="absolute left-[23px] top-[54px] -bottom-7 w-px bg-[linear-gradient(180deg,rgba(217,152,30,0.35),rgba(217,152,30,0.07))]"
                           />
                         )}
-                        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-[15px] border border-[rgba(37,133,255,0.16)] bg-[linear-gradient(135deg,rgba(245,245,255,0.92),rgba(255,255,255,0.96))] text-[#2585ff] shadow-[0_8px_18px_-8px_rgba(37,133,255,0.4)]">
+                        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-[15px] border border-[rgba(217,152,30,0.16)] bg-[linear-gradient(135deg,rgba(255, 245, 245,0.92),rgba(255,255,255,0.96))] text-[#a35707] shadow-[0_8px_18px_-8px_rgba(217,152,30,0.4)]">
                           <StepIcon size={22} aria-hidden="true" />
                         </div>
                         <div className="pt-0.5">
-                          <p className="text-[12px] font-[800] uppercase tracking-[0.16em] text-[#168ecf]">
+                          <p className="text-[12px] font-[800] uppercase tracking-[0.16em] text-[#a35707]">
                             {String(i + 1).padStart(2, "0")}
                           </p>
-                          <h3 className="mt-1 text-[19px] font-[700] leading-[1.25] tracking-[-0.02em] text-[#1d1d1f]">
+                          <h3 className="mt-1 text-[19px] font-[700] leading-[1.25] tracking-[-0.02em] text-[#1a1917]">
                             {step.title}
                           </h3>
-                          <p className="mt-1.5 text-[15px] font-[400] leading-[1.6] text-[#6e6e73]">
+                          <p className="mt-1.5 text-[15px] font-[400] leading-[1.6] text-[#6b665e]">
                             {step.body}
                           </p>
                         </div>
@@ -1782,46 +1897,46 @@ export default function HomePage() {
         </section>
 
         {/* PRICING */}
-        <section className="bg-[linear-gradient(180deg,#f8fbff_0%,#edf6ff_100%)] px-4 py-20 sm:px-5 md:py-28" id="pricing">
+        <section className="bg-[linear-gradient(180deg,#fffbf8_0%,#fff6ed_100%)] px-4 py-20 sm:px-5 md:py-28" id="pricing">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
             <AnimateOnScroll delay={0} className="mb-10 max-w-3xl md:mb-12">
-              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
+              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6b665e]">
                 {t("pricingEyebrow")}
               </p>
               <h2 className="text-[clamp(34px,4vw,54px)] font-[700] leading-[1.06] tracking-[-0.04em]">
                 {t("pricingTitle")}
               </h2>
-              <p className="mt-5 max-w-[780px] text-[17px] font-[400] leading-[1.62] text-[#5a5a63]">
+              <p className="mt-5 max-w-[780px] text-[17px] font-[400] leading-[1.62] text-[#6b665e]">
                 {t("pricingSub")}
               </p>
-              <p className="mt-4 text-[14px] font-[600] text-[#3f3f46]">
+              <p className="mt-4 text-[14px] font-[600] text-[#423d36]">
                 {t("pricingTrustLine")}
               </p>
             </AnimateOnScroll>
             <AnimateOnScroll
               delay={0.06}
-              className="rounded-[28px] border border-[rgba(29,29,31,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(246,248,255,0.92)_100%)] p-7 shadow-[0_20px_48px_rgba(15,23,42,0.06)] sm:p-9"
+              className="rounded-[28px] border border-[rgba(29,29,31,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(255, 248, 246,0.92)_100%)] p-7 shadow-[0_20px_48px_rgba(15,23,42,0.06)] sm:p-9"
             >
               <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
                 <div>
-                  <p className="text-[13px] font-[800] uppercase tracking-[0.16em] text-[#125be8]">
+                  <p className="text-[13px] font-[800] uppercase tracking-[0.16em] text-[#a35707]">
                     {t("downloadCardLabel")}
                   </p>
-                  <h3 className="mt-3 text-[clamp(28px,3vw,40px)] font-[700] leading-[1.05] tracking-[-0.04em] text-[#1d1d1f]">
+                  <h3 className="mt-3 text-[clamp(28px,3vw,40px)] font-[700] leading-[1.05] tracking-[-0.04em] text-[#1a1917]">
                     {t("downloadCardTitle")}
                   </h3>
-                  <p className="mt-4 max-w-[56ch] text-[16px] font-[400] leading-[1.65] text-[#5a5a63]">
+                  <p className="mt-4 max-w-[56ch] text-[16px] font-[400] leading-[1.65] text-[#6b665e]">
                     {t("downloadCardBody")}
                   </p>
                 </div>
-                <div className="rounded-[24px] border border-[rgba(37,133,255,0.12)] bg-[rgba(255,255,255,0.88)] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
-                  <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#8a8a94]">
+                <div className="rounded-[24px] border border-[rgba(217,152,30,0.12)] bg-[rgba(255,255,255,0.88)] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+                  <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#6b665e]">
                     {t("downloadCardStatusLabel")}
                   </p>
-                  <p className="mt-3 text-[34px] font-[700] leading-none tracking-[-0.04em] text-[#1d1d1f]">
+                  <p className="mt-3 text-[34px] font-[700] leading-none tracking-[-0.04em] text-[#1a1917]">
                     {t("downloadCardStatus")}
                   </p>
-                  <p className="mt-4 text-[15px] font-[400] leading-[1.6] text-[#6e6e73]">
+                  <p className="mt-4 text-[15px] font-[400] leading-[1.6] text-[#6b665e]">
                     {t("downloadCardNote")}
                   </p>
                   <OriginLink href="#download" size="md" className="mt-6 w-full">
@@ -1837,7 +1952,7 @@ export default function HomePage() {
         <section className="px-4 py-20 sm:px-5 md:py-28" id="faq">
           <div className="mx-auto" style={{ maxWidth: "min(720px, 100%)" }}>
             <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
-              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
+              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6b665e]">
                 {t("faqEyebrow")}
               </p>
               <h2 className="text-[clamp(34px,4vw,54px)] font-[700] leading-[1.06] tracking-[-0.04em]">
@@ -1854,13 +1969,13 @@ export default function HomePage() {
 
         <section
           id="download"
-          className="border-y border-[rgba(37,133,255,0.12)] bg-[linear-gradient(180deg,#ffffff_0%,#f1f8ff_54%,#eaf5ff_100%)] px-4 py-20 text-center sm:px-5 md:py-28"
+          className="border-y border-[rgba(217,152,30,0.12)] bg-[linear-gradient(180deg,#ffffff_0%,#fff8f1_54%,#fff5ea_100%)] px-4 py-20 text-center sm:px-5 md:py-28"
         >
           <div className="mx-auto" style={{ maxWidth: "min(900px, 100%)" }}>
-            <h2 className="text-[clamp(28px,4vw,46px)] font-[700] leading-[1.08] tracking-[-0.04em] text-[#1d1d1f]">
+            <h2 className="text-[clamp(28px,4vw,46px)] font-[700] leading-[1.08] tracking-[-0.04em] text-[#1a1917]">
               {lang === "ru" ? "Скачать LiveAssist AI" : "Download LiveAssist AI"}
             </h2>
-            <p className="mx-auto mt-4 max-w-[52ch] text-[16px] font-[400] leading-[1.6] text-[#6e6e73] md:text-[17px]">
+            <p className="mx-auto mt-4 max-w-[52ch] text-[16px] font-[400] leading-[1.6] text-[#6b665e] md:text-[17px]">
               {lang === "ru"
                 ? "Доступно для Mac, Windows и Linux. Попробуйте бесплатно."
                 : "Available for Mac, Windows, and Linux. Free to try."}
@@ -1869,8 +1984,9 @@ export default function HomePage() {
             <div className="mx-auto mt-10 grid max-w-[640px] gap-3 sm:grid-cols-3">
               {[
                 {
-                  href: "https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI-0.1.0-arm64.dmg",
+                  href: getDownloadHref("mac-arm64"),
                   label: "Mac",
+                  platform: "mac-arm64" as DownloadPlatform,
                   sub: "Apple Silicon",
                   icon: (
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -1879,8 +1995,9 @@ export default function HomePage() {
                   ),
                 },
                 {
-                  href: "https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI.Setup.0.1.0.1.exe",
+                  href: getDownloadHref("windows"),
                   label: "Windows",
+                  platform: "windows" as DownloadPlatform,
                   sub: "Windows 10/11",
                   icon: (
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -1889,8 +2006,9 @@ export default function HomePage() {
                   ),
                 },
                 {
-                  href: "https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI-0.1.0.1.AppImage",
+                  href: getDownloadHref("linux"),
                   label: "Linux",
+                  platform: "linux" as DownloadPlatform,
                   sub: "AppImage",
                   icon: (
                     <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -1902,20 +2020,21 @@ export default function HomePage() {
                 <OriginLink
                   key={item.label}
                   href={item.href}
+                  onClick={() => trackDownloadClick(item.platform)}
                   variant="platform"
                   contentClassName="flex min-w-0 items-center gap-3"
                 >
-                  <span className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-white/18 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.24)]">
+                  <span className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-[rgba(74,47,8,0.08)] text-[#4a2f08] shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]">
                     {item.icon}
                   </span>
                   <span className="relative z-10 min-w-0">
-                    <span className="block text-[11px] font-[600] uppercase tracking-[0.08em] text-white/68">
+                    <span className="block text-[11px] font-[600] uppercase tracking-[0.08em] text-[rgba(74,47,8,0.6)]">
                       {lang === "ru" ? "Скачать для" : "Download for"}
                     </span>
-                    <span className="block text-[15px] font-[800] leading-tight tracking-[-0.01em] text-white">
+                    <span className="block text-[15px] font-[800] leading-tight tracking-[-0.01em] text-[#4a2f08]">
                       {item.label}
                     </span>
-                    <span className="block text-[11px] font-[500] text-white/68">
+                    <span className="block text-[11px] font-[500] text-[rgba(74,47,8,0.6)]">
                       {item.sub}
                     </span>
                   </span>
@@ -1923,11 +2042,11 @@ export default function HomePage() {
               ))}
             </div>
 
-            <p className="mx-auto mt-7 inline-flex max-w-[52ch] flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-[13px] leading-[1.5] text-[#8a8a94]">
+            <p className="mx-auto mt-7 inline-flex max-w-[52ch] flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-[13px] leading-[1.5] text-[#6b665e]">
               {lang === "ru"
                 ? "Для Mac после установки выполните в Terminal:"
                 : "Mac users — after install, run in Terminal:"}
-              <code className="rounded-md bg-[#f5f5f7] px-2 py-0.5 text-[12px] text-[#3f3f46]">
+              <code className="rounded-md bg-[#f7f5f5] px-2 py-0.5 text-[12px] text-[#423d36]">
                 {"xattr -cr /Applications/LiveAssist\\ AI.app"}
               </code>
             </p>

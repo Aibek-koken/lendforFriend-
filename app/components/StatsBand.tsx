@@ -87,19 +87,19 @@ export function StatsBand({ lang }: { lang: Lang }) {
     <section className="px-4 py-14 sm:px-5 md:py-20">
       <div
         ref={ref}
-        className="relative mx-auto overflow-hidden rounded-[28px] border border-[rgba(37,133,255,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(244,246,255,0.92)_100%)] px-5 py-9 shadow-[0_24px_60px_rgba(37,133,255,0.08)] sm:px-10 sm:py-12"
+        className="relative mx-auto overflow-hidden rounded-[28px] border border-[rgba(217,152,30,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(255, 246, 244,0.92)_100%)] px-5 py-9 shadow-[0_24px_60px_rgba(217,152,30,0.08)] sm:px-10 sm:py-12"
         style={{ maxWidth: "min(1080px, 100%)" }}
       >
         {/* soft floating orbs */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -left-16 -top-20 h-56 w-56 rounded-full blur-[60px]"
-          style={{ background: "radial-gradient(circle, rgba(37,133,255,0.18), transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, rgba(217,152,30,0.18), transparent 70%)" }}
         />
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -bottom-24 -right-10 h-64 w-64 rounded-full blur-[70px]"
-          style={{ background: "radial-gradient(circle, rgba(33,168,154,0.14), transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, rgba(210,194,172,0.18), transparent 70%)" }}
         />
 
         <div className="relative grid grid-cols-2 gap-x-4 gap-y-9 md:grid-cols-4">
@@ -117,7 +117,7 @@ export function StatsBand({ lang }: { lang: Lang }) {
                 className="bg-clip-text text-[clamp(34px,6vw,52px)] font-[800] leading-none tracking-[-0.03em] text-transparent"
                 style={{
                   backgroundImage:
-                    "linear-gradient(135deg, #2585ff 0%, #125be8 55%, #1f9d9a 120%)",
+                    "linear-gradient(135deg, #c9820f 0%, #c9820f 55%, #e0a92e 120%)",
                 }}
               >
                 {stat.display ? (
@@ -133,7 +133,7 @@ export function StatsBand({ lang }: { lang: Lang }) {
                   />
                 )}
               </p>
-              <p className="mx-auto mt-2.5 max-w-[18ch] text-[13px] font-[500] leading-[1.4] text-[#6e6e73] sm:text-[14px]">
+              <p className="mx-auto mt-2.5 max-w-[18ch] text-[13px] font-[500] leading-[1.4] text-[#6b665e] sm:text-[14px]">
                 {stat.label}
               </p>
             </div>

@@ -277,7 +277,7 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                     aria-hidden="true"
                     style={{
                       background:
-                        'radial-gradient(circle at var(--cursor-x) var(--cursor-y), rgba(126,231,220,0.16), transparent 24%), linear-gradient(120deg, rgba(255,255,255,0.05), transparent 42%)',
+                        'radial-gradient(circle at var(--cursor-x) var(--cursor-y), rgba(143,227,255,0.2), transparent 26%), linear-gradient(120deg, rgba(255,255,255,0.05), transparent 42%)',
                     }}
                   />
 
@@ -290,7 +290,7 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                   <span className="text-sm font-[600] uppercase tracking-[0.14em] text-white/[0.46]">
                           {text.callTitle}
                         </span>
-                  <span className="rounded-full bg-[#21a89a]/[0.14] px-3 py-1.5 text-xs font-[700] text-[#7ee7dc]">
+                  <span className="rounded-full bg-[#2585ff]/[0.14] px-3 py-1.5 text-xs font-[700] text-[#8fe3ff]">
                           active
                         </span>
                       </div>
@@ -310,20 +310,20 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                     >
                 <div className="mb-5 flex items-start justify-between gap-5">
                         <div>
-                    <p className="text-sm font-[600] uppercase tracking-[0.14em] text-[#b9bbff]">
+                    <p className="text-sm font-[600] uppercase tracking-[0.14em] text-[#8fe3ff]">
                             {text.overlayTitle}
                           </p>
                     <p className="mt-3 text-[22px] font-[700] leading-[1.25] tracking-[-0.03em] text-white">
                             {activeMoment.title}
                           </p>
                         </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 text-[#7ee7dc]">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 text-[#8fe3ff]">
                     <ActiveIcon size={22} aria-hidden="true" />
                         </div>
                       </div>
                 <p className="text-[16px] font-[400] leading-[1.6] text-[#d7d9e5]">{text.overlayBody}</p>
                 <div className="mt-6 rounded-[12px] border border-white/10 bg-black/[0.24] p-4">
-                  <div className="flex items-center gap-2 text-sm font-[600] uppercase tracking-[0.12em] text-[#7ee7dc]">
+                  <div className="flex items-center gap-2 text-sm font-[600] uppercase tracking-[0.12em] text-[#8fe3ff]">
                     <FileText size={16} aria-hidden="true" />
                           {text.sourceLabel}
                         </div>
@@ -338,10 +338,10 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                   >
               <div className="rounded-[12px] border border-white/10 bg-black/[0.28] p-5 font-mono text-sm text-[#aeb2c4]">
                       <p>
-                        <span className="text-[#7ee7dc]">$</span> {text.terminalOne}
+                        <span className="text-[#8fe3ff]">$</span> {text.terminalOne}
                       </p>
                       <p className="mt-2">
-                        <span className="text-[#b9bbff]">✓</span> {text.terminalTwo}
+                        <span className="text-[#8fe3ff]">✓</span> {text.terminalTwo}
                       </p>
                     </div>
               <div className="rounded-[12px] border border-white/10 bg-white/[0.06] p-5">
@@ -367,19 +367,19 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.98 }}
                         transition={{ duration: prefersReducedMotion ? 0 : 0.18, ease: [0, 0, 0.2, 1] }}
-                className="rounded-[14px] border border-white/[0.14] bg-[#f7f8ff] p-5 text-[#17181d] shadow-[0_18px_46px_rgba(0,0,0,0.28)]"
+                className="rounded-[14px] border border-white/[0.14] bg-[#f7faff] p-5 text-[#17181d] shadow-[0_18px_46px_rgba(0,0,0,0.28)]"
                       >
                 <p className="text-xs font-[700] uppercase tracking-[0.13em] text-[#2585ff]">
                           {activeMoment.label}
                         </p>
                 <p className="mt-2 text-lg font-[700] leading-[1.25] tracking-[-0.02em]">{activeMoment.title}</p>
-                <p className="mt-3 text-[16px] font-[400] leading-[1.55] text-[#555864]">{activeMoment.body}</p>
+                <p className="mt-3 text-[16px] font-[400] leading-[1.55] text-[#6e6e73]">{activeMoment.body}</p>
                       </motion.div>
                     </AnimatePresence>
                   </div>
 
                   <div
-            className={`pointer-events-none absolute z-10 flex h-12 w-12 items-center justify-center rounded-full border border-[#7ee7dc]/40 bg-[#7ee7dc]/[0.12] text-[#7ee7dc] shadow-[0_0_28px_rgba(126,231,220,0.26)] ${
+            className={`pointer-events-none absolute z-10 flex h-12 w-12 items-center justify-center rounded-full border border-[#8fe3ff]/40 bg-[#8fe3ff]/[0.12] text-[#8fe3ff] shadow-[0_0_30px_rgba(143,227,255,0.32)] ${
                       isInside ? 'opacity-100' : 'opacity-55'
                     }`}
                     style={{
@@ -404,10 +404,10 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                           setActiveId(moment.id);
                           setPointer({ x: moment.x, y: moment.y });
                         }}
-                className={`absolute z-10 flex h-11 w-11 items-center justify-center rounded-full border text-white transition-colors focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[#7ee7dc] ${
+                className={`absolute z-10 flex h-11 w-11 items-center justify-center rounded-full border text-white transition-colors focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[#8fe3ff] ${
                           activeMoment.id === moment.id
-                            ? 'border-[#7ee7dc] bg-[#21a89a]/[0.28]'
-                            : 'border-white/[0.16] bg-white/10 hover:border-[#7ee7dc]/70'
+                            ? 'border-[#8fe3ff] bg-[#2585ff]/[0.28]'
+                            : 'border-white/[0.16] bg-white/10 hover:border-[#8fe3ff]/70'
                         }`}
                         style={{
                           left: `${moment.x}%`,
@@ -434,9 +434,9 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                     setPointer({ x: moment.x, y: moment.y });
                     setIsInside(true);
                   }}
-            className={`min-h-[52px] rounded-[10px] border px-8 py-3 text-left text-sm font-[600] transition-colors focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[#7ee7dc] ${
+            className={`min-h-[52px] rounded-[10px] border px-8 py-3 text-left text-sm font-[600] transition-colors focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[#8fe3ff] ${
                     activeMoment.id === moment.id
-                      ? 'border-[#7ee7dc]/70 bg-[#21a89a]/[0.18] text-white'
+                      ? 'border-[#8fe3ff]/70 bg-[#2585ff]/[0.18] text-white'
                       : 'border-white/10 bg-white/[0.04] text-white/[0.62] hover:border-white/[0.24] hover:text-white'
                   }`}
                 >

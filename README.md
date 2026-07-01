@@ -27,9 +27,23 @@ Use the project URL format `https://<project-ref>.supabase.co`, not the `/rest/v
 
 `SUPABASE_SERVICE_ROLE_KEY` is only used on the server inside the route handler. Do not expose it in client-side code.
 
+## Anonymous analytics
+
+Set `POSTHOG_API_KEY` and `POSTHOG_HOST` in `.env.local` to enable basic funnel analytics.
+
+Tracked landing events:
+
+- `landing_viewed`
+- `download_clicked`
+- `download_redirected`
+
+The landing page stores a random browser id in `localStorage` only to connect landing and download events. It does not send emails, document content, filenames, questions, answers, or other private product data.
+
 ## Project structure
 
 - `app/page.tsx` - main landing page.
+- `app/api/download/[platform]/route.ts` - tracked download redirects.
+- `lib/analytics.ts` - server-side analytics capture helper.
 - `app/components/ProductMockup.tsx` - animated product demo in the hero.
 - `lib/strings.ts` - English and Russian landing copy.
 - `app/globals.css` - global Tailwind styles and animation keyframes.
