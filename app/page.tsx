@@ -1327,7 +1327,7 @@ export default function HomePage() {
                   willChange: "transform, opacity, filter",
                 }}
               >
-                <div className="rounded-[28px] bg-[rgba(255,253,250,0.62)] p-7 shadow-[0_28px_64px_-30px_rgba(26,25,23,0.28)] backdrop-blur-xl">
+                <div className="relative max-w-[560px]">
                 <AnimateOnScroll
                   as="p"
                   delay={0}
@@ -1374,10 +1374,13 @@ export default function HomePage() {
                 </AnimateOnScroll>
                 <AnimateOnScroll
                   delay={0.26}
-                  className="flex flex-wrap gap-x-8 gap-y-5"
+                  className="grid max-w-[590px] grid-cols-1 gap-4 pt-1 lg:grid-cols-3"
                 >
                   {heroMetrics.map((metric) => (
-                    <div key={metric.title} className="min-w-[136px]">
+                    <div
+                      key={metric.title}
+                      className="min-h-[142px] min-w-0 rounded-[22px] border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.84)] px-5 py-5 shadow-[0_18px_44px_rgba(26,25,23,0.055)] backdrop-blur-sm"
+                    >
                       <p className="text-[18px] font-[800] leading-none text-[#a35707] md:text-[20px]">
                         {metric.title}
                       </p>
