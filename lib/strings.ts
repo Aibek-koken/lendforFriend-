@@ -77,6 +77,13 @@ export const strings = {
     emailSuccess:
       "You’re on the waitlist. We’ll email you when early access opens.",
     footerTagline: "Instant answers from company docs.",
+    footerDescription:
+      "The private desktop overlay that turns your company docs into instant, cited answers during live calls.",
+    footerConnect: "Contact",
+    footerLegal: "Legal",
+    footerFollow: "Follow",
+    footerRights: "All rights reserved.",
+    footerBuiltBy: "Built by Aibek Zharylkassyn",
     privacy: "Privacy",
     terms: "Terms",
     contact: "Contact",
@@ -259,6 +266,13 @@ export const strings = {
     emailSuccess:
       "Вы в листе ожидания. Напишем, когда откроем ранний доступ.",
     footerTagline: "Мгновенные ответы из документов компании.",
+    footerDescription:
+      "Приватный десктоп-оверлей, который превращает документы компании в мгновенные ответы с источником прямо во время звонков.",
+    footerConnect: "Контакты",
+    footerLegal: "Правовое",
+    footerFollow: "Мы в соцсетях",
+    footerRights: "Все права защищены.",
+    footerBuiltBy: "Сделал Айбек Жарылкасын",
     privacy: "Конфиденциальность",
     terms: "Условия",
     contact: "Контакты",

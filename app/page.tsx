@@ -23,6 +23,7 @@ import { InteractiveFooter } from "../components/InteractiveFooter";
 import { getLandingVisitorId, trackLandingEvent } from "../lib/clientAnalytics";
 import ProductMockup from "./components/ProductMockup";
 import { StatsBand } from "./components/StatsBand";
+import HeroOrbit from "./components/HeroOrbit";
 
 const navConfig = [
   { id: "features", labelKey: "navHow", url: "#features", icon: PlayCircle },
@@ -69,11 +70,6 @@ function clamp01(value: number) {
 function mix(from: number, to: number, progress: number) {
   return from + (to - from) * progress;
 }
-
-type HeroMetric = {
-  title: string;
-  lines: [string, string];
-};
 
 type HintStory = {
   title: string;
@@ -232,6 +228,9 @@ export default function HomePage() {
   const [landingVisitorId, setLandingVisitorId] = useState("");
   // Header auto-hide on scroll down / reveal on scroll up.
   const [headerHidden, setHeaderHidden] = useState(false);
+  // Chameleon header: light-on-dark while the header floats over the dark hero,
+  // then back to the default dark-on-light once it reaches the warm body.
+  const [onDark, setOnDark] = useState(true);
   // True briefly while an anchor-link smooth scroll is in flight, so the
   // scroll-snap is suppressed and the header stays visible during the jump.
   const navigatingRef = useRef(false);
@@ -268,20 +267,6 @@ export default function HomePage() {
     },
     [landingVisitorId, lang]
   );
-
-
-  const heroMetrics: HeroMetric[] =
-    lang === "ru"
-      ? [
-          { title: "Загрузил", lines: ["Документы готовы", "к каждому звонку"] },
-          { title: "Спросил", lines: ["Вопрос задаёшь", "прямо в моменте"] },
-          { title: "Ответил", lines: ["Источник рядом", "и паузы нет"] },
-        ]
-      : [
-          { title: "Upload", lines: ["Docs stay ready", "for every call"] },
-          { title: "Ask", lines: ["Use it live", "in the moment"] },
-          { title: "Answer", lines: ["Source attached", "no awkward pause"] },
-        ];
 
   const usageSteps =
     lang === "ru"
@@ -320,10 +305,6 @@ export default function HomePage() {
           },
         ];
 
-  const heroHeadlineLines =
-    lang === "ru"
-      ? ["Больше не теряйся", "на звонке с клиентом."]
-      : ["Never freeze", "on a client call again."];
 
   const scrollHintContent: Record<(typeof HINT_IDS)[number], HintStory> =
     lang === "ru"
@@ -948,6 +929,10 @@ export default function HomePage() {
         } else if (delta < -6) {
           setHeaderHidden(false);
         }
+        // Header sits over the dark hero until the warm body scrolls up under it.
+        const heroEl = document.getElementById("hero");
+        const heroBottom = heroEl ? heroEl.offsetHeight : window.innerHeight;
+        setOnDark(y < heroBottom - 120);
         lastY = y;
         ticking = false;
       });
@@ -996,7 +981,7 @@ export default function HomePage() {
           style={{ maxWidth: "min(1180px, calc(100% - 40px))" }}
           aria-label={t("navLabel")}
         >
-          <div className="relative md:hidden rounded-[20px] border border-[rgba(29,29,31,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.94)_0%,rgba(255, 248, 246,0.9)_100%)] px-3 py-2 shadow-[0_14px_32px_rgba(15,23,42,0.06),inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-md">
+          <div className="relative md:hidden rounded-[20px] border border-[rgba(29,29,31,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(252,248,246,0.86)_100%)] px-3 py-2 shadow-[0_14px_32px_rgba(15,23,42,0.12),inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-md">
             <div className="flex min-h-[40px] items-center justify-between gap-2">
               <span className="inline-flex min-w-0 flex-1 select-none items-center gap-2 overflow-hidden whitespace-nowrap text-[13px] font-[700] text-[#1a1917]">
                 {t("logo")}
@@ -1048,7 +1033,11 @@ export default function HomePage() {
           </div>
 
           <div className="hidden md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-3">
-            <span className="inline-flex min-h-10 select-none items-center gap-2 text-[15px] font-[700] text-[#1a1917]">
+            <span
+              className={`inline-flex min-h-10 select-none items-center gap-2 text-[15px] font-[700] transition-colors duration-300 ${
+                onDark ? "text-white" : "text-[#1a1917]"
+              }`}
+            >
               {t("logo")}
             </span>
 
@@ -1064,7 +1053,7 @@ export default function HomePage() {
             <div className="flex items-center justify-end gap-[10px]">
               <button
                 onClick={() => setLang(lang === "en" ? "ru" : "en")}
-                className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(255, 246, 244,0.92)_100%)] px-3 text-[13px] font-[500] text-[#1a1917] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] transition-all duration-150 hover:border-[rgba(217,152,30,0.22)] hover:bg-[linear-gradient(180deg,rgba(255,255,255,1)_0%,rgba(255, 242, 238,0.96)_100%)]"
+                className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.1)] bg-[rgba(252,250,247,0.82)] px-3 text-[13px] font-[500] text-[#1a1917] shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_8px_26px_rgba(15,15,20,0.14)] backdrop-blur-md transition-all duration-150 hover:border-[rgba(217,152,30,0.22)] hover:bg-[rgba(255,255,255,0.92)]"
                 aria-label={lang === "en" ? t("switchToRu") : t("switchToEn")}
               >
                 {lang === "en" ? "RU" : "EN"}
@@ -1078,78 +1067,7 @@ export default function HomePage() {
       </header>
 
       <main id="top">
-        <section className="relative overflow-hidden px-4 pb-12 pt-24 md:hidden">
-          <div
-            className="absolute inset-0"
-            aria-hidden="true"
-            style={{
-              background:
-                "radial-gradient(circle at 18% 12%, rgba(217,152,30,0.06), transparent 28%), radial-gradient(circle at 82% 16%, rgba(210,194,172,0.12), transparent 24%), linear-gradient(180deg, #ffffff 0%, #fffaf7 58%, #fff4ee 100%)",
-            }}
-          />
-          <div
-            className="absolute inset-x-[-12%] bottom-[-12%] h-[34%] rounded-[100%] border border-[rgba(217,152,30,0.12)] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.9)_0%,rgba(255, 247, 245,0.68)_55%,rgba(255, 247, 245,0)_100%)]"
-            aria-hidden="true"
-          />
-          <div
-            className="absolute inset-x-[-18%] bottom-[-18%] h-[38%] rounded-[100%] border border-[rgba(150,140,124,0.12)] opacity-70"
-            aria-hidden="true"
-          />
-          <div
-            className="absolute inset-x-[-28%] bottom-[-24%] h-[44%] rounded-[100%] border border-[rgba(150,140,124,0.09)] opacity-55"
-            aria-hidden="true"
-          />
-          <div className="relative mx-auto max-w-[430px]">
-            <p className="inline-flex items-center gap-2 rounded-full border border-[rgba(217,152,30,0.16)] bg-[rgba(255, 244, 232,0.72)] px-3 py-2 text-[12px] font-[800] uppercase tracking-[0.14em] text-[#a35707] shadow-[0_12px_30px_rgba(217,152,30,0.08)] backdrop-blur-sm">
-              <span className="h-2 w-2 rounded-full bg-[#c9820f]" aria-hidden="true" />
-              {t("heroEyebrow")}
-            </p>
-            <h1
-              className="mt-6 max-w-[11ch] text-[#1a1917]"
-              style={{
-                ...UI_DISPLAY_STYLE,
-                fontSize: "clamp(46px, 14vw, 60px)",
-                lineHeight: 0.92,
-              }}
-            >
-              {heroHeadlineLines.map((line) => (
-                <span key={line} className="block">
-                  {line}
-                </span>
-              ))}
-            </h1>
-            <p className="mt-5 max-w-[31ch] text-[16px] font-[400] leading-[1.62] text-[#6b665e]">
-              {t("heroSub")}
-            </p>
-            <div className="mt-8 grid gap-3">
-              <OriginLink href="#download" size="lg" className="w-full">
-                {t("heroPrimary")}
-              </OriginLink>
-              <a
-                href="#scrolly-mobile"
-                className="inline-flex min-h-[54px] items-center justify-center gap-2 rounded-full border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.76)] px-6 text-[15px] font-[600] leading-none text-[#1a1917] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-sm"
-              >
-                {t("heroSecondary")}
-              </a>
-            </div>
-            <div className="mt-8 grid gap-3">
-              {heroMetrics.map((metric) => (
-                <div
-                  key={metric.title}
-                  className="rounded-[24px] border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.8)] p-4 shadow-[0_14px_32px_rgba(15,23,42,0.05)] backdrop-blur-sm"
-                >
-                  <p className="text-[17px] font-[800] leading-none text-[#a35707]">
-                    {metric.title}
-                  </p>
-                  <p className="mt-2 text-[14px] font-[400] leading-[1.5] text-[#6b665e]">
-                    <span className="block">{metric.lines[0]}</span>
-                    <span className="block">{metric.lines[1]}</span>
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <HeroOrbit lang={lang} />
 
         <section
           ref={mobileHeroRef}
@@ -1334,10 +1252,10 @@ export default function HomePage() {
                   className="mb-5 inline-flex items-center gap-2 rounded-full border border-[rgba(217,152,30,0.16)] bg-[rgba(255, 244, 232,0.72)] px-4 py-2 text-[12px] font-[800] uppercase tracking-[0.16em] text-[#a35707] shadow-[0_12px_30px_rgba(217,152,30,0.08)] backdrop-blur-sm"
                 >
                   <span className="h-2 w-2 rounded-full bg-[#c9820f]" aria-hidden="true" />
-                  {t("heroEyebrow")}
+                  {lang === "ru" ? "Смотрите вживую" : "See it live"}
                 </AnimateOnScroll>
                 <AnimateOnScroll
-                  as="h1"
+                  as="h2"
                   delay={0.08}
                   className="mb-5 max-w-[640px] leading-[0.95] text-[#1a1917]"
                   style={{
@@ -1345,7 +1263,10 @@ export default function HomePage() {
                     fontSize: "clamp(42px, 4.5vw, 64px)",
                   }}
                 >
-                  {heroHeadlineLines.map((line) => (
+                  {(lang === "ru"
+                    ? ["Звонок клиента —", "в запись CRM."]
+                    : ["A client call becomes", "a clean CRM note."]
+                  ).map((line) => (
                     <span key={line} className="block">
                       {line}
                     </span>
@@ -1354,42 +1275,11 @@ export default function HomePage() {
                 <AnimateOnScroll
                   as="p"
                   delay={0.16}
-                  className="mb-8 max-w-[420px] text-[16px] font-[400] leading-[1.62] text-[#6b665e] md:max-w-[380px] md:text-[17px]"
+                  className="mb-8 max-w-[420px] text-[16px] font-[400] leading-[1.62] text-[#6b665e] md:max-w-[400px] md:text-[17px]"
                 >
-                  {t("heroSub")}
-                </AnimateOnScroll>
-                <AnimateOnScroll
-                  delay={0.22}
-                  className="mb-7 flex flex-wrap gap-3"
-                >
-                  <OriginLink href="#download" size="lg">
-                    {t("heroPrimary")}
-                  </OriginLink>
-                  <a
-                    href="#scrolly-desktop"
-                    className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.78)] px-6 text-[15px] font-[600] leading-none text-[#1a1917] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c9820f] focus-visible:ring-offset-2"
-                  >
-                    {t("heroSecondary")}
-                  </a>
-                </AnimateOnScroll>
-                <AnimateOnScroll
-                  delay={0.26}
-                  className="grid max-w-[590px] grid-cols-1 gap-4 pt-1 lg:grid-cols-3"
-                >
-                  {heroMetrics.map((metric) => (
-                    <div
-                      key={metric.title}
-                      className="min-h-[142px] min-w-0 rounded-[22px] border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.84)] px-5 py-5 shadow-[0_18px_44px_rgba(26,25,23,0.055)] backdrop-blur-sm"
-                    >
-                      <p className="text-[18px] font-[800] leading-none text-[#a35707] md:text-[20px]">
-                        {metric.title}
-                      </p>
-                      <p className="mt-2 text-[15px] font-[400] leading-[1.45] text-[#6b665e] md:text-[16px]">
-                        <span className="block">{metric.lines[0]}</span>
-                        <span className="block">{metric.lines[1]}</span>
-                      </p>
-                    </div>
-                  ))}
+                  {lang === "ru"
+                    ? "Спрашивайте прямо в моменте, получайте ответ с источником, а агент фиксирует каждую деталь — пока вы на звонке."
+                    : "Ask in the moment, get a cited answer, and let the agent log every detail — while you stay on the call."}
                 </AnimateOnScroll>
                 </div>
               </div>
@@ -2061,6 +1951,12 @@ export default function HomePage() {
         copy={{
           logo: t("logo"),
           tagline: t("footerTagline"),
+          description: t("footerDescription"),
+          connect: t("footerConnect"),
+          legal: t("footerLegal"),
+          follow: t("footerFollow"),
+          rights: t("footerRights"),
+          builtBy: t("footerBuiltBy"),
           privacy: t("privacy"),
           terms: t("terms"),
           contact: t("contact"),

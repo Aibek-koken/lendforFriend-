@@ -4,9 +4,13 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   FileSearch,
   FileText,
+  Instagram,
   Keyboard,
+  Linkedin,
+  Mail,
   MessageSquareText,
   MousePointer2,
+  Phone,
   ShieldCheck,
 } from 'lucide-react';
 import type { CSSProperties, PointerEvent } from 'react';
@@ -17,10 +21,55 @@ import type { Lang } from '../lib/strings';
 type FooterCopy = {
   logo: string;
   tagline: string;
+  description: string;
+  connect: string;
+  legal: string;
+  follow: string;
+  rights: string;
+  builtBy: string;
   privacy: string;
   terms: string;
   contact: string;
 };
+
+const CONTACT_EMAIL = 'aibek@liveassist.tech';
+const CONTACT_PHONE_DISPLAY = '+7 706 656 96 10';
+const CONTACT_PHONE_HREF = 'tel:+77066569610';
+
+const SOCIAL_LINKS = [
+  {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/in/aibek-zharylkassyn/',
+    icon: Linkedin,
+  },
+  {
+    id: 'instagram',
+    label: 'Instagram',
+    href: 'https://www.instagram.com/liveassist_/?hl=ru',
+    icon: Instagram,
+  },
+  {
+    id: 'x',
+    label: 'X',
+    href: 'https://x.com/zharylkassyn_a',
+    icon: XIcon,
+  },
+] as const;
+
+function XIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z" />
+    </svg>
+  );
+}
 
 type FooterMoment = {
   id: string;
@@ -448,32 +497,114 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
   );
 }
 
+const focusRing =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(37,133,255,0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fafafb]';
+
 export function InteractiveFooter({ copy }: { copy: FooterCopy }) {
+  const year = new Date().getFullYear();
+
   return (
-    <footer className="border-t border-[#e5e5ea] px-5 py-10">
-      <div
-        className="mx-auto flex flex-col items-start justify-between gap-6 md:flex-row md:items-center"
-        style={{ maxWidth: 'min(1180px, 100%)' }}
-      >
-          <div className="flex items-center gap-3">
-          <strong className="text-[15px] font-[700] text-[#1d1d1f]">{copy.logo}</strong>
-          <span className="text-[14px] text-[#6e6e73]">{copy.tagline}</span>
+    <footer className="border-t border-[#e5e5ea] bg-[#fafafb] px-5 pb-8 pt-14">
+      <div className="mx-auto w-full" style={{ maxWidth: 'min(1180px, 100%)' }}>
+        <div className="grid gap-10 md:grid-cols-[1.6fr_1fr_1fr] lg:gap-16">
+          {/* Brand */}
+          <div className="max-w-[420px]">
+            <div className="flex items-center gap-2.5">
+              <span
+                aria-hidden="true"
+                className="flex h-8 w-8 items-center justify-center rounded-[9px] bg-gradient-to-br from-[#2585ff] to-[#0a5bd6] text-[15px] font-[800] text-white shadow-[0_6px_18px_rgba(37,133,255,0.3)]"
+              >
+                L
+              </span>
+              <strong className="text-[17px] font-[700] tracking-[-0.01em] text-[#1d1d1f]">
+                {copy.logo}
+              </strong>
+            </div>
+            <p className="mt-4 text-[14px] leading-[1.6] text-[#6e6e73]">{copy.description}</p>
+
+            <div className="mt-6">
+              <p className="text-[12px] font-[700] uppercase tracking-[0.14em] text-[#86868b]">
+                {copy.follow}
+              </p>
+              <div className="mt-3 flex items-center gap-2.5">
+                {SOCIAL_LINKS.map(({ id, label, href, icon: Icon }) => (
+                  <a
+                    key={id}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    title={label}
+                    className={`flex h-10 w-10 items-center justify-center rounded-full border border-[#e0e0e5] bg-white text-[#4a4a4f] transition-all hover:-translate-y-0.5 hover:border-[#2585ff] hover:text-[#2585ff] hover:shadow-[0_8px_20px_rgba(37,133,255,0.18)] ${focusRing}`}
+                  >
+                    <Icon size={18} aria-hidden="true" />
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
-        <div className="flex flex-wrap gap-3 text-[14px] text-[#6e6e73]">
-          <a href="#" className="transition-colors hover:text-[#1d1d1f] focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[rgba(37,133,255,0.42)]">
-              {copy.privacy}
-            </a>
-          <a href="#" className="transition-colors hover:text-[#1d1d1f] focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[rgba(37,133,255,0.42)]">
-              {copy.terms}
-            </a>
-            <a
-              href="mailto:zarylkasynajbek92@gmail.com"
-            className="transition-colors hover:text-[#1d1d1f] focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[rgba(37,133,255,0.42)]"
-            >
-              {copy.contact}
-            </a>
+
+          {/* Contact */}
+          <div>
+            <p className="text-[12px] font-[700] uppercase tracking-[0.14em] text-[#86868b]">
+              {copy.connect}
+            </p>
+            <ul className="mt-4 space-y-3 text-[14px]">
+              <li>
+                <a
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  className={`group inline-flex items-center gap-2.5 text-[#4a4a4f] transition-colors hover:text-[#1d1d1f] ${focusRing}`}
+                >
+                  <Mail size={16} className="text-[#86868b] transition-colors group-hover:text-[#2585ff]" aria-hidden="true" />
+                  <span className="break-all">{CONTACT_EMAIL}</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href={CONTACT_PHONE_HREF}
+                  className={`group inline-flex items-center gap-2.5 text-[#4a4a4f] transition-colors hover:text-[#1d1d1f] ${focusRing}`}
+                >
+                  <Phone size={16} className="text-[#86868b] transition-colors group-hover:text-[#2585ff]" aria-hidden="true" />
+                  <span>{CONTACT_PHONE_DISPLAY}</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <p className="text-[12px] font-[700] uppercase tracking-[0.14em] text-[#86868b]">
+              {copy.legal}
+            </p>
+            <ul className="mt-4 space-y-3 text-[14px]">
+              <li>
+                <a
+                  href="/privacy"
+                  className={`text-[#4a4a4f] transition-colors hover:text-[#1d1d1f] ${focusRing}`}
+                >
+                  {copy.privacy}
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/terms"
+                  className={`text-[#4a4a4f] transition-colors hover:text-[#1d1d1f] ${focusRing}`}
+                >
+                  {copy.terms}
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
+
+        {/* Bottom bar */}
+        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-[#e5e5ea] pt-6 text-[13px] text-[#86868b] sm:flex-row sm:items-center">
+          <span>
+            © {year} {copy.logo}. {copy.rights}
+          </span>
+          <span>{copy.builtBy}</span>
+        </div>
+      </div>
     </footer>
   );
 }
