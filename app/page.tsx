@@ -24,6 +24,8 @@ import { getLandingVisitorId, trackLandingEvent } from "../lib/clientAnalytics";
 import ProductMockup from "./components/ProductMockup";
 import { StatsBand } from "./components/StatsBand";
 import HeroOrbit from "./components/HeroOrbit";
+import CrmShowcase from "./components/CrmShowcase";
+import FeatureBento from "./components/FeatureBento";
 
 const navConfig = [
   { id: "features", labelKey: "navHow", url: "#features", icon: PlayCircle },
@@ -272,36 +274,36 @@ export default function HomePage() {
     lang === "ru"
       ? [
           {
-            icon: Upload,
-            title: "Загрузите документы",
-            body: "PDF, FAQ, регламенты и прайсы — загрузили один раз, и они готовы к каждому звонку.",
+            icon: Keyboard,
+            title: "Спросите прямо в звонке",
+            body: "Нажимаете ⌥ Space (Ctrl Alt Space на Windows) — вопрос и ответ с источником, без переключения вкладок.",
           },
           {
-            icon: Keyboard,
-            title: "Хоткей — и задаёте вопрос",
-            body: "Нажимаете Ctrl+J на Windows/Linux или ⌘J на Mac прямо в звонке — без переключения вкладок.",
+            icon: FileSearch,
+            title: "Ответ с доказательством",
+            body: "Мгновенный ответ с точным файлом и страницей — можете проверить сами при клиенте.",
           },
           {
             icon: BadgeCheck,
-            title: "Ответ с доказательством",
-            body: "Мгновенный ответ с точным файлом и страницей — можете проверить сами.",
+            title: "Подтвердите запись в amoCRM",
+            body: "После звонка агент собирает заметку, задачу и тег. Вы подтверждаете — и это записывается в CRM.",
           },
         ]
       : [
           {
-            icon: Upload,
-            title: "Upload your documents",
-            body: "Drop in PDFs, FAQs, SOPs and pricing once — indexed and ready for every call.",
+            icon: Keyboard,
+            title: "Ask right on the call",
+            body: "Press ⌥ Space (Ctrl Alt Space on Windows) — question and a cited answer, no tab switching.",
           },
           {
-            icon: Keyboard,
-            title: "Use the shortcut, ask anything",
-            body: "Press Ctrl+J on Windows/Linux or ⌘J on Mac mid-call — no tab switching.",
+            icon: FileSearch,
+            title: "A cited answer you can trust",
+            body: "An instant answer with the exact file and page attached — verify it yourself, in front of the client.",
           },
           {
             icon: BadgeCheck,
-            title: "A cited answer you can trust",
-            body: "An instant answer with the exact file and page attached — verify it yourself.",
+            title: "Approve the amoCRM write-back",
+            body: "After the call the agent drafts the note, task, and tag. You approve, and it lands in your CRM.",
           },
         ];
 
@@ -981,7 +983,7 @@ export default function HomePage() {
           style={{ maxWidth: "min(1180px, calc(100% - 40px))" }}
           aria-label={t("navLabel")}
         >
-          <div className="relative md:hidden rounded-[20px] border border-[rgba(29,29,31,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(252,248,246,0.86)_100%)] px-3 py-2 shadow-[0_14px_32px_rgba(15,23,42,0.12),inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-md">
+          <div className="relative md:hidden rounded-[20px] border border-[rgba(255,255,255,0.5)] bg-[rgba(253,251,248,0.6)] px-3 py-2 shadow-[0_14px_32px_rgba(15,23,42,0.14),inset_0_1px_0_rgba(255,255,255,0.95)] backdrop-blur-xl backdrop-saturate-150">
             <div className="flex min-h-[40px] items-center justify-between gap-2">
               <span className="inline-flex min-w-0 flex-1 select-none items-center gap-2 overflow-hidden whitespace-nowrap text-[13px] font-[700] text-[#1a1917]">
                 {t("logo")}
@@ -1053,7 +1055,7 @@ export default function HomePage() {
             <div className="flex items-center justify-end gap-[10px]">
               <button
                 onClick={() => setLang(lang === "en" ? "ru" : "en")}
-                className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.1)] bg-[rgba(252,250,247,0.82)] px-3 text-[13px] font-[500] text-[#1a1917] shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_8px_26px_rgba(15,15,20,0.14)] backdrop-blur-md transition-all duration-150 hover:border-[rgba(217,152,30,0.22)] hover:bg-[rgba(255,255,255,0.92)]"
+                className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[rgba(255,255,255,0.5)] bg-[rgba(253,251,248,0.58)] px-3 text-[13px] font-[500] text-[#1a1917] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_10px_30px_rgba(15,15,20,0.16)] backdrop-blur-xl backdrop-saturate-150 transition-all duration-150 hover:border-[rgba(217,152,30,0.28)] hover:bg-[rgba(255,255,255,0.72)]"
                 aria-label={lang === "en" ? t("switchToRu") : t("switchToEn")}
               >
                 {lang === "en" ? "RU" : "EN"}
@@ -1699,6 +1701,12 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* CRM ASSISTANT — after-the-call write-back to amoCRM */}
+        <CrmShowcase lang={lang} />
+
+        {/* CAPABILITIES — bento grid */}
+        <FeatureBento lang={lang} />
 
         {/* STATS BAND */}
         <StatsBand lang={lang} />

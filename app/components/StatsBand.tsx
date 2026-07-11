@@ -71,16 +71,16 @@ export function StatsBand({ lang }: { lang: Lang }) {
   const stats: Stat[] =
     lang === "ru"
       ? [
-          { value: 1.4, decimals: 1, suffix: " с", label: "среднее время ответа" },
-          { value: 94, suffix: "%", label: "уверенность с источником" },
-          { display: "3 ОС", value: 0, label: "хоткей для Mac, Windows и Linux" },
-          { value: 0, label: "фоновой прослушки" },
+          { value: 1.4, decimals: 1, suffix: " с", label: "ответ с источником" },
+          { value: 100, suffix: "%", label: "записей вы подтверждаете сами" },
+          { value: 0, label: "дублей при записи в amoCRM" },
+          { display: "3 ОС", value: 0, label: "Mac, Windows и Linux" },
         ]
       : [
-          { value: 1.4, decimals: 1, suffix: "s", label: "average answer time" },
-          { value: 94, suffix: "%", label: "source-backed confidence" },
-          { display: "3 OS", value: 0, label: "shortcut for Mac, Windows, and Linux" },
-          { value: 0, label: "always-on listening" },
+          { value: 1.4, decimals: 1, suffix: "s", label: "cited answer, live" },
+          { value: 100, suffix: "%", label: "writes you approve first" },
+          { value: 0, label: "duplicate writes to amoCRM" },
+          { display: "3 OS", value: 0, label: "Mac, Windows, and Linux" },
         ];
 
   return (

@@ -23,7 +23,7 @@ export function NavBar({
 }) {
   return (
     <div className={className}>
-      <div className="inline-flex items-center justify-center rounded-[28px] border border-[rgba(29,29,31,0.06)] bg-[rgba(252,250,247,0.82)] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_8px_26px_rgba(15,15,20,0.14)] backdrop-blur-md">
+      <div className="inline-flex items-center justify-center rounded-[28px] border border-[rgba(255,255,255,0.5)] bg-[rgba(253,251,248,0.58)] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_10px_30px_rgba(15,15,20,0.16)] backdrop-blur-xl backdrop-saturate-150">
         {items.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
