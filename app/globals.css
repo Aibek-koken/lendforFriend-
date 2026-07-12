@@ -54,6 +54,28 @@ body {
   overflow-x: hidden;
 }
 
+.signup-surface {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255, 210, 122, 0.18), transparent 28rem),
+    radial-gradient(circle at 88% 92%, rgba(233, 227, 218, 0.72), transparent 30rem),
+    #faf8f5;
+}
+
+.signup-enter {
+  animation: signup-enter 360ms cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+@keyframes signup-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signup-enter {
+    animation: none;
+  }
+}
+
 ::-moz-selection {
   background: rgba(37, 133, 255, 0.18);
 }

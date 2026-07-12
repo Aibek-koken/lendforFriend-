@@ -989,8 +989,8 @@ export default function HomePage() {
                 {t("logo")}
               </span>
               <div className="flex shrink-0 items-center gap-1.5">
-                <OriginLink href="#download" size="xs">
-                  {t("navPricing")}
+                <OriginLink href={`/signup?lang=${lang}`} size="xs">
+                  {t("getStarted")}
                 </OriginLink>
                 <button
                   onClick={() => setMenuOpen((current) => !current)}
@@ -1060,8 +1060,8 @@ export default function HomePage() {
               >
                 {lang === "en" ? "RU" : "EN"}
               </button>
-              <OriginLink href="#download" size="sm">
-                {t("joinWaitlist")}
+              <OriginLink href={`/signup?lang=${lang}`} size="sm">
+                {t("getStarted")}
               </OriginLink>
             </div>
           </div>

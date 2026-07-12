@@ -2,7 +2,16 @@ export type AnalyticsEventName =
   | "landing_viewed"
   | "download_clicked"
   | "download_redirected"
-  | "waitlist_submitted";
+  | "waitlist_submitted"
+  | ProductAnalyticsEventName;
+
+export const PRODUCT_ANALYTICS_EVENTS = [
+  "signup_completed",
+  "demo_started",
+  "crm_connected",
+] as const;
+
+export type ProductAnalyticsEventName = (typeof PRODUCT_ANALYTICS_EVENTS)[number];
 
 type AnalyticsProperties = Record<string, string | number | boolean | null | undefined>;
 
@@ -15,7 +24,10 @@ type CaptureAnalyticsEventInput = {
 const SAFE_PROPERTY_KEYS = new Set([
   "app_version",
   "download_platform",
+  "company_id",
+  "crm_provider",
   "language",
+  "mode",
   "os",
   "os_version",
   "path",
@@ -87,4 +99,30 @@ export async function captureAnalyticsEvent({
   } catch (error) {
     console.warn(`Analytics capture failed for ${event}:`, error);
   }
+}
+
+export async function identifyAnalyticsUser(userId: string) {
+  const apiKey = process.env.POSTHOG_API_KEY;
+  if (!apiKey || !userId) return;
+
+  const host = normalizePostHogHost(process.env.POSTHOG_HOST);
+  try {
+    await fetch(`${host}/capture/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        api_key: apiKey,
+        distinct_id: userId,
+        event: "$identify",
+        properties: { source: "signup", timestamp: new Date().toISOString() },
+      }),
+      cache: "no-store",
+    });
+  } catch (error) {
+    console.warn("Analytics identify failed:", error);
+  }
+}
+
+export function isProductAnalyticsEvent(value: string): value is ProductAnalyticsEventName {
+  return PRODUCT_ANALYTICS_EVENTS.includes(value as ProductAnalyticsEventName);
 }

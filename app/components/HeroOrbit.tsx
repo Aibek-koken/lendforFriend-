@@ -30,13 +30,13 @@ const COPY: Record<Lang, { eyebrow: string; headline: string; primary: string; s
   en: {
     eyebrow: "AI CRM AGENT FOR SALES TEAMS",
     headline: "Turn every client call into an updated CRM.",
-    primary: "Download",
+    primary: "Get started",
     secondary: "See how it works",
   },
   ru: {
     eyebrow: "AI CRM-АГЕНТ ДЛЯ ОТДЕЛОВ ПРОДАЖ",
     headline: "Каждый звонок клиента — в обновлённую CRM.",
-    primary: "Скачать",
+    primary: "Начать бесплатно",
     secondary: "Как это работает",
   },
 };
@@ -93,7 +93,7 @@ export default function HeroOrbit({ lang }: { lang: Lang }) {
         </p>
         <h1 className="hero-orbit__headline">{copy.headline}</h1>
         <div className="hero-orbit__cta">
-          <OriginLink href="#download" size="lg">
+          <OriginLink href={`/signup?lang=${lang}`} size="lg">
             {copy.primary}
           </OriginLink>
           <a href="#features" className="hero-orbit__ghost">
