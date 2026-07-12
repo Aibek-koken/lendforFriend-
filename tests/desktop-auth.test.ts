@@ -207,7 +207,7 @@ describe("handoff copy", () => {
   });
 
   it("ships every handoff string in both languages", () => {
-    const keys = ["open", "opening", "openedHint", "handoffError", "desktopFinishTitle", "desktopFinishBody"] as const;
+    const keys = ["open", "opening", "openedHint", "handoffError", "desktopFinishTitle", "desktopFinishBody", "switchAccount", "switchingAccount", "switchAccountError"] as const;
 
     for (const key of keys) {
       expect(signupStrings.en[key].length).toBeGreaterThan(0);

@@ -31,6 +31,16 @@ type Props = {
 
 const focusClass = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a35707] focus-visible:ring-offset-2 focus-visible:ring-offset-[#faf8f5]";
 
+const signedOutState: SignupState = {
+  authenticated: false,
+  step: "auth",
+  mode: null,
+  companyId: null,
+  companyName: null,
+  crmProvider: null,
+  crmStatus: null,
+};
+
 function GoogleMark() {
   return (
     <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
@@ -76,6 +86,8 @@ export function SignupFlow({ configured, databaseReady = true, desktopState = nu
   const [state, setState] = useState(initialState);
   const [error, setError] = useState(oauthError ? "auth" : "");
   const [errors, setErrors] = useState<ValidationErrors>({});
+  const [isSwitchingAccount, setIsSwitchingAccount] = useState(false);
+  const [accountSwitchError, setAccountSwitchError] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [handoff, setHandoff] = useState<"idle" | "pending" | "opened" | "error">("idle");
   const companyNameRef = useRef<HTMLInputElement>(null);
@@ -92,6 +104,7 @@ export function SignupFlow({ configured, databaseReady = true, desktopState = nu
 
   const beginGoogle = async () => {
     setError("");
+    setAccountSwitchError(false);
     if (!configured) {
       setError("config");
       return;
@@ -110,6 +123,24 @@ export function SignupFlow({ configured, databaseReady = true, desktopState = nu
       },
     });
     if (authError) setError("auth");
+  };
+
+  const switchGoogleAccount = async () => {
+    setError("");
+    setAccountSwitchError(false);
+    setHandoff("idle");
+    setIsSwitchingAccount(true);
+    const supabase = createClient();
+    const { error: signOutError } = await supabase.auth.signOut();
+    setIsSwitchingAccount(false);
+
+    if (signOutError) {
+      setAccountSwitchError(true);
+      return;
+    }
+
+    setErrors({});
+    setState(signedOutState);
   };
 
   // Mints a fresh single-use code and hands it to the desktop app. The code is
@@ -292,6 +323,21 @@ export function SignupFlow({ configured, databaseReady = true, desktopState = nu
               </div>
             )}
             <Link href="/#download" className={`mt-3 inline-flex min-h-11 items-center justify-center rounded-xl px-4 text-sm font-bold text-[#a35707] hover:text-[#7a4108] ${focusClass}`}>{t.download}</Link>
+            <button
+              type="button"
+              onClick={switchGoogleAccount}
+              disabled={isPending || isSwitchingAccount}
+              aria-busy={isSwitchingAccount}
+              className={`mt-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold text-[#423d36] transition-colors duration-100 hover:bg-white/70 hover:text-[#1a1917] disabled:cursor-not-allowed disabled:opacity-60 ${focusClass}`}
+            >
+              {isSwitchingAccount ? <Loader2 className="h-4 w-4 motion-safe:animate-spin" aria-hidden="true" /> : null}
+              {isSwitchingAccount ? t.switchingAccount : t.switchAccount}
+            </button>
+            {accountSwitchError ? (
+              <div role="alert" className="mt-3 rounded-2xl bg-[#fff8ed] px-4 py-3 text-left text-sm leading-5 text-[#6b4210] ring-1 ring-[#efd5ad]">
+                {t.switchAccountError}
+              </div>
+            ) : null}
             <p className="mx-auto mt-4 max-w-[48ch] text-xs leading-5 text-[#6b665e]">{t.handoffNote}</p>
           </div>
         ) : null}
