@@ -32,6 +32,14 @@ The signup uses Supabase SSR cookies and Row Level Security. It does not expose 
 
 The real-company flow stores supported CRM choices as `pending`. It does not claim a CRM is connected until a later, real OAuth integration confirms it.
 
+That confirmation step now exists for amoCRM: after the desktop app finishes a
+successful **local** amoCRM OAuth connection, it calls a server route with the
+desktop session bearer token. The route hashes the bearer token, validates it
+against `public.desktop_sessions` (rejecting missing, expired, or revoked
+sessions), and updates only the caller's own `crm_connections` row from
+`pending` to `connected`. The route never accepts or stores amoCRM
+`access_token`, `refresh_token`, `client_secret`, or the pasted OAuth `code`.
+
 ### Signup analytics
 
 PostHog receives the Supabase user id as the anonymous-safe distinct id after authentication. The only signup product events are:
@@ -56,6 +64,12 @@ Run `supabase/desktop-auth.sql` in the Supabase SQL editor, after `supabase/sign
 2. The user signs in with Google. The nonce rides through the OAuth round trip on our own `desktop_state` param — never OAuth's `state`, which Supabase owns.
 3. On the final screen, **Open LiveAssist** calls the `issueDesktopHandoff` server action, which mints a one-time code, stores `sha256(code)` and `sha256(nonce)` in `desktop_auth_codes`, and returns the deep link `liveassist://auth/callback?code=…&state=…`.
 4. The desktop app POSTs `{ code, state }` to `POST /api/desktop/auth/exchange`, which atomically consumes the code (service-role) and returns the profile/workspace snapshot plus an opaque desktop session token.
+5. Later, if that workspace is `real + amocrm + pending`, the desktop app uses
+   the stored desktop session bearer token to call `POST /api/desktop` only
+   after a successful local amoCRM OAuth completion. The server validates the
+   hashed bearer token against `desktop_sessions`, rejects expired/revoked
+   sessions, and updates only that company's `crm_connections.status` to
+   `connected`.
 
 ### Security properties
 
@@ -66,6 +80,9 @@ Run `supabase/desktop-auth.sql` in the Supabase SQL editor, after `supabase/sign
 - Every rejection (expired / consumed / unknown / state mismatch) returns the same opaque `invalid_code`, so the endpoint cannot be probed.
 - The code, state, and session token are never logged. `lib/desktop-auth/secrets.ts` (node:crypto) is server-only; client components import `lib/desktop-auth/handoff.ts`, which is crypto-free by construction and covered by a test.
 - The service-role key stays server-side, in the route handler only.
+- The amoCRM completion route never stores OAuth secrets or tokens. It trusts
+  only the desktop session bearer, and only after the desktop already reported a
+  successful local amoCRM connection.
 
 ### Known boundaries
 
