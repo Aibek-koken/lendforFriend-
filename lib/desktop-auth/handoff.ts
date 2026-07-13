@@ -30,6 +30,8 @@ export const DESKTOP_CALLBACK_PATH = "auth/callback";
  * contract requires it.
  */
 export const DESKTOP_STATE_PARAM = "desktop_state";
+export const DESKTOP_STATE_COOKIE = "liveassist_desktop_state";
+export const DESKTOP_STATE_COOKIE_MAX_AGE_SECONDS = 10 * 60;
 
 /** One-time code lifetime. Long enough to click a button, short enough that a
  *  leaked link (browser history, shoulder-surfing) is near-useless. */

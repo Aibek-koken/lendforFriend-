@@ -5,12 +5,17 @@ import Link from "next/link";
 import { useMemo, useRef, useState, useTransition, type FormEvent } from "react";
 import { ArrowLeft, ArrowRight, Building2, Check, Database, Loader2, Play, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { DESKTOP_STATE_PARAM } from "@/lib/desktop-auth/handoff";
+import {
+  DESKTOP_STATE_COOKIE,
+  DESKTOP_STATE_COOKIE_MAX_AGE_SECONDS,
+} from "@/lib/desktop-auth/handoff";
 import {
   crmProviders,
   mainGoals,
   managerCounts,
+  needsAmoCrmSetup,
   validateCompanySetup,
+  shouldShowRealSetupForDemoUpgrade,
   type CompanySetupInput,
   type SignupState,
   type ValidationErrors,
@@ -24,6 +29,7 @@ type Props = {
   databaseReady?: boolean;
   desktopState?: string | null;
   displayName?: string | null;
+  forceRealSetup?: boolean;
   initialLang: Lang;
   initialState: SignupState;
   oauthError: boolean;
@@ -81,7 +87,7 @@ function PrimaryButton({ children, loading = false, ...props }: React.ButtonHTML
   );
 }
 
-export function SignupFlow({ configured, databaseReady = true, desktopState = null, displayName, initialLang, initialState, oauthError }: Props) {
+export function SignupFlow({ configured, databaseReady = true, desktopState = null, displayName, forceRealSetup = false, initialLang, initialState, oauthError }: Props) {
   const [lang, setLang] = useState(initialLang);
   const [state, setState] = useState(initialState);
   const [error, setError] = useState(oauthError ? "auth" : "");
@@ -93,7 +99,10 @@ export function SignupFlow({ configured, databaseReady = true, desktopState = nu
   const companyNameRef = useRef<HTMLInputElement>(null);
   const t = signupStrings[lang];
 
-  const step = state.companyId ? "complete" : state.step;
+  const isDemoRealUpgrade = shouldShowRealSetupForDemoUpgrade(state, forceRealSetup ? "real" : null);
+  const step = isDemoRealUpgrade ? "company" : state.companyId ? "complete" : state.step;
+  const requiresAmoCrmSetup = needsAmoCrmSetup(state);
+  const crmSetupHref = `/account/integrations?lang=${lang}${desktopState ? `&desktop_state=${encodeURIComponent(desktopState)}` : ""}`;
   const options = useMemo(() => ({
     managers: managerCounts,
     crms: crmProviders,
@@ -109,10 +118,14 @@ export function SignupFlow({ configured, databaseReady = true, desktopState = nu
       setError("config");
       return;
     }
-    // Carry the desktop nonce across the Google round trip so the final screen
-    // can still mint a code bound to the app that started this signup.
+    // Carry the desktop nonce across the Google round trip without putting it
+    // in the OAuth callback URL. Supabase can fall back to Site URL when a
+    // query-bearing callback is not allow-listed exactly.
     const callback = new URL("/auth/callback", window.location.origin);
-    if (desktopState) callback.searchParams.set(DESKTOP_STATE_PARAM, desktopState);
+    if (desktopState) {
+      const secure = window.location.protocol === "https:" ? "; Secure" : "";
+      document.cookie = `${DESKTOP_STATE_COOKIE}=${encodeURIComponent(desktopState)}; Path=/; Max-Age=${DESKTOP_STATE_COOKIE_MAX_AGE_SECONDS}; SameSite=Lax${secure}`;
+    }
 
     const supabase = createClient();
     const { error: authError } = await supabase.auth.signInWithOAuth({
@@ -207,6 +220,14 @@ export function SignupFlow({ configured, databaseReady = true, desktopState = nu
     });
   };
 
+  const backFromCompany = () => {
+    if (isDemoRealUpgrade) {
+      window.location.href = `/account?lang=${lang}`;
+      return;
+    }
+    setState((current) => ({ ...current, mode: null, step: "mode" }));
+  };
+
   const cardClass = `group w-full rounded-[24px] bg-white/80 p-5 text-left shadow-[0_18px_54px_rgba(74,47,8,.08)] ring-1 ring-[#e9e3da] transition-[transform,box-shadow,background-color] duration-150 hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_22px_64px_rgba(74,47,8,.12)] active:translate-y-0 ${focusClass}`;
 
   return (
@@ -259,7 +280,7 @@ export function SignupFlow({ configured, databaseReady = true, desktopState = nu
 
         {step === "company" ? (
           <form onSubmit={submitCompany} className="mx-auto max-w-[620px]" noValidate>
-            <button type="button" onClick={() => setState((current) => ({ ...current, mode: null, step: "mode" }))} className={`mb-6 inline-flex min-h-10 items-center gap-2 rounded-xl px-2 text-sm font-semibold text-[#6b665e] hover:text-[#1a1917] ${focusClass}`}><ArrowLeft className="h-4 w-4" aria-hidden="true" />{t.back}</button>
+            <button type="button" onClick={backFromCompany} className={`mb-6 inline-flex min-h-10 items-center gap-2 rounded-xl px-2 text-sm font-semibold text-[#6b665e] hover:text-[#1a1917] ${focusClass}`}><ArrowLeft className="h-4 w-4" aria-hidden="true" />{t.back}</button>
             <p className="text-xs font-bold uppercase tracking-[.16em] text-[#a35707]">02 · 02</p>
             <h1 className="mt-3 text-[clamp(2rem,7vw,3rem)] font-bold leading-[1.04] tracking-[-.045em]">{t.companyTitle}</h1>
             <p className="mt-4 text-[15px] leading-6 text-[#6b665e]">{t.companyBody}</p>
@@ -271,7 +292,7 @@ export function SignupFlow({ configured, databaseReady = true, desktopState = nu
                 {errors.companyName ? <p id="companyName-error" className="mt-2 text-sm text-[#9b3f27]">{errors.companyName === "company_name_long" ? t.companyNameLong : t.companyNameShort}</p> : null}
               </div>
               <ChoiceGroup legend={t.managers} name="managerCount" values={options.managers} labels={{}} error={errors.managerCount ? t.required : ""} />
-              <ChoiceGroup legend={t.crm} name="crmProvider" values={options.crms} labels={{ amocrm: "amoCRM", bitrix24: "Bitrix24", hubspot: "HubSpot", other: t.other, none: t.noCrm }} error={errors.crmProvider ? t.required : ""} />
+              <ChoiceGroup legend={t.crm} name="crmProvider" values={options.crms} labels={{ amocrm: "amoCRM", none: t.noCrm }} error={errors.crmProvider ? t.required : ""} />
               <ChoiceGroup legend={t.goal} name="mainGoal" values={options.goals} labels={{ sales: t.sales, support: t.support, training: t.training, other: t.other }} error={errors.mainGoal ? t.required : ""} />
               {error === "submit" ? <div role="alert" className="rounded-2xl bg-[#fff8ed] px-4 py-3 text-sm text-[#6b4210] ring-1 ring-[#efd5ad]">{t.submitError}</div> : null}
               <PrimaryButton type="submit" loading={isPending}>{isPending ? t.saving : t.continue}<ArrowRight className="h-4 w-4" aria-hidden="true" /></PrimaryButton>
@@ -288,6 +309,19 @@ export function SignupFlow({ configured, databaseReady = true, desktopState = nu
               <div className="rounded-2xl bg-white/80 p-4 ring-1 ring-[#e9e3da]"><Database className="h-5 w-5 text-[#a35707]" aria-hidden="true" /><p className="mt-3 text-xs font-semibold uppercase tracking-[.12em] text-[#6b665e]">{state.mode === "demo" ? t.completeDemo : t.completeReal}</p><p className="mt-1 font-bold">{state.companyName}</p></div>
               <div className="rounded-2xl bg-white/80 p-4 ring-1 ring-[#e9e3da]"><ShieldCheck className="h-5 w-5 text-[#a35707]" aria-hidden="true" /><p className="mt-3 text-xs font-semibold uppercase tracking-[.12em] text-[#6b665e]">{t.crmLabel}</p><p className="mt-1 font-bold">{state.crmStatus ? t[state.crmStatus] : t.demo}</p></div>
             </div>
+            {requiresAmoCrmSetup ? (
+              <div className="mt-7 rounded-2xl bg-white/80 px-4 py-4 text-left text-sm leading-6 text-[#423d36] ring-1 ring-[#e9e3da]">
+                <p className="font-bold text-[#1a1917]">{t.setupCrmTitle}</p>
+                <p className="mt-1 text-[#6b665e]">{t.setupCrmBody}</p>
+                <Link
+                  href={crmSetupHref}
+                  className={`mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#1a1917] px-5 py-3 text-sm font-bold text-white shadow-[0_14px_34px_rgba(26,25,23,.18)] transition-transform duration-100 hover:-translate-y-px active:translate-y-0 ${focusClass}`}
+                >
+                  {t.setupCrm} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </div>
+            ) : (
+              <>
             {/* Stage 2 handoff. The button mints a short-lived, single-use code
                 server-side and opens liveassist://auth/callback?code=…&state=….
                 No Supabase access_token or refresh_token is ever put in this link. */}
@@ -321,6 +355,8 @@ export function SignupFlow({ configured, databaseReady = true, desktopState = nu
                 <p className="font-bold text-[#1a1917]">{t.desktopFinishTitle}</p>
                 <p className="mt-1 text-[#6b665e]">{t.desktopFinishBody}</p>
               </div>
+            )}
+              </>
             )}
             <Link href="/#download" className={`mt-3 inline-flex min-h-11 items-center justify-center rounded-xl px-4 text-sm font-bold text-[#a35707] hover:text-[#7a4108] ${focusClass}`}>{t.download}</Link>
             <button

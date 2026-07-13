@@ -50,6 +50,50 @@ PostHog receives the Supabase user id as the anonymous-safe distinct id after au
 
 Do not add email, company names, OAuth tokens, CRM account names, documents, leads, call notes, questions, or answers to analytics properties.
 
+## Account & CRM setup (web-first)
+
+Status: **implemented, no manual QA yet.**
+
+Signup, workspace setup, account management **and CRM setup** live here, not in
+the desktop app. The desktop shows a status card and links back to these pages.
+
+- `/account` — workspace, CRM status, sign out, download link.
+- `/account/integrations` — the amoCRM setup guide plus the credential form
+  (subdomain, region, client ID, client secret).
+
+### Setup
+
+1. Run `supabase/crm-connect.sql` in the SQL editor, after `supabase/signup.sql`.
+2. Set `CRM_SECRETS_ENCRYPTION_KEY` (`openssl rand -base64 32`) and
+   `NEXT_PUBLIC_SITE_URL`. See `.env.example`.
+3. In the customer's amoCRM integration, set the Redirect URI to
+   `{NEXT_PUBLIC_SITE_URL}/api/crm/amocrm/callback` — the page shows the exact
+   string with a copy button, and amoCRM compares it byte-for-byte.
+
+### Where the secrets live
+
+Two tables, two trust levels:
+
+| | `crm_connections` | `crm_connection_secrets` |
+|---|---|---|
+| holds | provider, status, subdomain, domain zone, client id, account id, connected_at, last error | client secret, access token, refresh token |
+| RLS | company members can read | **on, with no policy** — grants revoked |
+| readable by | the web account page, and the desktop over `GET /api/desktop` | the service-role key only, from server-side routes |
+| at rest | plaintext (none of it is secret) | AES-256-GCM (`lib/crm/crypto.ts`) |
+
+Nothing secret goes into localStorage, renderer state, a URL query param, the
+desktop app, or a log line. `GET /api/desktop` has no code path to the secrets
+table, so a compromised desktop session cannot yield a token.
+
+`GET /api/crm/amocrm/callback` is the only place an authorization code is
+exchanged. It consumes an httpOnly `state` cookie and compares it in constant
+time **before any network call** — without that, a crafted callback URL could
+bind an attacker's amoCRM account to a victim's workspace.
+
+Only a **400/401 from amoCRM's token endpoint** marks a connection `failed`. A
+429, a 5xx, or an unreachable amoCRM is transient: flipping the row would send
+the customer to re-enter credentials that were never wrong.
+
 ## Desktop handoff (Stage 2)
 
 Status: **implemented, not yet verified at runtime.** Web-side automated checks pass (`npm run typecheck`, `npm run test`, `npm run build`), but the end-to-end deep link into the Tauri app has not been exercised by a human. Do not describe desktop sign-in as shipped until the manual QA below passes.

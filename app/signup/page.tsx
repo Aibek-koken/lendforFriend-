@@ -37,7 +37,7 @@ function normalizeState(value: unknown): SignupState {
 export default async function SignupPage({
   searchParams,
 }: {
-  searchParams: { lang?: string; auth_error?: string; [DESKTOP_STATE_PARAM]?: string };
+  searchParams: { lang?: string; auth_error?: string; upgrade?: string; [DESKTOP_STATE_PARAM]?: string };
 }) {
   const configured = isSupabaseConfigured();
   const initialLang: Lang = searchParams.lang === "ru" ? "ru" : "en";
@@ -50,6 +50,7 @@ export default async function SignupPage({
       <SignupFlow
         configured={false}
         desktopState={desktopState}
+        forceRealSetup={searchParams.upgrade === "real"}
         initialLang={initialLang}
         initialState={signedOutState}
         oauthError={Boolean(searchParams.auth_error)}
@@ -64,6 +65,7 @@ export default async function SignupPage({
       <SignupFlow
         configured
         desktopState={desktopState}
+        forceRealSetup={searchParams.upgrade === "real"}
         initialLang={initialLang}
         initialState={signedOutState}
         oauthError={Boolean(searchParams.auth_error)}
@@ -83,6 +85,7 @@ export default async function SignupPage({
       databaseReady={!error}
       desktopState={desktopState}
       displayName={typeof displayName === "string" ? displayName : null}
+      forceRealSetup={searchParams.upgrade === "real"}
       initialLang={initialLang}
       initialState={error ? { ...signedOutState, authenticated: true, step: "mode" } : normalizeState(data)}
       oauthError={Boolean(searchParams.auth_error)}

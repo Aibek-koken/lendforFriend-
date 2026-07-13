@@ -238,6 +238,9 @@ create or replace function public.complete_real_signup(
 declare
   current_user_id uuid := auth.uid();
   new_company_id uuid;
+  existing_company_id uuid;
+  existing_company_mode public.company_mode;
+  existing_member_role public.company_role;
   connection_status public.crm_status;
 begin
   if current_user_id is null then raise exception 'authentication required'; end if;
@@ -248,7 +251,44 @@ begin
 
   insert into public.profiles (id) values (current_user_id) on conflict (id) do nothing;
   perform 1 from public.profiles where id = current_user_id for update;
-  if exists (select 1 from public.company_members where user_id = current_user_id) then
+  select c.id, c.mode, cm.role
+    into existing_company_id, existing_company_mode, existing_member_role
+  from public.company_members cm
+  join public.companies c on c.id = cm.company_id
+  where cm.user_id = current_user_id
+  order by cm.created_at asc
+  limit 1
+  for update of c;
+
+  connection_status := case when crm_provider = 'amocrm' then 'pending'::public.crm_status else 'unsupported'::public.crm_status end;
+
+  if existing_company_id is not null and existing_company_mode = 'demo' and existing_member_role = 'owner' then
+    -- Upgrade the current demo workspace in place. This preserves the desktop
+    -- auth binding to one company id while removing demo-only records.
+    delete from public.demo_call_notes where company_id = existing_company_id;
+    delete from public.demo_leads where company_id = existing_company_id;
+    delete from public.demo_accounts where company_id = existing_company_id;
+    delete from public.demo_deal_stages where company_id = existing_company_id;
+
+    update public.companies
+      set name = trim(company_name),
+          manager_count_bucket = manager_bucket,
+          main_goal = primary_goal,
+          mode = 'real'
+      where id = existing_company_id;
+
+    insert into public.crm_connections (company_id, provider, status)
+    values (existing_company_id, crm_provider, connection_status)
+    on conflict (company_id) do update
+      set provider = excluded.provider,
+          status = excluded.status,
+          external_account_name = null;
+
+    update public.profiles set preferred_language = requested_language, signup_mode = 'real', onboarding_step = 'complete' where id = current_user_id;
+    return jsonb_build_object('created', false, 'upgraded', true, 'state', public.signup_state_for(current_user_id));
+  end if;
+
+  if existing_company_id is not null then
     return jsonb_build_object('created', false, 'state', public.signup_state_for(current_user_id));
   end if;
 
@@ -256,7 +296,6 @@ begin
   values (trim(company_name), manager_bucket, primary_goal, 'real', current_user_id)
   returning id into new_company_id;
   insert into public.company_members (company_id, user_id, role) values (new_company_id, current_user_id, 'owner');
-  connection_status := case when crm_provider in ('amocrm', 'bitrix24', 'hubspot') then 'pending'::public.crm_status else 'unsupported'::public.crm_status end;
   insert into public.crm_connections (company_id, provider, status) values (new_company_id, crm_provider, connection_status);
   update public.profiles set preferred_language = requested_language, signup_mode = 'real', onboarding_step = 'complete' where id = current_user_id;
   return jsonb_build_object('created', true, 'state', public.signup_state_for(current_user_id));

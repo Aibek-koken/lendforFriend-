@@ -59,6 +59,139 @@ function parseRequestedTransition(
   return { provider, status };
 }
 
+/**
+ * Resolves the desktop session bearer token to its company, or returns the
+ * NextResponse to answer with. Shared by GET and POST so the two can never
+ * drift apart on who is allowed to see what.
+ */
+async function authorizeDesktopSession(
+  request: Request
+): Promise<
+  | { ok: true; userId: string; companyId: string; admin: ReturnType<typeof createAdminClient> }
+  | { ok: false; response: NextResponse }
+> {
+  const sessionToken = readBearerToken(request.headers.get("authorization"));
+  if (!sessionToken) return { ok: false, response: failure("unauthorized", 401) };
+
+  if (!isAdminConfigured()) {
+    console.error("desktop api: not configured —", adminConfigProblem());
+    return { ok: false, response: failure("not_configured", 503) };
+  }
+
+  const admin = createAdminClient();
+
+  const sessionLookup = await admin
+    .from("desktop_sessions")
+    .select("user_id, company_id, expires_at, revoked_at")
+    .eq("token_hash", hashHandoffSecret(sessionToken))
+    .maybeSingle<{
+      user_id: string;
+      company_id: string | null;
+      expires_at: string;
+      revoked_at: string | null;
+    }>();
+
+  if (sessionLookup.error) {
+    console.error("desktop api: desktop_sessions lookup failed", {
+      code: sessionLookup.error.code,
+      message: sessionLookup.error.message,
+    });
+    return { ok: false, response: failure("server_error", 500) };
+  }
+
+  const validation = validateDesktopSession(
+    sessionLookup.data
+      ? ({
+          userId: sessionLookup.data.user_id,
+          companyId: sessionLookup.data.company_id,
+          expiresAt: sessionLookup.data.expires_at,
+          revokedAt: sessionLookup.data.revoked_at,
+        } satisfies DesktopSessionRecord)
+      : null,
+    new Date()
+  );
+
+  if (!validation.ok) {
+    return { ok: false, response: authFailure(validation.code) };
+  }
+
+  return {
+    ok: true,
+    userId: validation.session.userId,
+    companyId: validation.session.companyId,
+    admin,
+  };
+}
+
+/**
+ * The desktop's read of its workspace's CRM situation.
+ *
+ * Returns ONLY non-secret metadata — the same columns the web account page
+ * renders. There is no code path from here to crm_connection_secrets, so a
+ * compromised desktop session cannot yield a client_secret or a token; the worst
+ * it can learn is which amoCRM account the workspace is attached to.
+ *
+ * This is what replaced the desktop's own amoCRM connect form: the app reads
+ * status, it does not own it.
+ */
+export async function GET(request: Request) {
+  const auth = await authorizeDesktopSession(request);
+  if (!auth.ok) return auth.response;
+
+  const connection = await auth.admin
+    .from("crm_connections")
+    .select(
+      "provider, status, subdomain, domain_zone, external_account_id, connected_at, last_error_code, last_error_at"
+    )
+    .eq("company_id", auth.companyId)
+    .maybeSingle<{
+      provider: string;
+      status: string;
+      subdomain: string | null;
+      domain_zone: string | null;
+      external_account_id: string | null;
+      connected_at: string | null;
+      last_error_code: string | null;
+      last_error_at: string | null;
+    }>();
+
+  if (connection.error) {
+    console.error("desktop api: crm_connections lookup failed", {
+      code: connection.error.code,
+      message: connection.error.message,
+    });
+    return failure("server_error", 500);
+  }
+
+  const company = await auth.admin
+    .from("companies")
+    .select("name, mode")
+    .eq("id", auth.companyId)
+    .maybeSingle<{ name: string; mode: string }>();
+
+  const row = connection.data;
+
+  return NextResponse.json(
+    {
+      ok: true,
+      workspace: {
+        companyId: auth.companyId,
+        companyName: company.data?.name ?? null,
+        mode: company.data?.mode ?? null,
+        crmProvider: row?.provider ?? null,
+        crmStatus: row?.status ?? null,
+        crmSubdomain: row?.subdomain ?? null,
+        crmDomainZone: row?.domain_zone ?? null,
+        crmAccountId: row?.external_account_id ?? null,
+        crmConnectedAt: row?.connected_at ?? null,
+        crmLastErrorCode: row?.last_error_code ?? null,
+        crmLastErrorAt: row?.last_error_at ?? null,
+      },
+    },
+    { status: 200, headers: { "Cache-Control": "no-store" } }
+  );
+}
+
 export async function POST(request: Request) {
   const sessionToken = readBearerToken(request.headers.get("authorization"));
   if (!sessionToken) return failure("unauthorized", 401);

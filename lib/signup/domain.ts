@@ -1,11 +1,12 @@
 export const signupModes = ["real", "demo"] as const;
 export const managerCounts = ["1", "2-5", "6-20", "20+"] as const;
-export const crmProviders = ["amocrm", "bitrix24", "hubspot", "other", "none"] as const;
+export const crmProviders = ["amocrm", "none"] as const;
+export const crmProviderValues = ["amocrm", "bitrix24", "hubspot", "other", "none"] as const;
 export const mainGoals = ["sales", "support", "training", "other"] as const;
 
 export type SignupMode = (typeof signupModes)[number];
 export type ManagerCount = (typeof managerCounts)[number];
-export type CrmProvider = (typeof crmProviders)[number];
+export type CrmProvider = (typeof crmProviderValues)[number];
 export type MainGoal = (typeof mainGoals)[number];
 export type CrmStatus = "pending" | "connected" | "failed" | "unsupported" | "demo";
 
@@ -44,7 +45,7 @@ export function validateCompanySetup(input: CompanySetupInput) {
   if (!managerCounts.includes(input.managerCount as ManagerCount)) {
     errors.managerCount = "manager_count_required";
   }
-  if (!crmProviders.includes(input.crmProvider as CrmProvider)) {
+  if (!crmProviders.includes(input.crmProvider as (typeof crmProviders)[number])) {
     errors.crmProvider = "crm_required";
   }
   if (!mainGoals.includes(input.mainGoal as MainGoal)) {
@@ -58,10 +59,14 @@ export function validateCompanySetup(input: CompanySetupInput) {
     value: {
       companyName,
       managerCount: input.managerCount as ManagerCount,
-      crmProvider: input.crmProvider as CrmProvider,
+      crmProvider: input.crmProvider as (typeof crmProviders)[number],
       mainGoal: input.mainGoal as MainGoal,
     },
   };
+}
+
+export function needsAmoCrmSetup(state: Pick<SignupState, "mode" | "crmProvider" | "crmStatus">) {
+  return state.mode === "real" && state.crmProvider === "amocrm" && state.crmStatus !== "connected";
 }
 
 export function canCaptureCrmConnected(status: CrmStatus) {
@@ -80,4 +85,16 @@ export function nextStepForState(state: Pick<SignupState, "authenticated" | "mod
   if (state.companyId) return "complete" as const;
   if (state.mode === "real") return "company" as const;
   return "mode" as const;
+}
+
+export function shouldShowRealSetupForDemoUpgrade(
+  state: Pick<SignupState, "authenticated" | "mode" | "companyId">,
+  requestedUpgrade: string | null | undefined
+) {
+  return (
+    requestedUpgrade === "real" &&
+    state.authenticated &&
+    state.mode === "demo" &&
+    Boolean(state.companyId)
+  );
 }

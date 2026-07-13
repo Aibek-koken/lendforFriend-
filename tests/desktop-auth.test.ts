@@ -2,6 +2,8 @@ import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import {
   AUTH_CODE_TTL_SECONDS,
+  DESKTOP_STATE_COOKIE,
+  DESKTOP_STATE_COOKIE_MAX_AGE_SECONDS,
   DESKTOP_SESSION_TTL_SECONDS,
   DESKTOP_STATE_PARAM,
   buildDesktopDeepLink,
@@ -96,6 +98,13 @@ describe("deep link", () => {
 describe("desktop state param", () => {
   it("uses a name that cannot collide with Supabase's own OAuth state", () => {
     expect(DESKTOP_STATE_PARAM).toBe("desktop_state");
+  });
+
+  it("uses a short-lived desktop state cookie for the external OAuth round trip", () => {
+    expect(DESKTOP_STATE_COOKIE).toBe("liveassist_desktop_state");
+    expect(DESKTOP_STATE_COOKIE).not.toBe("state");
+    expect(DESKTOP_STATE_COOKIE_MAX_AGE_SECONDS).toBeLessThanOrEqual(600);
+    expect(DESKTOP_STATE_COOKIE_MAX_AGE_SECONDS).toBeGreaterThanOrEqual(60);
   });
 
   it("treats an absent or malformed nonce as a plain web signup", () => {
@@ -196,6 +205,23 @@ describe("client/server boundary", () => {
     );
 
     expect(source).not.toMatch(/from "node:crypto"|require\("node:crypto"\)|from "crypto"/);
+  });
+
+  it("keeps the Google OAuth callback query-free and restores desktop state from a cookie", async () => {
+    const signupSource = await readFile(
+      new URL("../app/signup/SignupFlow.tsx", import.meta.url),
+      "utf8"
+    );
+    const callbackSource = await readFile(
+      new URL("../app/auth/callback/route.ts", import.meta.url),
+      "utf8"
+    );
+
+    expect(signupSource).toContain("document.cookie");
+    expect(signupSource).toContain("DESKTOP_STATE_COOKIE");
+    expect(signupSource).not.toMatch(/callback\.searchParams\.set\(\s*DESKTOP_STATE_PARAM/);
+    expect(callbackSource).toContain("DESKTOP_STATE_COOKIE");
+    expect(callbackSource).toContain("response.cookies.set");
   });
 });
 
