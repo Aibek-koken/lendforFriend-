@@ -17,6 +17,7 @@ import {
   createAdminClient,
   isAdminConfigured,
 } from "@/lib/supabase/admin";
+import { authorizeDesktopSession } from "@/lib/desktop-auth/authorize";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -57,70 +58,6 @@ function parseRequestedTransition(
   if (!isRequestedCrmStatus(status)) return { invalid: true };
 
   return { provider, status };
-}
-
-/**
- * Resolves the desktop session bearer token to its company, or returns the
- * NextResponse to answer with. Shared by GET and POST so the two can never
- * drift apart on who is allowed to see what.
- */
-async function authorizeDesktopSession(
-  request: Request
-): Promise<
-  | { ok: true; userId: string; companyId: string; admin: ReturnType<typeof createAdminClient> }
-  | { ok: false; response: NextResponse }
-> {
-  const sessionToken = readBearerToken(request.headers.get("authorization"));
-  if (!sessionToken) return { ok: false, response: failure("unauthorized", 401) };
-
-  if (!isAdminConfigured()) {
-    console.error("desktop api: not configured —", adminConfigProblem());
-    return { ok: false, response: failure("not_configured", 503) };
-  }
-
-  const admin = createAdminClient();
-
-  const sessionLookup = await admin
-    .from("desktop_sessions")
-    .select("user_id, company_id, expires_at, revoked_at")
-    .eq("token_hash", hashHandoffSecret(sessionToken))
-    .maybeSingle<{
-      user_id: string;
-      company_id: string | null;
-      expires_at: string;
-      revoked_at: string | null;
-    }>();
-
-  if (sessionLookup.error) {
-    console.error("desktop api: desktop_sessions lookup failed", {
-      code: sessionLookup.error.code,
-      message: sessionLookup.error.message,
-    });
-    return { ok: false, response: failure("server_error", 500) };
-  }
-
-  const validation = validateDesktopSession(
-    sessionLookup.data
-      ? ({
-          userId: sessionLookup.data.user_id,
-          companyId: sessionLookup.data.company_id,
-          expiresAt: sessionLookup.data.expires_at,
-          revokedAt: sessionLookup.data.revoked_at,
-        } satisfies DesktopSessionRecord)
-      : null,
-    new Date()
-  );
-
-  if (!validation.ok) {
-    return { ok: false, response: authFailure(validation.code) };
-  }
-
-  return {
-    ok: true,
-    userId: validation.session.userId,
-    companyId: validation.session.companyId,
-    admin,
-  };
 }
 
 /**

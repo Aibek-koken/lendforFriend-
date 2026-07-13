@@ -333,7 +333,11 @@ export async function disconnectCrm(companyId: string): Promise<void> {
  * "amoCRM is having a bad day"; a transient failure must never clear the stored
  * credentials.
  */
-export async function accessTokenForCompany(companyId: string, redirectUri: string): Promise<string> {
+export async function accessTokenForCompany(
+  companyId: string,
+  redirectUri: string,
+  options: { forceRefresh?: boolean } = {}
+): Promise<string> {
   const admin = createAdminClient();
 
   const connection = await admin
@@ -366,7 +370,7 @@ export async function accessTokenForCompany(companyId: string, redirectUri: stri
     ? new Date(secret.data.access_token_expires_at)
     : null;
 
-  if (secret.data.access_token_enc && isAccessTokenFresh(expiresAt)) {
+  if (!options.forceRefresh && secret.data.access_token_enc && isAccessTokenFresh(expiresAt)) {
     return decryptSecret(secret.data.access_token_enc);
   }
 
@@ -383,6 +387,41 @@ export async function accessTokenForCompany(companyId: string, redirectUri: stri
     redirectUri,
   });
 
-  await saveTokenPair(companyId, refreshed);
+  if (!(await saveTokenPair(companyId, refreshed))) {
+    throw new AmoCrmTokenError(
+      "provider_unavailable",
+      "The refreshed amoCRM token pair could not be stored"
+    );
+  }
   return refreshed.accessToken;
+}
+
+export async function loadAmoCrmRuntimeConnection(companyId: string): Promise<{
+  subdomain: string;
+  domainZone: AmoCrmDomainZone;
+} | null> {
+  const admin = createAdminClient();
+  const connection = await admin
+    .from("crm_connections")
+    .select("provider, status, subdomain, domain_zone")
+    .eq("company_id", companyId)
+    .maybeSingle<{
+      provider: string;
+      status: string;
+      subdomain: string | null;
+      domain_zone: string | null;
+    }>();
+
+  const row = connection.data;
+  if (
+    connection.error ||
+    row?.provider !== "amocrm" ||
+    row.status !== "connected" ||
+    !row.subdomain ||
+    !isAmoCrmDomainZone(row.domain_zone)
+  ) {
+    return null;
+  }
+
+  return { subdomain: row.subdomain, domainZone: row.domain_zone };
 }

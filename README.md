@@ -109,18 +109,23 @@ Run `supabase/desktop-auth.sql` in the Supabase SQL editor, after `supabase/sign
 3. On the final screen, **Open LiveAssist** calls the `issueDesktopHandoff` server action, which mints a one-time code, stores `sha256(code)` and `sha256(nonce)` in `desktop_auth_codes`, and returns the deep link `liveassist://auth/callback?code=…&state=…`.
 4. The desktop app POSTs `{ code, state }` to `POST /api/desktop/auth/exchange`, which atomically consumes the code (service-role) and returns the profile/workspace snapshot plus an opaque desktop session token.
 
-### Desktop CRM status reconciliation (`POST /api/desktop`)
+### Desktop CRM runtime (`/api/desktop/crm`)
 
-The desktop app reconciles its LOCAL amoCRM connection state (the OS-keychain
-truth) to the workspace's `crm_connections.status` with a bearer desktop
-session token and an optional JSON body `{ provider: "amocrm", status:
-"connected" | "pending" | "failed" }` (a body-less POST means
-amocrm/connected, preserving the original completion contract). Transitions
-are authorized by the pure `decideCrmStatusTransition`
-(`lib/signup/crmCompletion.ts`): only the caller-owned company's amoCRM row
-can move, identity transitions are idempotent, and `demo`/`unsupported` rows
-are never desktop-writable. No amoCRM token or integration secret ever
-reaches this endpoint — it carries only a status word.
+`GET /api/desktop` remains the non-secret workspace/status snapshot. Live CRM
+operations use `GET /api/desktop/crm?leadId=…` for context and
+`POST /api/desktop/crm` for an approved allowlisted action. Both endpoints
+authenticate the opaque desktop session bearer, derive the company from that
+session, and access encrypted amoCRM credentials only on the server.
+
+The runtime refreshes expired tokens through `accessTokenForCompany()`, retries
+one 401 after a forced refresh, and preserves the existing error taxonomy. It
+also re-reads current notes, tasks, or tags before writes so duplicate refusal
+is authoritative. No amoCRM token, refresh token, client secret, or arbitrary
+company id reaches the desktop or renderer.
+
+`POST /api/desktop` still supports the older local-status reconciliation
+contract for unsigned development QA, but it is not the production source of
+CRM credentials or live access.
 
 ### Security properties
 

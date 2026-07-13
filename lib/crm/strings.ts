@@ -70,7 +70,7 @@ export const integrationStrings = {
     copyStep5: "Copy Secret key into Client secret.",
     copyStep6: "Your account subdomain is the part before amocrm.ru in your amoCRM URL.",
     authorizationCodeWarning:
-      "Do not paste the authorization code into Client ID. The authorization code is temporary and is only valid for 20 minutes.",
+      "Use the Integration ID from amoCRM as Client ID. The temporary 20-minute authorization code is handled during authorization and is not entered here.",
     redirectCopied: "Copied",
     copy: "Copy",
     formTitle: "Integration credentials",
@@ -139,7 +139,7 @@ export const integrationStrings = {
     copyStep5: "Скопируйте Секретный ключ в Client secret.",
     copyStep6: "Поддомен аккаунта — это часть URL до amocrm.ru.",
     authorizationCodeWarning:
-      "Не вставляйте код авторизации в Client ID. Код авторизации временный и действует только 20 минут.",
+      "В поле Client ID укажите ID интеграции из amoCRM. Временный 20-минутный код авторизации обрабатывается при подключении, вводить его здесь не нужно.",
     redirectCopied: "Скопировано",
     copy: "Копировать",
     formTitle: "Данные интеграции",

@@ -81,10 +81,16 @@ describe("deep link", () => {
     expect(url.searchParams.get("state")).toBe("state-value");
   });
 
-  it("never carries anything token-shaped", () => {
-    const link = buildDesktopDeepLink(generateHandoffSecret(), generateHandoffSecret());
+  it("carries opaque one-time secrets, never token parameters or JWTs", () => {
+    const url = new URL(buildDesktopDeepLink(generateHandoffSecret(), generateHandoffSecret()));
 
-    expect(link).not.toMatch(/access_token|refresh_token|bearer|eyJ/i);
+    expect([...url.searchParams.keys()].sort()).toEqual(["code", "state"]);
+    expect(url.searchParams.has("access_token")).toBe(false);
+    expect(url.searchParams.has("refresh_token")).toBe(false);
+    for (const value of [url.searchParams.get("code"), url.searchParams.get("state")]) {
+      expect(value).toMatch(/^[A-Za-z0-9_-]{43}$/);
+      expect(value).not.toContain(".");
+    }
   });
 
   it("percent-encodes secrets so a stray character cannot forge a second param", () => {

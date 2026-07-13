@@ -349,7 +349,7 @@ export function AmoCrmSetup({
 
           <form onSubmit={submit} className={`mt-4 ${cardClass}`} noValidate>
             <h2 className="text-lg font-bold">{t.formTitle}</h2>
-            <div role="note" className="mt-4 rounded-2xl bg-[#fff8ed] px-4 py-3 text-sm leading-5 text-[#6b4210] ring-1 ring-[#efd5ad]">
+            <div role="note" className="mt-4 rounded-xl bg-[#f6f5f2] px-4 py-3 text-sm leading-5 text-[#5f5a52] ring-1 ring-[#e4e0d9]">
               {t.authorizationCodeWarning}
             </div>
 
