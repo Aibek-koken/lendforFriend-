@@ -3,7 +3,12 @@ import {
   readBearerToken,
   validateDesktopSession,
 } from "@/lib/desktop-auth/session";
-import { decideAmoCrmCompletion } from "@/lib/signup/crmCompletion";
+import {
+  decideAmoCrmCompletion,
+  decideCrmStatusTransition,
+  isRequestedCrmStatus,
+  type RequestedCrmStatus,
+} from "@/lib/signup/crmCompletion";
 
 const NOW = new Date("2026-07-12T12:00:00.000Z");
 const TOKEN =
@@ -133,5 +138,102 @@ describe("desktop CRM completion authorization", () => {
         "company-1"
       )
     ).toEqual({ ok: false, code: "not_pending" });
+  });
+});
+
+// Doc/25 Phase 4: the generalized desktop status reconciliation contract.
+describe("desktop CRM status transitions", () => {
+  const connection = (status: string, overrides?: { companyId?: string; provider?: string }) => ({
+    companyId: overrides?.companyId ?? "company-1",
+    provider: overrides?.provider ?? "amocrm",
+    status,
+  });
+
+  it("validates the requested status names", () => {
+    expect(isRequestedCrmStatus("connected")).toBe(true);
+    expect(isRequestedCrmStatus("pending")).toBe(true);
+    expect(isRequestedCrmStatus("failed")).toBe(true);
+    expect(isRequestedCrmStatus("demo")).toBe(false);
+    expect(isRequestedCrmStatus("unsupported")).toBe(false);
+    expect(isRequestedCrmStatus(42)).toBe(false);
+  });
+
+  it("moves pending -> connected as a real change (the one analytics-worthy event)", () => {
+    expect(decideCrmStatusTransition(connection("pending"), "company-1", "connected")).toEqual({
+      ok: true,
+      changed: true,
+      nextStatus: "connected",
+    });
+  });
+
+  it("treats a repeated connect as idempotent — changed=false, so no duplicate analytics", () => {
+    expect(decideCrmStatusTransition(connection("connected"), "company-1", "connected")).toEqual({
+      ok: true,
+      changed: false,
+      nextStatus: "connected",
+    });
+  });
+
+  it("moves connected -> pending on disconnect, idempotently", () => {
+    expect(decideCrmStatusTransition(connection("connected"), "company-1", "pending")).toEqual({
+      ok: true,
+      changed: true,
+      nextStatus: "pending",
+    });
+    expect(decideCrmStatusTransition(connection("pending"), "company-1", "pending")).toEqual({
+      ok: true,
+      changed: false,
+      nextStatus: "pending",
+    });
+  });
+
+  it("allows pending -> failed and failed -> connected/pending recoveries", () => {
+    expect(decideCrmStatusTransition(connection("pending"), "company-1", "failed")).toEqual({
+      ok: true,
+      changed: true,
+      nextStatus: "failed",
+    });
+    expect(decideCrmStatusTransition(connection("failed"), "company-1", "connected")).toEqual({
+      ok: true,
+      changed: true,
+      nextStatus: "connected",
+    });
+    expect(decideCrmStatusTransition(connection("failed"), "company-1", "pending")).toEqual({
+      ok: true,
+      changed: true,
+      nextStatus: "pending",
+    });
+  });
+
+  it("never lets the desktop flip a demo or unsupported row", () => {
+    const requests: RequestedCrmStatus[] = ["connected", "pending", "failed"];
+    for (const status of ["demo", "unsupported"]) {
+      for (const requested of requests) {
+        expect(decideCrmStatusTransition(connection(status), "company-1", requested)).toEqual({
+          ok: false,
+          code: "not_allowed",
+        });
+      }
+    }
+  });
+
+  it("refuses to fail a connected row (disconnect first)", () => {
+    expect(decideCrmStatusTransition(connection("connected"), "company-1", "failed")).toEqual({
+      ok: false,
+      code: "not_allowed",
+    });
+  });
+
+  it("still enforces company and provider ownership", () => {
+    expect(
+      decideCrmStatusTransition(connection("pending", { companyId: "company-2" }), "company-1", "connected")
+    ).toEqual({ ok: false, code: "wrong_company" });
+    expect(
+      decideCrmStatusTransition(connection("pending", { provider: "hubspot" }), "company-1", "connected")
+    ).toEqual({ ok: false, code: "wrong_provider" });
+    expect(decideCrmStatusTransition(null, "company-1", "connected")).toEqual({
+      ok: false,
+      code: "missing_connection",
+    });
   });
 });

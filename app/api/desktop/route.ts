@@ -6,9 +6,12 @@ import {
 } from "@/lib/desktop-auth/session";
 import { hashHandoffSecret } from "@/lib/desktop-auth/secrets";
 import {
-  decideAmoCrmCompletion,
+  decideCrmStatusTransition,
+  isRequestedCrmStatus,
   type CrmConnectionRecord,
+  type RequestedCrmStatus,
 } from "@/lib/signup/crmCompletion";
+import { captureAnalyticsEvent } from "@/lib/analytics";
 import {
   adminConfigProblem,
   createAdminClient,
@@ -32,14 +35,28 @@ function authFailure(
 }
 
 function crmFailure(
-  code:
-    | "missing_connection"
-    | "wrong_company"
-    | "wrong_provider"
-    | "not_pending"
+  code: "missing_connection" | "wrong_company" | "wrong_provider" | "not_allowed"
 ) {
-  if (code === "not_pending") return failure("crm_not_pending", 403);
+  if (code === "not_allowed") return failure("crm_transition_not_allowed", 403);
   return failure("crm_not_authorized", 403);
+}
+
+// The desktop's status reconciliation body (Doc/25 Phase 4). Both fields are
+// optional so the original body-less "mark my amoCRM row connected" contract
+// keeps working for already-shipped callers.
+function parseRequestedTransition(
+  body: unknown
+): { provider: string; status: RequestedCrmStatus } | { invalid: true } {
+  const record =
+    body && typeof body === "object" ? (body as Record<string, unknown>) : {};
+
+  const provider =
+    typeof record.provider === "string" ? record.provider : "amocrm";
+
+  const status = record.status === undefined ? "connected" : record.status;
+  if (!isRequestedCrmStatus(status)) return { invalid: true };
+
+  return { provider, status };
 }
 
 export async function POST(request: Request) {
@@ -47,14 +64,21 @@ export async function POST(request: Request) {
   if (!sessionToken) return failure("unauthorized", 401);
 
   if (!isAdminConfigured()) {
-    console.error("desktop crm completion: not configured —", adminConfigProblem());
+    console.error("desktop crm status: not configured —", adminConfigProblem());
     return failure("not_configured", 503);
   }
 
   const configProblem = adminConfigProblem();
   if (configProblem) {
-    console.error("desktop crm completion: misconfigured —", configProblem);
+    console.error("desktop crm status: misconfigured —", configProblem);
   }
+
+  // A body-less POST (the original completion contract) means
+  // provider=amocrm, status=connected.
+  const body = await request.json().catch(() => null);
+  const transition = parseRequestedTransition(body);
+  if ("invalid" in transition) return failure("invalid_status", 400);
+  if (transition.provider !== "amocrm") return failure("crm_not_authorized", 403);
 
   try {
     const admin = createAdminClient();
@@ -71,7 +95,7 @@ export async function POST(request: Request) {
       }>();
 
     if (sessionLookup.error) {
-      console.error("desktop crm completion: desktop_sessions lookup failed", {
+      console.error("desktop crm status: desktop_sessions lookup failed", {
         code: sessionLookup.error.code,
         message: sessionLookup.error.message,
         hint: sessionLookup.error.hint,
@@ -108,7 +132,7 @@ export async function POST(request: Request) {
       }>();
 
     if (connectionLookup.error) {
-      console.error("desktop crm completion: crm_connections lookup failed", {
+      console.error("desktop crm status: crm_connections lookup failed", {
         code: connectionLookup.error.code,
         message: connectionLookup.error.message,
         hint: connectionLookup.error.hint,
@@ -116,7 +140,7 @@ export async function POST(request: Request) {
       return failure("server_error", 500);
     }
 
-    const decision = decideAmoCrmCompletion(
+    const decision = decideCrmStatusTransition(
       connectionLookup.data
         ? ({
             companyId: connectionLookup.data.company_id,
@@ -124,29 +148,47 @@ export async function POST(request: Request) {
             status: connectionLookup.data.status,
           } satisfies CrmConnectionRecord)
         : null,
-      companyId
+      companyId,
+      transition.status
     );
 
     if (!decision.ok) {
       return crmFailure(decision.code);
     }
 
-    if (!decision.alreadyConnected) {
+    if (decision.changed) {
       const update = await admin
         .from("crm_connections")
-        .update({ status: "connected" })
+        .update({ status: decision.nextStatus })
         .eq("id", connectionLookup.data!.id)
         .eq("company_id", companyId)
         .select("provider, status")
         .maybeSingle<{ provider: string; status: string }>();
 
       if (update.error || !update.data) {
-        console.error("desktop crm completion: crm_connections update failed", {
+        console.error("desktop crm status: crm_connections update failed", {
           code: update.error?.code,
           message: update.error?.message,
           hint: update.error?.hint,
         });
         return failure("server_error", 500);
+      }
+
+      // crm_connected fires ONLY here: the database row genuinely moved to
+      // `connected`. Idempotent retries (decision.changed === false) and
+      // disconnects never emit it, so one real connection produces exactly
+      // one event. Payload stays within the sanitized safe-property set.
+      if (decision.nextStatus === "connected") {
+        await captureAnalyticsEvent({
+          distinctId: sessionValidation.session.userId,
+          event: "crm_connected",
+          properties: {
+            company_id: companyId,
+            crm_provider: "amocrm",
+            mode: "real",
+            source: "desktop",
+          },
+        });
       }
     }
 
@@ -155,7 +197,7 @@ export async function POST(request: Request) {
         ok: true,
         workspace: {
           crmProvider: "amocrm",
-          crmStatus: "connected",
+          crmStatus: decision.nextStatus,
         },
       },
       {
@@ -165,7 +207,7 @@ export async function POST(request: Request) {
     );
   } catch (cause) {
     console.error(
-      "desktop crm completion: could not reach Supabase",
+      "desktop crm status: could not reach Supabase",
       cause instanceof Error ? cause.message : cause
     );
     return failure("server_error", 500);

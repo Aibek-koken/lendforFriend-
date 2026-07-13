@@ -42,7 +42,11 @@ PostHog receives the Supabase user id as the anonymous-safe distinct id after au
 
 - `signup_completed` — once when a workspace and owner membership are created;
 - `demo_started` — once when a demo workspace is created;
-- `crm_connected` — reserved for a later confirmed CRM OAuth success, never for `pending`.
+- `crm_connected` — emitted by `POST /api/desktop` only when the caller's own
+  `crm_connections` row genuinely transitions to `connected` (a real
+  pending/failed → connected database change). Idempotent retries and
+  already-connected calls never re-emit it, and it is never emitted for
+  `pending`.
 
 Do not add email, company names, OAuth tokens, CRM account names, documents, leads, call notes, questions, or answers to analytics properties.
 
@@ -60,6 +64,20 @@ Run `supabase/desktop-auth.sql` in the Supabase SQL editor, after `supabase/sign
 2. The user signs in with Google. The nonce rides through the OAuth round trip on our own `desktop_state` param — never OAuth's `state`, which Supabase owns.
 3. On the final screen, **Open LiveAssist** calls the `issueDesktopHandoff` server action, which mints a one-time code, stores `sha256(code)` and `sha256(nonce)` in `desktop_auth_codes`, and returns the deep link `liveassist://auth/callback?code=…&state=…`.
 4. The desktop app POSTs `{ code, state }` to `POST /api/desktop/auth/exchange`, which atomically consumes the code (service-role) and returns the profile/workspace snapshot plus an opaque desktop session token.
+
+### Desktop CRM status reconciliation (`POST /api/desktop`)
+
+The desktop app reconciles its LOCAL amoCRM connection state (the OS-keychain
+truth) to the workspace's `crm_connections.status` with a bearer desktop
+session token and an optional JSON body `{ provider: "amocrm", status:
+"connected" | "pending" | "failed" }` (a body-less POST means
+amocrm/connected, preserving the original completion contract). Transitions
+are authorized by the pure `decideCrmStatusTransition`
+(`lib/signup/crmCompletion.ts`): only the caller-owned company's amoCRM row
+can move, identity transitions are idempotent, and `demo`/`unsupported` rows
+are never desktop-writable. No amoCRM token or integration secret ever
+reaches this endpoint — it carries only a status word.
+
 ### Security properties
 
 - The deep link carries **only** `code` and `state`. No Supabase `access_token` or `refresh_token` ever reaches it.
