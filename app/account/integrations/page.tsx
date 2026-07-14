@@ -18,6 +18,7 @@ import { AmoCrmSetup } from "./AmoCrmSetup";
 export const metadata: Metadata = {
   title: "CRM integration · LiveAssist AI",
   description: "Connect amoCRM to your LiveAssist AI workspace.",
+  robots: { index: false, follow: false },
 };
 
 export const dynamic = "force-dynamic";

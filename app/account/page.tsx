@@ -9,6 +9,7 @@ import { AccountView } from "./AccountView";
 export const metadata: Metadata = {
   title: "Account · LiveAssist AI",
   description: "Manage your LiveAssist AI workspace and CRM connection.",
+  robots: { index: false, follow: false },
 };
 
 export const dynamic = "force-dynamic";

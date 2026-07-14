@@ -9,6 +9,7 @@ import {
   DESKTOP_STATE_COOKIE,
   DESKTOP_STATE_COOKIE_MAX_AGE_SECONDS,
 } from "@/lib/desktop-auth/handoff";
+import { landingOrigin } from "@/lib/hosts";
 import {
   crmProviders,
   mainGoals,
@@ -58,13 +59,23 @@ function GoogleMark() {
   );
 }
 
-function Shell({ children, lang, onLanguage }: { children: React.ReactNode; lang: Lang; onLanguage: () => void }) {
+function Shell({
+  children,
+  homeHref,
+  lang,
+  onLanguage,
+}: {
+  children: React.ReactNode;
+  homeHref: string;
+  lang: Lang;
+  onLanguage: () => void;
+}) {
   const t = signupStrings[lang];
   return (
     <main className="signup-surface min-h-[100svh] px-4 py-4 text-[#1a1917] sm:px-6 sm:py-6">
       <div className="mx-auto flex min-h-[calc(100svh-2rem)] max-w-[1120px] flex-col sm:min-h-[calc(100svh-3rem)]">
         <header className="flex min-h-12 items-center justify-between gap-4">
-          <Link href="/" className={`inline-flex min-h-11 items-center gap-3 rounded-xl pr-3 text-sm font-bold ${focusClass}`}>
+          <Link href={homeHref} className={`inline-flex min-h-11 items-center gap-3 rounded-xl pr-3 text-sm font-bold ${focusClass}`}>
             <Image src="/icons/favicon-48x48.png" width={32} height={32} alt="" className="rounded-[10px]" />
             LiveAssist AI
           </Link>
@@ -103,6 +114,10 @@ export function SignupFlow({ configured, databaseReady = true, desktopState = nu
   const step = isDemoRealUpgrade ? "company" : state.companyId ? "complete" : state.step;
   const requiresAmoCrmSetup = needsAmoCrmSetup(state);
   const crmSetupHref = `/account/integrations?lang=${lang}${desktopState ? `&desktop_state=${encodeURIComponent(desktopState)}` : ""}`;
+  // The logo must never land on the retired landing route. It reloads the
+  // signup flow itself (the server re-resolves the current step), keeping the
+  // desktop handoff nonce in the URL so a mid-flow click can't orphan it.
+  const homeHref = `/signup?lang=${lang}${desktopState ? `&desktop_state=${encodeURIComponent(desktopState)}` : ""}`;
   const options = useMemo(() => ({
     managers: managerCounts,
     crms: crmProviders,
@@ -231,7 +246,7 @@ export function SignupFlow({ configured, databaseReady = true, desktopState = nu
   const cardClass = `group w-full rounded-[24px] bg-white/80 p-5 text-left shadow-[0_18px_54px_rgba(74,47,8,.08)] ring-1 ring-[#e9e3da] transition-[transform,box-shadow,background-color] duration-150 hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_22px_64px_rgba(74,47,8,.12)] active:translate-y-0 ${focusClass}`;
 
   return (
-    <Shell lang={lang} onLanguage={toggleLanguage}>
+    <Shell homeHref={homeHref} lang={lang} onLanguage={toggleLanguage}>
       <section className="signup-enter w-full max-w-[720px]">
         {step === "auth" ? (
           <div className="mx-auto max-w-[440px] text-center">
@@ -358,7 +373,7 @@ export function SignupFlow({ configured, databaseReady = true, desktopState = nu
             )}
               </>
             )}
-            <Link href="/#download" className={`mt-3 inline-flex min-h-11 items-center justify-center rounded-xl px-4 text-sm font-bold text-[#a35707] hover:text-[#7a4108] ${focusClass}`}>{t.download}</Link>
+            <a href={`${landingOrigin()}/#download`} className={`mt-3 inline-flex min-h-11 items-center justify-center rounded-xl px-4 text-sm font-bold text-[#a35707] hover:text-[#7a4108] ${focusClass}`}>{t.download}</a>
             <button
               type="button"
               onClick={switchGoogleAccount}

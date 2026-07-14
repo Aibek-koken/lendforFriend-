@@ -21,6 +21,7 @@ import { OriginLink } from "@/components/ui/origin-button";
 import { AnimateOnScroll } from "../components/ui/animate-on-scroll";
 import { InteractiveFooter } from "../components/InteractiveFooter";
 import { getLandingVisitorId, trackLandingEvent } from "../lib/clientAnalytics";
+import { portalSignupUrl } from "../lib/hosts";
 import ProductMockup from "./components/ProductMockup";
 import { StatsBand } from "./components/StatsBand";
 import HeroOrbit from "./components/HeroOrbit";
@@ -989,7 +990,7 @@ export default function HomePage() {
                 {t("logo")}
               </span>
               <div className="flex shrink-0 items-center gap-1.5">
-                <OriginLink href={`/signup?lang=${lang}`} size="xs">
+                <OriginLink href={portalSignupUrl(lang)} size="xs">
                   {t("getStarted")}
                 </OriginLink>
                 <button
@@ -1060,7 +1061,7 @@ export default function HomePage() {
               >
                 {lang === "en" ? "RU" : "EN"}
               </button>
-              <OriginLink href={`/signup?lang=${lang}`} size="sm">
+              <OriginLink href={portalSignupUrl(lang)} size="sm">
                 {t("getStarted")}
               </OriginLink>
             </div>

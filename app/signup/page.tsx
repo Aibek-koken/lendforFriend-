@@ -9,6 +9,8 @@ import type { Lang } from "@/lib/strings";
 export const metadata: Metadata = {
   title: "Get started · LiveAssist AI",
   description: "Create your LiveAssist AI workspace with Google.",
+  // The portal is not the marketing site: keep auth pages out of search.
+  robots: { index: false, follow: false },
 };
 
 const signedOutState: SignupState = {

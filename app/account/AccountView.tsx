@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Building2, Database, Download, Loader2, LogOut, Plug } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { landingOrigin } from "@/lib/hosts";
 import { accountStrings, crmStateCopy } from "@/lib/crm/strings";
 import { crmAccountLabel, resolveCrmAccountState } from "@/lib/crm/state";
 import type { Lang } from "@/lib/strings";
@@ -67,7 +68,7 @@ export function AccountView({ initialLang, state }: { initialLang: Lang; state: 
     <main className="signup-surface min-h-[100svh] px-4 py-4 text-[#1a1917] sm:px-6 sm:py-6">
       <div className="mx-auto flex min-h-[calc(100svh-2rem)] max-w-[960px] flex-col sm:min-h-[calc(100svh-3rem)]">
         <header className="flex min-h-12 items-center justify-between gap-4">
-          <Link href="/" className={`inline-flex min-h-11 items-center gap-3 rounded-xl pr-3 text-sm font-bold ${focusClass}`}>
+          <Link href={`/account?lang=${lang}`} className={`inline-flex min-h-11 items-center gap-3 rounded-xl pr-3 text-sm font-bold ${focusClass}`}>
             <Image src="/icons/favicon-48x48.png" width={32} height={32} alt="" className="rounded-[10px]" />
             LiveAssist AI
           </Link>
@@ -137,12 +138,12 @@ export function AccountView({ initialLang, state }: { initialLang: Lang; state: 
                 </span>
                 <p className="max-w-[52ch] text-sm leading-6 text-[#6b665e]">{t.desktopHint}</p>
               </div>
-              <Link
-                href="/#download"
+              <a
+                href={`${landingOrigin()}/#download`}
                 className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-sm font-bold text-[#a35707] hover:text-[#7a4108] ${focusClass}`}
               >
                 <Download className="h-4 w-4" aria-hidden="true" /> {t.download}
-              </Link>
+              </a>
             </div>
           </div>
 

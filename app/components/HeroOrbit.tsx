@@ -1,6 +1,7 @@
 "use client";
 
 import { OriginLink } from "@/components/ui/origin-button";
+import { portalSignupUrl } from "@/lib/hosts";
 import type { Lang } from "../../lib/strings";
 
 type OrbitIcon = {
@@ -93,7 +94,7 @@ export default function HeroOrbit({ lang }: { lang: Lang }) {
         </p>
         <h1 className="hero-orbit__headline">{copy.headline}</h1>
         <div className="hero-orbit__cta">
-          <OriginLink href={`/signup?lang=${lang}`} size="lg">
+          <OriginLink href={portalSignupUrl(lang)} size="lg">
             {copy.primary}
           </OriginLink>
           <a href="#features" className="hero-orbit__ghost">
