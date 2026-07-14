@@ -106,6 +106,14 @@ export const integrationStrings = {
     openingDesktop: "Opening LiveAssist…",
     desktopOpenedHint: "LiveAssist should be signing you in. Nothing happened? Press the button again.",
     desktopHandoffError: "We could not create a sign-in link. Press the button again.",
+    // Connect / replace / disconnect by an already signed-in user. The browser
+    // never hears back from the desktop app, so this copy promises what we
+    // actually know — the app updates itself — and never claims it already did.
+    desktopRefreshBody: "amoCRM is connected. Open LiveAssist and the app will update the connection automatically.",
+    desktopRefreshOpenedHint: "LiveAssist is open. The CRM status updates automatically.",
+    disconnectedTitle: "amoCRM disconnected",
+    disconnectedBody:
+      "The stored credentials and tokens are removed. Open LiveAssist and the app will update the connection automatically.",
     errors: {
       subdomain_required: "Enter your amoCRM subdomain.",
       subdomain_invalid: "That does not look like an amoCRM subdomain.",
@@ -175,6 +183,11 @@ export const integrationStrings = {
     openingDesktop: "Открываем LiveAssist…",
     desktopOpenedHint: "LiveAssist сейчас выполнит вход. Ничего не произошло? Нажмите кнопку ещё раз.",
     desktopHandoffError: "Не удалось создать ссылку для входа. Нажмите кнопку ещё раз.",
+    desktopRefreshBody: "amoCRM успешно подключена. Откройте LiveAssist — приложение автоматически обновит подключение.",
+    desktopRefreshOpenedHint: "LiveAssist открыт. Статус CRM обновляется автоматически.",
+    disconnectedTitle: "amoCRM отключена",
+    disconnectedBody:
+      "Сохранённые данные и токены удалены. Откройте LiveAssist — приложение автоматически обновит подключение.",
     errors: {
       subdomain_required: "Укажите поддомен amoCRM.",
       subdomain_invalid: "Это не похоже на поддомен amoCRM.",

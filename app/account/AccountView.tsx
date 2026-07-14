@@ -119,12 +119,12 @@ export function AccountView({ initialLang, state }: { initialLang: Lang; state: 
               </p>
               <p className="mt-2 text-sm leading-6 text-[#6b665e]">{copy.body}</p>
               {state.companyId ? (
-                <Link
+                <a
                   href={crmHref}
                   className={`mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl text-sm font-bold text-[#a35707] hover:text-[#7a4108] ${focusClass}`}
                 >
                   {crmCta} <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </Link>
+                </a>
               ) : null}
             </div>
           </div>

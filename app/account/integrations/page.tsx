@@ -44,7 +44,13 @@ function normalize(value: unknown): CrmConnectionMetadata & { companyId: string 
 export default async function IntegrationsPage({
   searchParams,
 }: {
-  searchParams: { lang?: string; error?: string; connected?: string; [DESKTOP_STATE_PARAM]?: string };
+  searchParams: {
+    lang?: string;
+    error?: string;
+    connected?: string;
+    disconnected?: string;
+    [DESKTOP_STATE_PARAM]?: string;
+  };
 }) {
   const lang: Lang = searchParams.lang === "ru" ? "ru" : "en";
 
@@ -69,6 +75,9 @@ export default async function IntegrationsPage({
       secretsConfigured={isCrmSecretsConfigured()}
       callbackError={searchParams.error ? toCrmErrorCode(searchParams.error) : null}
       justConnected={searchParams.connected === "1"}
+      // Set by the disconnect flow itself, so the page that lands afterwards can
+      // offer the same "Open LiveAssist" sync action a connect does.
+      justDisconnected={searchParams.disconnected === "1"}
       desktopState={desktopState}
     />
   );

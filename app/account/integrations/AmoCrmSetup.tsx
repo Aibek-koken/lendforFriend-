@@ -11,6 +11,7 @@ import {
   type CrmErrorCode,
 } from "@/lib/crm/state";
 import { crmErrorCopy, crmStateCopy, integrationStrings } from "@/lib/crm/strings";
+import { resolveDesktopOpenAction, shouldOfferDesktopOpen } from "@/lib/desktop-auth/refresh";
 import type { Lang } from "@/lib/strings";
 import { issueDesktopHandoff } from "../../signup/actions";
 import { disconnectAmoCrm, saveAmoCrmSetup, selectAmoCrm } from "../actions";
@@ -28,6 +29,7 @@ type Props = {
   secretsConfigured: boolean;
   callbackError: CrmErrorCode | null;
   justConnected: boolean;
+  justDisconnected: boolean;
   desktopState?: string | null;
 };
 
@@ -38,6 +40,7 @@ export function AmoCrmSetup({
   secretsConfigured,
   callbackError,
   justConnected,
+  justDisconnected,
   desktopState = null,
 }: Props) {
   const [lang, setLang] = useState(initialLang);
@@ -103,11 +106,30 @@ export function AmoCrmSetup({
     });
   };
 
+  // Two flows, never mixed:
+  //
+  //   * A desktop-initiated SIGN-IN is in flight (a desktop_state nonce rode
+  //     through the browser): finish it the existing way — mint a single-use
+  //     code bound to that nonce and open the auth callback.
+  //   * Otherwise the user is simply MANAGING CRM from the browser while already
+  //     signed in on both sides. There is no nonce to bind a code to, and no
+  //     credential is needed: open a bare `liveassist://account/refresh`, which
+  //     only tells the app to re-read the server.
+  const desktopAction = resolveDesktopOpenAction(desktopState);
+
   const openDesktopApp = () => {
-    if (!desktopState) return;
     setHandoff("pending");
+
+    if (desktopAction.kind === "account_refresh") {
+      // Nothing is minted and nothing is put on the wire — the link is a signal,
+      // not a credential. No server round trip, so there is no failure to report.
+      setHandoff("opened");
+      window.location.href = desktopAction.deepLink;
+      return;
+    }
+
     startTransition(async () => {
-      const result = await issueDesktopHandoff(desktopState);
+      const result = await issueDesktopHandoff(desktopAction.desktopState);
       if (!result.ok) {
         setHandoff("error");
         return;
@@ -120,9 +142,16 @@ export function AmoCrmSetup({
   const disconnect = () => {
     setIsDisconnecting(true);
     startTransition(async () => {
-      await disconnectAmoCrm();
+      const result = await disconnectAmoCrm();
       setIsDisconnecting(false);
-      window.location.reload();
+      if (!result.ok) {
+        setFormError(t.errors.server_error);
+        return;
+      }
+      // Land on the page in its post-disconnect state, which offers the same
+      // "Open LiveAssist" action — a disconnect the desktop never hears about is
+      // exactly as stale as a connect it never hears about.
+      window.location.href = `/account/integrations?lang=${lang}&disconnected=1`;
     });
   };
 
@@ -200,6 +229,39 @@ export function AmoCrmSetup({
 
   const isConnected = state === "connected";
   const formVisible = !isConnected || showForm;
+  const offerDesktopOpen = shouldOfferDesktopOpen(state, { justDisconnected });
+
+  // One panel for both flows. The button is no longer gated on `desktopState`:
+  // that gate is what made "Open LiveAssist" appear during a first-time desktop
+  // signup and disappear for every later connect/replace/disconnect.
+  const desktopOpenPanel = (message: string, { divider = true }: { divider?: boolean } = {}) => (
+    <div className={divider ? "mt-6 border-t border-[#eee7dd] pt-5" : "mt-3"}>
+      <p className="text-sm leading-6 text-[#6b665e]">{message}</p>
+      <button
+        type="button"
+        onClick={openDesktopApp}
+        disabled={isPending}
+        aria-busy={handoff === "pending"}
+        className={`mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#1a1917] px-5 text-sm font-bold text-white hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60 ${focusClass}`}
+      >
+        {handoff === "pending" ? <Loader2 className="h-4 w-4 motion-safe:animate-spin" aria-hidden="true" /> : null}
+        {handoff === "pending" ? t.openingDesktop : t.openDesktop}
+        {handoff === "pending" ? null : <ArrowRight className="h-4 w-4" aria-hidden="true" />}
+      </button>
+      {handoff === "opened" ? (
+        // The browser gets no acknowledgement back from the desktop app, so this
+        // says what the app will do — never that it already did it.
+        <p role="status" className="mt-3 text-sm leading-5 text-[#6b665e]">
+          {desktopAction.kind === "auth_handoff" ? t.desktopOpenedHint : t.desktopRefreshOpenedHint}
+        </p>
+      ) : null}
+      {handoff === "error" ? (
+        <div role="alert" className="mt-3 rounded-2xl bg-[#fff8ed] px-4 py-3 text-sm leading-5 text-[#6b4210] ring-1 ring-[#efd5ad]">
+          {t.desktopHandoffError}
+        </div>
+      ) : null}
+    </div>
+  );
   const createIntegrationSteps = [
     t.createStep1,
     t.createStep2,
@@ -298,27 +360,14 @@ export function AmoCrmSetup({
             </button>
           </div>
           <p className="mt-3 text-xs leading-5 text-[#6b665e]">{t.disconnectHint}</p>
-          {desktopState ? (
-            <div className="mt-6 border-t border-[#eee7dd] pt-5">
-              <button
-                type="button"
-                onClick={openDesktopApp}
-                disabled={isPending}
-                aria-busy={handoff === "pending"}
-                className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#1a1917] px-5 text-sm font-bold text-white hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60 ${focusClass}`}
-              >
-                {handoff === "pending" ? <Loader2 className="h-4 w-4 motion-safe:animate-spin" aria-hidden="true" /> : null}
-                {handoff === "pending" ? t.openingDesktop : t.openDesktop}
-                {handoff === "pending" ? null : <ArrowRight className="h-4 w-4" aria-hidden="true" />}
-              </button>
-              {handoff === "opened" ? <p className="mt-3 text-sm leading-5 text-[#6b665e]">{t.desktopOpenedHint}</p> : null}
-              {handoff === "error" ? (
-                <div role="alert" className="mt-3 rounded-2xl bg-[#fff8ed] px-4 py-3 text-sm leading-5 text-[#6b4210] ring-1 ring-[#efd5ad]">
-                  {t.desktopHandoffError}
-                </div>
-              ) : null}
-            </div>
-          ) : null}
+          {offerDesktopOpen ? desktopOpenPanel(t.desktopRefreshBody) : null}
+        </div>
+      ) : null}
+
+      {justDisconnected ? (
+        <div className={`mt-8 ${cardClass}`}>
+          <h2 className="text-lg font-bold">{t.disconnectedTitle}</h2>
+          {desktopOpenPanel(t.disconnectedBody, { divider: false })}
         </div>
       ) : null}
 
