@@ -1,22 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { captureAnalyticsEvent } from "@/lib/analytics";
+import { API_DOWNLOAD_URLS, isApiDownloadPlatform } from "@/lib/downloads";
 
-const DOWNLOADS = {
-  "mac-arm64":
-    "https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI-0.1.0-arm64.dmg",
-  windows:
-    "https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI.Setup.0.1.0.1.exe",
-  linux:
-    "https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI-0.1.0.1.AppImage",
-} as const;
-
-type DownloadPlatform = keyof typeof DOWNLOADS;
-
-function isDownloadPlatform(platform: string): platform is DownloadPlatform {
-  return platform in DOWNLOADS;
-}
-
-function getDistinctId(request: NextRequest, platform: DownloadPlatform) {
+function getDistinctId(request: NextRequest, platform: string) {
   const visitorId = request.nextUrl.searchParams.get("visitor_id")?.trim();
 
   if (visitorId) {
@@ -30,7 +16,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { platform: string } }
 ) {
-  if (!isDownloadPlatform(params.platform)) {
+  if (!isApiDownloadPlatform(params.platform)) {
     return NextResponse.json({ errorCode: "unknown_download_platform" }, { status: 404 });
   }
 
@@ -44,5 +30,5 @@ export async function GET(
     },
   });
 
-  return NextResponse.redirect(DOWNLOADS[params.platform], 302);
+  return NextResponse.redirect(API_DOWNLOAD_URLS[params.platform], 302);
 }
