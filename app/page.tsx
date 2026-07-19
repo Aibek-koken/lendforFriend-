@@ -1536,7 +1536,7 @@ export default function HomePage() {
                 <p className="mx-auto mt-5 max-w-[28ch] text-[15px] leading-[1.6] text-[#6b665e]">
                   {t("scrollyStep5Sub")}
                 </p>
-                <OriginLink href="#download" size="lg" className="mt-7 w-full">
+                <OriginLink href="/download" size="lg" className="mt-7 w-full">
                   {t("joinWaitlist")}
                 </OriginLink>
               </div>
@@ -1695,7 +1695,7 @@ export default function HomePage() {
                 <p className="mx-auto mb-7 max-w-[560px] text-[16px] font-[400] leading-[1.58] text-[#6b665e] md:text-[17px]">
                   {t("scrollyStep5Sub")}
                 </p>
-                <OriginLink href="#download" size="sm">
+                <OriginLink href="/download" size="sm">
                   {t("heroPrimary")}
                 </OriginLink>
               </div>
@@ -1841,7 +1841,7 @@ export default function HomePage() {
                   <p className="mt-4 text-[15px] font-[400] leading-[1.6] text-[#6b665e]">
                     {t("downloadCardNote")}
                   </p>
-                  <OriginLink href="#download" size="md" className="mt-6 w-full">
+                  <OriginLink href="/download" size="md" className="mt-6 w-full">
                     {t("downloadCta")}
                   </OriginLink>
                 </div>
