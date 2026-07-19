@@ -87,8 +87,8 @@ export default function ProductMockup({
   const expandedWidth = large ? 760 : compact ? 288 : 520;
   const expandedMaxHeight = large ? 620 : compact ? 448 : 480;
   const outerPadding = large ? "28px 32px" : compact ? "14px 14px 16px" : "20px 24px";
-  const fileAccent = onboarding ? "#1F9D63" : "#5E5CE6";
-  const sourceButtonBg = onboarding ? "#1D1D1F" : "#5E5CE6";
+  const fileAccent = onboarding ? "#1F9D63" : "#2585ff";
+  const sourceButtonBg = onboarding ? "#1D1D1F" : "#2585ff";
   const isRussian = lang === "ru";
 
   const hints: OnboardingHint[] = isRussian

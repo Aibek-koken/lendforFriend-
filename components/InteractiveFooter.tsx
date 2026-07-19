@@ -4,9 +4,13 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   FileSearch,
   FileText,
+  Instagram,
   Keyboard,
+  Linkedin,
+  Mail,
   MessageSquareText,
   MousePointer2,
+  Phone,
   ShieldCheck,
 } from 'lucide-react';
 import type { CSSProperties, PointerEvent } from 'react';
@@ -17,10 +21,55 @@ import type { Lang } from '../lib/strings';
 type FooterCopy = {
   logo: string;
   tagline: string;
+  description: string;
+  connect: string;
+  legal: string;
+  follow: string;
+  rights: string;
+  builtBy: string;
   privacy: string;
   terms: string;
   contact: string;
 };
+
+const CONTACT_EMAIL = 'aibek@liveassist.tech';
+const CONTACT_PHONE_DISPLAY = '+7 706 656 96 10';
+const CONTACT_PHONE_HREF = 'tel:+77066569610';
+
+const SOCIAL_LINKS = [
+  {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/in/aibek-zharylkassyn/',
+    icon: Linkedin,
+  },
+  {
+    id: 'instagram',
+    label: 'Instagram',
+    href: 'https://www.instagram.com/liveassist_/?hl=ru',
+    icon: Instagram,
+  },
+  {
+    id: 'x',
+    label: 'X',
+    href: 'https://x.com/zharylkassyn_a',
+    icon: XIcon,
+  },
+] as const;
+
+function XIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z" />
+    </svg>
+  );
+}
 
 type FooterMoment = {
   id: string;
@@ -55,8 +104,8 @@ const momentsByLang: Record<Lang, FooterMoment[]> = {
       x: 46,
       y: 58,
       label: 'Hotkey',
-      title: '⌘J opens the private layer',
-      body: 'No app switching, no searching tabs, no visible customer-facing popup.',
+      title: 'The shortcut opens the private layer',
+      body: 'Ctrl+J on Windows/Linux or ⌘J on Mac. No app switching, no visible customer-facing popup.',
       source: 'Desktop overlay',
       icon: Keyboard,
     },
@@ -107,8 +156,8 @@ const momentsByLang: Record<Lang, FooterMoment[]> = {
       x: 46,
       y: 58,
       label: 'Хоткей',
-      title: '⌘J открывает приватный слой',
-      body: 'Без переключения вкладок, ручного поиска и видимого клиенту окна.',
+      title: 'Хоткей открывает приватный слой',
+      body: 'Ctrl+J на Windows/Linux или ⌘J на Mac. Без переключения вкладок и видимого клиенту окна.',
       source: 'Desktop overlay',
       icon: Keyboard,
     },
@@ -277,7 +326,7 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                     aria-hidden="true"
                     style={{
                       background:
-                        'radial-gradient(circle at var(--cursor-x) var(--cursor-y), rgba(126,231,220,0.16), transparent 24%), linear-gradient(120deg, rgba(255,255,255,0.05), transparent 42%)',
+                        'radial-gradient(circle at var(--cursor-x) var(--cursor-y), rgba(143,227,255,0.2), transparent 26%), linear-gradient(120deg, rgba(255,255,255,0.05), transparent 42%)',
                     }}
                   />
 
@@ -290,7 +339,7 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                   <span className="text-sm font-[600] uppercase tracking-[0.14em] text-white/[0.46]">
                           {text.callTitle}
                         </span>
-                  <span className="rounded-full bg-[#21a89a]/[0.14] px-3 py-1.5 text-xs font-[700] text-[#7ee7dc]">
+                  <span className="rounded-full bg-[#2585ff]/[0.14] px-3 py-1.5 text-xs font-[700] text-[#8fe3ff]">
                           active
                         </span>
                       </div>
@@ -298,32 +347,32 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                   <div className="rounded-[10px] bg-white/[0.06] p-4 text-base leading-[1.45] text-white/[0.78]">
                           {text.transcriptOne}
                         </div>
-                  <div className="ml-8 rounded-[10px] bg-[#5e5ce6]/[0.18] p-4 text-base leading-[1.45] text-white/[0.86]">
+                  <div className="ml-8 rounded-[10px] bg-[#2585ff]/[0.18] p-4 text-base leading-[1.45] text-white/[0.86]">
                           {text.transcriptTwo}
                         </div>
                       </div>
                     </div>
 
                     <div
-              className="relative rounded-[16px] border border-[#5e5ce6]/[0.34] bg-[#171a2c]/[0.92] p-8 shadow-[0_24px_70px_rgba(94,92,230,0.24)]"
+              className="relative rounded-[16px] border border-[#2585ff]/[0.34] bg-[#171a2c]/[0.92] p-8 shadow-[0_24px_70px_rgba(37,133,255,0.24)]"
                       style={{ transform: 'translateZ(72px)' }}
                     >
                 <div className="mb-5 flex items-start justify-between gap-5">
                         <div>
-                    <p className="text-sm font-[600] uppercase tracking-[0.14em] text-[#b9bbff]">
+                    <p className="text-sm font-[600] uppercase tracking-[0.14em] text-[#8fe3ff]">
                             {text.overlayTitle}
                           </p>
                     <p className="mt-3 text-[22px] font-[700] leading-[1.25] tracking-[-0.03em] text-white">
                             {activeMoment.title}
                           </p>
                         </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 text-[#7ee7dc]">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 text-[#8fe3ff]">
                     <ActiveIcon size={22} aria-hidden="true" />
                         </div>
                       </div>
                 <p className="text-[16px] font-[400] leading-[1.6] text-[#d7d9e5]">{text.overlayBody}</p>
                 <div className="mt-6 rounded-[12px] border border-white/10 bg-black/[0.24] p-4">
-                  <div className="flex items-center gap-2 text-sm font-[600] uppercase tracking-[0.12em] text-[#7ee7dc]">
+                  <div className="flex items-center gap-2 text-sm font-[600] uppercase tracking-[0.12em] text-[#8fe3ff]">
                     <FileText size={16} aria-hidden="true" />
                           {text.sourceLabel}
                         </div>
@@ -338,10 +387,10 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                   >
               <div className="rounded-[12px] border border-white/10 bg-black/[0.28] p-5 font-mono text-sm text-[#aeb2c4]">
                       <p>
-                        <span className="text-[#7ee7dc]">$</span> {text.terminalOne}
+                        <span className="text-[#8fe3ff]">$</span> {text.terminalOne}
                       </p>
                       <p className="mt-2">
-                        <span className="text-[#b9bbff]">✓</span> {text.terminalTwo}
+                        <span className="text-[#8fe3ff]">✓</span> {text.terminalTwo}
                       </p>
                     </div>
               <div className="rounded-[12px] border border-white/10 bg-white/[0.06] p-5">
@@ -367,19 +416,19 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.98 }}
                         transition={{ duration: prefersReducedMotion ? 0 : 0.18, ease: [0, 0, 0.2, 1] }}
-                className="rounded-[14px] border border-white/[0.14] bg-[#f7f8ff] p-5 text-[#17181d] shadow-[0_18px_46px_rgba(0,0,0,0.28)]"
+                className="rounded-[14px] border border-white/[0.14] bg-[#f7faff] p-5 text-[#17181d] shadow-[0_18px_46px_rgba(0,0,0,0.28)]"
                       >
-                <p className="text-xs font-[700] uppercase tracking-[0.13em] text-[#5e5ce6]">
+                <p className="text-xs font-[700] uppercase tracking-[0.13em] text-[#2585ff]">
                           {activeMoment.label}
                         </p>
                 <p className="mt-2 text-lg font-[700] leading-[1.25] tracking-[-0.02em]">{activeMoment.title}</p>
-                <p className="mt-3 text-[16px] font-[400] leading-[1.55] text-[#555864]">{activeMoment.body}</p>
+                <p className="mt-3 text-[16px] font-[400] leading-[1.55] text-[#6e6e73]">{activeMoment.body}</p>
                       </motion.div>
                     </AnimatePresence>
                   </div>
 
                   <div
-            className={`pointer-events-none absolute z-10 flex h-12 w-12 items-center justify-center rounded-full border border-[#7ee7dc]/40 bg-[#7ee7dc]/[0.12] text-[#7ee7dc] shadow-[0_0_28px_rgba(126,231,220,0.26)] ${
+            className={`pointer-events-none absolute z-10 flex h-12 w-12 items-center justify-center rounded-full border border-[#8fe3ff]/40 bg-[#8fe3ff]/[0.12] text-[#8fe3ff] shadow-[0_0_30px_rgba(143,227,255,0.32)] ${
                       isInside ? 'opacity-100' : 'opacity-55'
                     }`}
                     style={{
@@ -404,10 +453,10 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                           setActiveId(moment.id);
                           setPointer({ x: moment.x, y: moment.y });
                         }}
-                className={`absolute z-10 flex h-11 w-11 items-center justify-center rounded-full border text-white transition-colors focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[#7ee7dc] ${
+                className={`absolute z-10 flex h-11 w-11 items-center justify-center rounded-full border text-white transition-colors focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[#8fe3ff] ${
                           activeMoment.id === moment.id
-                            ? 'border-[#7ee7dc] bg-[#21a89a]/[0.28]'
-                            : 'border-white/[0.16] bg-white/10 hover:border-[#7ee7dc]/70'
+                            ? 'border-[#8fe3ff] bg-[#2585ff]/[0.28]'
+                            : 'border-white/[0.16] bg-white/10 hover:border-[#8fe3ff]/70'
                         }`}
                         style={{
                           left: `${moment.x}%`,
@@ -434,9 +483,9 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
                     setPointer({ x: moment.x, y: moment.y });
                     setIsInside(true);
                   }}
-            className={`min-h-[52px] rounded-[10px] border px-8 py-3 text-left text-sm font-[600] transition-colors focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[#7ee7dc] ${
+            className={`min-h-[52px] rounded-[10px] border px-8 py-3 text-left text-sm font-[600] transition-colors focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[#8fe3ff] ${
                     activeMoment.id === moment.id
-                      ? 'border-[#7ee7dc]/70 bg-[#21a89a]/[0.18] text-white'
+                      ? 'border-[#8fe3ff]/70 bg-[#2585ff]/[0.18] text-white'
                       : 'border-white/10 bg-white/[0.04] text-white/[0.62] hover:border-white/[0.24] hover:text-white'
                   }`}
                 >
@@ -448,32 +497,114 @@ export function InteractiveDemoPanel({ lang }: { lang: Lang }) {
   );
 }
 
+const focusRing =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(37,133,255,0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fafafb]';
+
 export function InteractiveFooter({ copy }: { copy: FooterCopy }) {
+  const year = new Date().getFullYear();
+
   return (
-    <footer className="border-t border-[#e5e5ea] px-5 py-10">
-      <div
-        className="mx-auto flex flex-col items-start justify-between gap-6 md:flex-row md:items-center"
-        style={{ maxWidth: 'min(1180px, 100%)' }}
-      >
-          <div className="flex items-center gap-3">
-          <strong className="text-[15px] font-[700] text-[#1d1d1f]">{copy.logo}</strong>
-          <span className="text-[14px] text-[#6e6e73]">{copy.tagline}</span>
+    <footer className="border-t border-[#e5e5ea] bg-[#fafafb] px-5 pb-8 pt-14">
+      <div className="mx-auto w-full" style={{ maxWidth: 'min(1180px, 100%)' }}>
+        <div className="grid gap-10 md:grid-cols-[1.6fr_1fr_1fr] lg:gap-16">
+          {/* Brand */}
+          <div className="max-w-[420px]">
+            <div className="flex items-center gap-2.5">
+              <span
+                aria-hidden="true"
+                className="flex h-8 w-8 items-center justify-center rounded-[9px] bg-gradient-to-br from-[#2585ff] to-[#0a5bd6] text-[15px] font-[800] text-white shadow-[0_6px_18px_rgba(37,133,255,0.3)]"
+              >
+                L
+              </span>
+              <strong className="text-[17px] font-[700] tracking-[-0.01em] text-[#1d1d1f]">
+                {copy.logo}
+              </strong>
+            </div>
+            <p className="mt-4 text-[14px] leading-[1.6] text-[#6e6e73]">{copy.description}</p>
+
+            <div className="mt-6">
+              <p className="text-[12px] font-[700] uppercase tracking-[0.14em] text-[#86868b]">
+                {copy.follow}
+              </p>
+              <div className="mt-3 flex items-center gap-2.5">
+                {SOCIAL_LINKS.map(({ id, label, href, icon: Icon }) => (
+                  <a
+                    key={id}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    title={label}
+                    className={`flex h-10 w-10 items-center justify-center rounded-full border border-[#e0e0e5] bg-white text-[#4a4a4f] transition-all hover:-translate-y-0.5 hover:border-[#2585ff] hover:text-[#2585ff] hover:shadow-[0_8px_20px_rgba(37,133,255,0.18)] ${focusRing}`}
+                  >
+                    <Icon size={18} aria-hidden="true" />
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
-        <div className="flex flex-wrap gap-3 text-[14px] text-[#6e6e73]">
-          <a href="#" className="transition-colors hover:text-[#1d1d1f] focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[rgba(94,92,230,0.42)]">
-              {copy.privacy}
-            </a>
-          <a href="#" className="transition-colors hover:text-[#1d1d1f] focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[rgba(94,92,230,0.42)]">
-              {copy.terms}
-            </a>
-            <a
-              href="mailto:zarylkasynajbek92@gmail.com"
-            className="transition-colors hover:text-[#1d1d1f] focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[rgba(94,92,230,0.42)]"
-            >
-              {copy.contact}
-            </a>
+
+          {/* Contact */}
+          <div>
+            <p className="text-[12px] font-[700] uppercase tracking-[0.14em] text-[#86868b]">
+              {copy.connect}
+            </p>
+            <ul className="mt-4 space-y-3 text-[14px]">
+              <li>
+                <a
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  className={`group inline-flex items-center gap-2.5 text-[#4a4a4f] transition-colors hover:text-[#1d1d1f] ${focusRing}`}
+                >
+                  <Mail size={16} className="text-[#86868b] transition-colors group-hover:text-[#2585ff]" aria-hidden="true" />
+                  <span className="break-all">{CONTACT_EMAIL}</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href={CONTACT_PHONE_HREF}
+                  className={`group inline-flex items-center gap-2.5 text-[#4a4a4f] transition-colors hover:text-[#1d1d1f] ${focusRing}`}
+                >
+                  <Phone size={16} className="text-[#86868b] transition-colors group-hover:text-[#2585ff]" aria-hidden="true" />
+                  <span>{CONTACT_PHONE_DISPLAY}</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <p className="text-[12px] font-[700] uppercase tracking-[0.14em] text-[#86868b]">
+              {copy.legal}
+            </p>
+            <ul className="mt-4 space-y-3 text-[14px]">
+              <li>
+                <a
+                  href="/privacy"
+                  className={`text-[#4a4a4f] transition-colors hover:text-[#1d1d1f] ${focusRing}`}
+                >
+                  {copy.privacy}
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/terms"
+                  className={`text-[#4a4a4f] transition-colors hover:text-[#1d1d1f] ${focusRing}`}
+                >
+                  {copy.terms}
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
+
+        {/* Bottom bar */}
+        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-[#e5e5ea] pt-6 text-[13px] text-[#86868b] sm:flex-row sm:items-center">
+          <span>
+            © {year} {copy.logo}. {copy.rights}
+          </span>
+          <span>{copy.builtBy}</span>
+        </div>
+      </div>
     </footer>
   );
 }

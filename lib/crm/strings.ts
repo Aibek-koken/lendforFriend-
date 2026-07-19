@@ -1,0 +1,253 @@
+import type { CrmAccountState, CrmErrorCode } from "./state";
+import type { Lang } from "@/lib/strings";
+
+export const accountStrings = {
+  en: {
+    title: "Account",
+    subtitle: "Your workspace, CRM connection, and desktop app.",
+    back: "Back to site",
+    signOut: "Sign out",
+    signingOut: "Signing out…",
+    workspace: "Workspace",
+    noWorkspace: "No workspace yet",
+    finishSignup: "Finish signup",
+    modeReal: "Real company",
+    modeDemo: "Demo workspace",
+    crm: "CRM",
+    integrations: "Integrations",
+    manageCrm: "Manage CRM",
+    connectCrm: "Connect CRM",
+    connectRealCrm: "Connect a real CRM",
+    setUpAmoCrm: "Set up amoCRM",
+    reconnect: "Reconnect",
+    download: "Download the desktop app",
+    desktopHint:
+      "The desktop app signs in with this account. It never stores your CRM secrets — they stay encrypted on our servers.",
+  },
+  ru: {
+    title: "Аккаунт",
+    subtitle: "Рабочее пространство, подключение CRM и десктоп-приложение.",
+    back: "На сайт",
+    signOut: "Выйти",
+    signingOut: "Выходим…",
+    workspace: "Рабочее пространство",
+    noWorkspace: "Пространство ещё не создано",
+    finishSignup: "Завершить регистрацию",
+    modeReal: "Реальная компания",
+    modeDemo: "Demo-пространство",
+    crm: "CRM",
+    integrations: "Интеграции",
+    manageCrm: "Управлять CRM",
+    connectCrm: "Подключить CRM",
+    connectRealCrm: "Подключить реальную CRM",
+    setUpAmoCrm: "Настроить amoCRM",
+    reconnect: "Переподключить",
+    download: "Скачать приложение",
+    desktopHint:
+      "Десктоп-приложение входит под этим аккаунтом. Оно не хранит секреты CRM — они лежат зашифрованными на наших серверах.",
+  },
+} satisfies Record<Lang, Record<string, string>>;
+
+export const integrationStrings = {
+  en: {
+    title: "amoCRM",
+    subtitle: "Connect the CRM your team already works in. Setup happens here, once.",
+    backToAccount: "Back to account",
+    stepsTitle: "Before you start",
+    createIntegrationTitle: "Create integration in amoCRM",
+    createStep1: "Open amoCRM → amoMarket.",
+    createStep2: "Click Create integration and choose External integration.",
+    createStep3: "Paste this Redirect URI:",
+    createStep4: "Leave the disconnect webhook URL empty.",
+    createStep5: "Set access to All for the first connection.",
+    createStep6: "Do not enable duplicate control or multiple sources.",
+    createStep7: "Name the integration “LiveAssist AI” and save it.",
+    copyKeysTitle: "Copy keys into LiveAssist",
+    copyStep1: "Open the created LiveAssist AI integration in amoMarket.",
+    copyStep2: "Go to Keys and scopes.",
+    copyStep3: "Click Generate secret key.",
+    copyStep4: "Copy Integration ID into Client ID.",
+    copyStep5: "Copy Secret key into Client secret.",
+    copyStep6: "Your account subdomain is the part before amocrm.ru in your amoCRM URL.",
+    authorizationCodeWarning:
+      "Use the Integration ID from amoCRM as Client ID. The temporary 20-minute authorization code is handled during authorization and is not entered here.",
+    redirectCopied: "Copied",
+    copy: "Copy",
+    formTitle: "Integration credentials",
+    subdomain: "Account subdomain",
+    subdomainHint:
+      "The part before amocrm.ru in your account URL. Example: zharylkassynaibek from zharylkassynaibek.amocrm.ru.",
+    region: "Region",
+    clientId: "Client ID",
+    clientIdHint: "Paste Integration ID from amoCRM. This is not your email.",
+    clientSecret: "Client secret",
+    clientSecretHint:
+      "Paste Secret key from amoCRM. Generate it in amoMarket → your integration → Keys and scopes.",
+    clientSecretSecurityHint:
+      "Encrypted with AES-256-GCM and stored on our servers. It is never sent to the desktop app, never shown again, and never placed in a URL.",
+    save: "Save and authorize",
+    saving: "Saving…",
+    authorizing: "Opening amoCRM…",
+    connectedTitle: "Connected",
+    connectedBody: "LiveAssist can read lead context and write approved notes, tasks and tags to this account.",
+    disconnect: "Disconnect",
+    disconnecting: "Disconnecting…",
+    disconnectHint: "Removes the stored credentials and tokens. Your amoCRM data is untouched.",
+    change: "Replace credentials",
+    demoTitle: "You are on a demo workspace",
+    demoBody:
+      "The CRM Assistant runs on built-in demonstration data. Connecting a real CRM needs a real-company workspace.",
+    demoCta: "Connect a real CRM",
+    unsupportedTitle: "Not supported yet",
+    unsupportedBody: "Only amoCRM (and Kommo) connections are available in the beta. Switch this workspace to amoCRM to continue setup.",
+    switchToAmoCrm: "Set up amoCRM instead",
+    selectingAmoCrm: "Switching to amoCRM…",
+    openDesktop: "Open LiveAssist",
+    openingDesktop: "Opening LiveAssist…",
+    desktopOpenedHint: "LiveAssist should be signing you in. Nothing happened? Press the button again.",
+    desktopHandoffError: "We could not create a sign-in link. Press the button again.",
+    // Connect / replace / disconnect by an already signed-in user. The browser
+    // never hears back from the desktop app, so this copy promises what we
+    // actually know — the app updates itself — and never claims it already did.
+    desktopRefreshBody: "amoCRM is connected. Open LiveAssist and the app will update the connection automatically.",
+    desktopRefreshOpenedHint: "LiveAssist is open. The CRM status updates automatically.",
+    disconnectedTitle: "amoCRM disconnected",
+    disconnectedBody:
+      "The stored credentials and tokens are removed. Open LiveAssist and the app will update the connection automatically.",
+    errors: {
+      subdomain_required: "Enter your amoCRM subdomain.",
+      subdomain_invalid: "That does not look like an amoCRM subdomain.",
+      domain_zone_invalid: "Choose your account region.",
+      client_id_required: "Enter the integration's Client ID.",
+      client_id_invalid: "That does not look like a Client ID.",
+      client_secret_required: "Enter the integration's Client secret.",
+      client_secret_invalid: "That does not look like a Client secret.",
+      server_error: "Something went wrong on our side. Try again.",
+      not_configured: "CRM setup is disabled until CRM_SECRETS_ENCRYPTION_KEY is configured on the server.",
+    } as Record<string, string>,
+  },
+  ru: {
+    title: "amoCRM",
+    subtitle: "Подключите CRM, в которой уже работает команда. Настройка — здесь, один раз.",
+    backToAccount: "К аккаунту",
+    stepsTitle: "Перед началом",
+    createIntegrationTitle: "Создайте интеграцию в amoCRM",
+    createStep1: "Откройте amoCRM → amoMarket.",
+    createStep2: "Нажмите Создать интеграцию и выберите Внешняя интеграция.",
+    createStep3: "Вставьте этот Redirect URI:",
+    createStep4: "Оставьте disconnect webhook URL пустым.",
+    createStep5: "Для первого подключения поставьте доступ Все.",
+    createStep6: "Не включайте Контроль дублей и Множественные источники.",
+    createStep7: "Назовите интеграцию “LiveAssist AI” и сохраните.",
+    copyKeysTitle: "Скопируйте ключи в LiveAssist",
+    copyStep1: "Откройте созданную интеграцию LiveAssist AI в amoMarket.",
+    copyStep2: "Перейдите во вкладку Ключи и доступы.",
+    copyStep3: "Нажмите Сгенерировать ключ.",
+    copyStep4: "Скопируйте ID интеграции в Client ID.",
+    copyStep5: "Скопируйте Секретный ключ в Client secret.",
+    copyStep6: "Поддомен аккаунта — это часть URL до amocrm.ru.",
+    authorizationCodeWarning:
+      "В поле Client ID укажите ID интеграции из amoCRM. Временный 20-минутный код авторизации обрабатывается при подключении, вводить его здесь не нужно.",
+    redirectCopied: "Скопировано",
+    copy: "Копировать",
+    formTitle: "Данные интеграции",
+    subdomain: "Поддомен аккаунта",
+    subdomainHint:
+      "Часть адреса до amocrm.ru. Например: zharylkassynaibek из zharylkassynaibek.amocrm.ru.",
+    region: "Регион",
+    clientId: "Client ID",
+    clientIdHint: "Вставьте ID интеграции из amoCRM. Это не email.",
+    clientSecret: "Client secret",
+    clientSecretHint:
+      "Вставьте Секретный ключ из amoCRM. Сгенерируйте его в amoMarket → ваша интеграция → Ключи и доступы.",
+    clientSecretSecurityHint:
+      "Шифруется алгоритмом AES-256-GCM и хранится на наших серверах. Он не передаётся в десктоп-приложение, не показывается повторно и никогда не попадает в URL.",
+    save: "Сохранить и авторизовать",
+    saving: "Сохраняем…",
+    authorizing: "Открываем amoCRM…",
+    connectedTitle: "Подключено",
+    connectedBody: "LiveAssist читает контекст сделки и записывает одобренные примечания, задачи и теги в этот аккаунт.",
+    disconnect: "Отключить",
+    disconnecting: "Отключаем…",
+    disconnectHint: "Удаляет сохранённые данные и токены. Данные в amoCRM не трогаются.",
+    change: "Заменить данные",
+    demoTitle: "Вы в demo-пространстве",
+    demoBody:
+      "CRM-ассистент работает на встроенных демо-данных. Для подключения реальной CRM нужно пространство реальной компании.",
+    demoCta: "Подключить реальную CRM",
+    unsupportedTitle: "Пока не поддерживается",
+    unsupportedBody: "В бете доступно подключение только amoCRM (и Kommo). Переключите этот workspace на amoCRM, чтобы продолжить настройку.",
+    switchToAmoCrm: "Настроить amoCRM вместо этого",
+    selectingAmoCrm: "Переключаем на amoCRM…",
+    openDesktop: "Открыть LiveAssist",
+    openingDesktop: "Открываем LiveAssist…",
+    desktopOpenedHint: "LiveAssist сейчас выполнит вход. Ничего не произошло? Нажмите кнопку ещё раз.",
+    desktopHandoffError: "Не удалось создать ссылку для входа. Нажмите кнопку ещё раз.",
+    desktopRefreshBody: "amoCRM успешно подключена. Откройте LiveAssist — приложение автоматически обновит подключение.",
+    desktopRefreshOpenedHint: "LiveAssist открыт. Статус CRM обновляется автоматически.",
+    disconnectedTitle: "amoCRM отключена",
+    disconnectedBody:
+      "Сохранённые данные и токены удалены. Откройте LiveAssist — приложение автоматически обновит подключение.",
+    errors: {
+      subdomain_required: "Укажите поддомен amoCRM.",
+      subdomain_invalid: "Это не похоже на поддомен amoCRM.",
+      domain_zone_invalid: "Выберите регион аккаунта.",
+      client_id_required: "Укажите Client ID интеграции.",
+      client_id_invalid: "Это не похоже на Client ID.",
+      client_secret_required: "Укажите Client secret интеграции.",
+      client_secret_invalid: "Это не похоже на Client secret.",
+      server_error: "Что-то пошло не так на нашей стороне. Попробуйте ещё раз.",
+      not_configured: "Настройка CRM отключена, пока на сервере не задан CRM_SECRETS_ENCRYPTION_KEY.",
+    } as Record<string, string>,
+  },
+} satisfies Record<Lang, Record<string, unknown>>;
+
+const stateCopy: Record<Lang, Record<CrmAccountState, { label: string; body: string }>> = {
+  en: {
+    no_workspace: { label: "No workspace", body: "Finish signup to create your workspace." },
+    demo: { label: "Demo", body: "Running on built-in demo data. No CRM is connected." },
+    unsupported: { label: "Not supported", body: "This CRM is not available in the beta yet." },
+    setup_required: { label: "Not connected", body: "amoCRM is chosen but not set up yet." },
+    authorization_required: { label: "Authorization needed", body: "Credentials saved. Approve access in amoCRM to finish." },
+    connected: { label: "Connected", body: "Live lead context and approved write-back are enabled." },
+    failed: { label: "Connection failed", body: "The last attempt did not go through. Reconnect to try again." },
+  },
+  ru: {
+    no_workspace: { label: "Нет пространства", body: "Завершите регистрацию, чтобы создать пространство." },
+    demo: { label: "Demo", body: "Работает на встроенных демо-данных. CRM не подключена." },
+    unsupported: { label: "Не поддерживается", body: "Эта CRM пока недоступна в бете." },
+    setup_required: { label: "Не подключено", body: "amoCRM выбрана, но ещё не настроена." },
+    authorization_required: { label: "Нужна авторизация", body: "Данные сохранены. Подтвердите доступ в amoCRM." },
+    connected: { label: "Подключено", body: "Живой контекст сделки и одобренная запись включены." },
+    failed: { label: "Ошибка подключения", body: "Последняя попытка не прошла. Переподключитесь." },
+  },
+};
+
+export function crmStateCopy(lang: Lang, state: CrmAccountState) {
+  return stateCopy[lang][state];
+}
+
+const errorCopy: Record<Lang, Record<CrmErrorCode, string>> = {
+  en: {
+    invalid_credentials: "amoCRM rejected the Client ID or Client secret. Check both and save them again.",
+    authorization_expired: "The amoCRM authorization expired. Authorize again to reconnect.",
+    state_mismatch: "That authorization did not match the request we started. Try again from this page.",
+    access_denied: "Access was declined in amoCRM.",
+    rate_limited: "amoCRM is rate-limiting us. Wait a minute and try again.",
+    provider_unavailable: "amoCRM could not be reached. Try again shortly.",
+    unknown: "The connection did not complete. Try again.",
+  },
+  ru: {
+    invalid_credentials: "amoCRM отклонила Client ID или Client secret. Проверьте оба и сохраните заново.",
+    authorization_expired: "Авторизация amoCRM истекла. Авторизуйтесь заново.",
+    state_mismatch: "Авторизация не совпала с начатым запросом. Попробуйте снова с этой страницы.",
+    access_denied: "Доступ в amoCRM был отклонён.",
+    rate_limited: "amoCRM ограничивает частоту запросов. Подождите минуту.",
+    provider_unavailable: "Не удалось связаться с amoCRM. Попробуйте позже.",
+    unknown: "Подключение не завершилось. Попробуйте ещё раз.",
+  },
+};
+
+export function crmErrorCopy(lang: Lang, code: CrmErrorCode): string {
+  return errorCopy[lang][code];
+}

@@ -1,0 +1,11 @@
+LiveAssist AI is a desktop AI assistant for sales and CRM teams. It helps managers work faster with clients before, during, and after a call.
+
+During a conversation, a manager can quickly get answers from company documents, knowledge bases, and CRM data without switching between different tools. This helps remove pauses during calls, respond with more confidence, and avoid losing clients because of phrases like “I’ll check and get back to you later.”
+
+The main value of LiveAssist AI comes after the call. The assistant analyzes the conversation or its transcript, creates a short summary, and shows the manager suggested actions — what should be added or updated in the CRM. For example: update the lead stage, add a note, create a follow-up task, mark the client’s objection, add a tag, or save important deal information.
+
+The manager does not need to fill in the CRM manually from scratch. They simply review the suggested actions and apply the needed changes with one click. As a result, after the call, the CRM is updated, the client communication history is saved, the next steps are clear, and the manager spends less time on routine work.
+
+The next stage of the product is an autonomous CRM agent. It will be able to perform routine actions inside the CRM, help move clients through the sales pipeline, send messages, and provide 24/7 support in WhatsApp.
+
+LiveAssist AI will also help teams build better sales scripts. Based on successful conversations, CRM history, and closed deals, the assistant will identify effective communication patterns and turn them into clear sales scripts for the sales team.

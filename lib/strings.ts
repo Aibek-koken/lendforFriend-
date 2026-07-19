@@ -1,8 +1,11 @@
 export const strings = {
   en: {
-    logo: "⌘ LiveAssist AI",
+    logo: "LiveAssist AI",
     navLabel: "Main navigation",
     navPricing: "Download",
+    getStarted: "Get started",
+    navHow: "How it works",
+    navPricingNav: "Pricing",
     navFaq: "FAQ",
     switchToRu: "Switch language to Russian",
     switchToEn: "Switch language to English",
@@ -11,9 +14,9 @@ export const strings = {
     joinWaitlist: "Download",
     heroEyebrow: "Private desktop overlay",
     heroHeadline:
-      "Know the answer. Before they finish asking.",
+      "Never freeze on a client call again.",
     heroSub:
-      "LiveAssist AI gives your team instant, source-backed answers from your own documents — without leaving the call.",
+      "Upload your docs once, ask in the moment, and answer with proof before the silence gets awkward.",
     heroPrimary: "Download",
     heroSecondary: "See how it works",
     mockup: {
@@ -31,18 +34,18 @@ export const strings = {
       answeredIn: "Answered in 1.4s",
       openingFile: "Opening file..."
     },
-    scrollyStep1: "Your rep is on a live call.",
-    scrollyStep2: "The customer asks something specific.",
-    scrollyKey: "⌘ J",
-    scrollyStep3: "They press ⌘J",
-    scrollyStep4: "Answer in 1–2 seconds. Source included.",
-    scrollyStep5: "Stay in the call. Keep the answer.",
+    scrollyStep1: "Upload your docs once.",
+    scrollyStep2: "The client asks a hard question.",
+    scrollyKey: "⌥ Space",
+    scrollyStep3: "Press ⌥ Space and ask.",
+    scrollyStep4: "Get a cited answer in 1–2 seconds.",
+    scrollyStep5: "Then the call becomes a CRM update.",
     scrollyStep5Sub:
-      "Give every rep a private assistant trained on your company docs.",
+      "After you hang up, the agent drafts the amoCRM note, task, and tag — you just approve.",
     featuresEyebrow: "Features",
-    featuresTitle: "Designed for the exact second a rep needs help",
+    featuresTitle: "From the live answer to the updated CRM",
     featuresSub:
-      "Cited answers in seconds — from an overlay only you can see.",
+      "Cited answers during the call — then a reviewed, safe write-back to amoCRM after it.",
     pricingEyebrow: "Download",
     pricingTitle: "Download LiveAssist AI",
     pricingSub:
@@ -50,7 +53,7 @@ export const strings = {
     pricingTrustLine: "Free to try.",
     popular: "Most popular",
     faqEyebrow: "FAQ",
-    faqTitle: "Clear answers before download",
+    faqTitle: "Clear answers before you install",
     downloadLabel: "Download",
     downloadHeadline: "Download LiveAssist AI",
     downloadSub: "Available for Mac, Windows, and Linux. Free to try.",
@@ -75,33 +78,40 @@ export const strings = {
     emailSuccess:
       "You’re on the waitlist. We’ll email you when early access opens.",
     footerTagline: "Instant answers from company docs.",
+    footerDescription:
+      "The private desktop overlay that turns your company docs into instant, cited answers during live calls.",
+    footerConnect: "Contact",
+    footerLegal: "Legal",
+    footerFollow: "Follow",
+    footerRights: "All rights reserved.",
+    footerBuiltBy: "Built by Aibek Zharylkassyn",
     privacy: "Privacy",
     terms: "Terms",
     contact: "Contact",
     features: [
       [
-        "Instant answers from your docs",
-        "PDFs, FAQs, SOPs, and pricing pages become searchable during the call."
+        "Cited answers, live",
+        "Ask by hotkey mid-call and get a concise answer with the exact source file and page."
       ],
       [
-        "Source citation on every answer",
-        "Every response shows where it came from, so reps can trust the answer."
+        "Turns calls into CRM updates",
+        "After the call, the agent drafts amoCRM notes, tasks, and tags from what was actually said."
       ],
       [
-        "Floating overlay above any app",
-        "Works over your call tool, CRM, inbox, chat, browser, or desktop workflow."
+        "You approve every write",
+        "Review each suggested action with its evidence and confidence before anything reaches amoCRM."
       ],
       [
-        "Hotkey-first workflow",
-        "Press ⌘J, ask, answer, and return to the conversation without tab switching."
+        "Safe, duplicate-proof writes",
+        "Applied, failed, or skipped-as-duplicate — every write is explicit, and a repeat never doubles it."
       ],
       [
-        "Voice or text input",
-        "Ask naturally by typing a question or speaking when the call context allows it."
+        "Floating overlay, one hotkey",
+        "A private layer above any app. Press ⌥ Space (Ctrl Alt Space on Windows) to ask without switching tabs."
       ],
       [
-        "No constant listening",
-        "LiveAssist activates only on demand, so it stays private until the rep asks."
+        "Local-first and private",
+        "Your documents stay on your machine. Nothing is recorded or sent until you ask."
       ]
     ],
     pricing: [
@@ -158,7 +168,15 @@ export const strings = {
     faqs: [
       [
         "Does LiveAssist AI listen all the time?",
-        "No. LiveAssist AI is hotkey-first and activates only when the rep asks for help. Nothing is recorded or processed until ⌘J is pressed."
+        "No. It is hotkey-first and activates only when you ask for help. Nothing is recorded or processed until you press the shortcut: ⌥ Space on Mac, Ctrl Alt Space on Windows/Linux."
+      ],
+      [
+        "How does it update my CRM?",
+        "After a call, the agent reads your session note and drafts amoCRM actions — a note, a task, a tag. You review each one and approve; only then is it written to amoCRM."
+      ],
+      [
+        "Can it write to amoCRM without me?",
+        "No. Every write is reviewed and approved by you, shown with its evidence and confidence first. A repeated apply is safely skipped as a duplicate instead of doubling the write."
       ],
       [
         "Where do answers come from?",
@@ -166,22 +184,17 @@ export const strings = {
       ],
       [
         "Can the customer see the overlay?",
-        "No. The overlay is a private desktop layer visible only to the rep. It appears above other windows on their screen and is not shared over video or screen share by default."
-      ],
-      [
-        "Is this only for sales teams?",
-        "No. LiveAssist works for any role that answers live questions — support agents, travel agents, clinic staff, real estate reps, consultants, and more."
-      ],
-      [
-        "Does it replace my CRM or knowledge base?",
-        "No. LiveAssist sits on top of your existing tools. It reads your documents and surfaces answers — you keep your CRM, inbox, and call tools exactly as they are."
+        "No. The overlay is a private desktop layer visible only to you. It sits above other windows on your screen and is not shared over video or screen share by default."
       ]
     ]
   },
   ru: {
-    logo: "⌘ LiveAssist AI",
+    logo: "LiveAssist AI",
     navLabel: "Основная навигация",
     navPricing: "Скачать",
+    getStarted: "Начать бесплатно",
+    navHow: "Как это работает",
+    navPricingNav: "Цены",
     navFaq: "Вопросы",
     switchToRu: "Переключить язык на русский",
     switchToEn: "Переключить язык на английский",
@@ -190,9 +203,9 @@ export const strings = {
     joinWaitlist: "Скачать",
     heroEyebrow: "Приватный оверлей на рабочем столе",
     heroHeadline:
-      "Знай ответ. До того, как они договорят.",
+      "Больше не теряйся на звонке с клиентом.",
     heroSub:
-      "LiveAssist AI мгновенно находит ответы в документах вашей компании прямо во время разговора — без переключения вкладок и без выхода из звонка.",
+      "Загрузите документы один раз, задайте вопрос в нужный момент и отвечайте с источником без неловкой паузы.",
     heroPrimary: "Скачать",
     heroSecondary: "Посмотреть как работает",
     mockup: {
@@ -210,19 +223,19 @@ export const strings = {
       answeredIn: "Ответ за 1,4 с",
       openingFile: "Открываем файл..."
     },
-    scrollyStep1: "Ваш менеджер уже на живом звонке.",
-    scrollyStep2: "Клиент задает конкретный вопрос.",
-    scrollyKey: "⌘ J",
-    scrollyStep3: "Менеджер нажимает ⌘J",
-    scrollyStep4: "Ответ за 1–2 секунды. Источник приложен.",
-    scrollyStep5: "Оставайтесь в разговоре. Держите ответ под рукой.",
+    scrollyStep1: "Загрузите документы один раз.",
+    scrollyStep2: "Клиент задаёт сложный вопрос.",
+    scrollyKey: "⌥ Space",
+    scrollyStep3: "Нажмите ⌥ Space и спросите.",
+    scrollyStep4: "Получите ответ с источником за 1–2 секунды.",
+    scrollyStep5: "А потом звонок превращается в запись в CRM.",
     scrollyStep5Sub:
-      "Дайте каждому менеджеру приватного ассистента, обученного на документах компании.",
+      "После разговора агент сам собирает заметку, задачу и тег в amoCRM — вам остаётся только подтвердить.",
     featuresEyebrow: "Возможности",
     featuresTitle:
-      "Создан для той самой секунды, когда менеджеру нужен точный ответ",
+      "От ответа на звонке — до обновлённой CRM",
     featuresSub:
-      "Ответы с источниками за секунды — в оверлее, который видите только вы.",
+      "Ответы с источником во время разговора — и проверенная, безопасная запись в amoCRM после него.",
     pricingEyebrow: "Скачать",
     pricingTitle: "Скачать LiveAssist AI",
     pricingSub:
@@ -230,7 +243,7 @@ export const strings = {
     pricingTrustLine: "Можно попробовать бесплатно.",
     popular: "Популярный выбор",
     faqEyebrow: "Вопросы",
-    faqTitle: "Коротко перед скачиванием",
+    faqTitle: "Коротко перед установкой",
     downloadLabel: "Скачать",
     downloadHeadline: "Скачать LiveAssist AI",
     downloadSub: "Доступно для Mac, Windows и Linux. Можно попробовать бесплатно.",
@@ -255,33 +268,40 @@ export const strings = {
     emailSuccess:
       "Вы в листе ожидания. Напишем, когда откроем ранний доступ.",
     footerTagline: "Мгновенные ответы из документов компании.",
+    footerDescription:
+      "Приватный десктоп-оверлей, который превращает документы компании в мгновенные ответы с источником прямо во время звонков.",
+    footerConnect: "Контакты",
+    footerLegal: "Правовое",
+    footerFollow: "Мы в соцсетях",
+    footerRights: "Все права защищены.",
+    footerBuiltBy: "Сделал Айбек Жарылкасын",
     privacy: "Конфиденциальность",
     terms: "Условия",
     contact: "Контакты",
     features: [
       [
-        "Мгновенные ответы из ваших документов",
-        "PDF, FAQ, SOP и страницы с тарифами становятся доступны прямо во время разговора."
+        "Ответы с источником вживую",
+        "Спросите по хоткею прямо на звонке и получите короткий ответ с точным файлом и страницей."
       ],
       [
-        "Источник у каждого ответа",
-        "Каждый ответ показывает, откуда он взят, чтобы менеджер мог быстро ему доверять и проверять факты."
+        "Звонок превращается в запись CRM",
+        "После разговора агент сам собирает заметку, задачу и тег в amoCRM из того, что реально прозвучало."
       ],
       [
-        "Плавающий оверлей поверх любого приложения",
-        "Работает поверх звонков, CRM, почты, чатов, браузера и других рабочих инструментов."
+        "Каждую запись подтверждаете вы",
+        "Просматривайте каждое предложенное действие с доказательством и уверенностью — до того, как оно попадёт в amoCRM."
       ],
       [
-        "Работа через горячую клавишу",
-        "Нажмите ⌘J, задайте вопрос, получите ответ и сразу вернитесь к разговору без переключения вкладок."
+        "Безопасная запись без дублей",
+        "Применено, ошибка или пропущено как дубль — каждая запись явная, а повтор не создаёт вторую."
       ],
       [
-        "Голосовой или текстовый ввод",
-        "Задавайте вопрос текстом или голосом, когда формат разговора это позволяет."
+        "Плавающий оверлей, один хоткей",
+        "Приватный слой поверх любого приложения. Нажмите ⌥ Space (Ctrl Alt Space на Windows), чтобы спросить без переключения вкладок."
       ],
       [
-        "Без постоянного прослушивания",
-        "LiveAssist включается только по запросу и остается приватным, пока менеджер сам не позовет помощь."
+        "Локально и приватно",
+        "Ваши документы остаются на вашем устройстве. Ничего не записывается и не отправляется, пока вы не спросите."
       ]
     ],
     pricing: [
@@ -338,7 +358,15 @@ export const strings = {
     faqs: [
       [
         "LiveAssist AI слушает всё время?",
-        "Нет. LiveAssist AI работает через горячую клавишу и включается только тогда, когда менеджер сам просит помощь. До нажатия ⌘J ничего не записывается и не обрабатывается."
+        "Нет. Он работает через горячую клавишу и включается только когда вы сами просите помощь. До нажатия хоткея ничего не записывается и не обрабатывается: ⌥ Space на Mac, Ctrl Alt Space на Windows/Linux."
+      ],
+      [
+        "Как он обновляет мою CRM?",
+        "После звонка агент читает вашу заметку о разговоре и собирает черновик действий в amoCRM — заметку, задачу, тег. Вы просматриваете каждое и подтверждаете; только тогда оно записывается в amoCRM."
+      ],
+      [
+        "Он может писать в amoCRM без меня?",
+        "Нет. Каждую запись вы просматриваете и подтверждаете — сначала видите доказательство и уверенность. Повторное применение безопасно пропускается как дубль, а не создаёт вторую запись."
       ],
       [
         "Откуда берутся ответы?",
@@ -346,15 +374,7 @@ export const strings = {
       ],
       [
         "Клиент видит оверлей?",
-        "Нет. Оверлей видит только менеджер на своем экране. По умолчанию он не показывается клиенту в звонке и не попадает в демонстрацию экрана."
-      ],
-      [
-        "Это только для отделов продаж?",
-        "Нет. LiveAssist подходит службе поддержки, клиникам, онлайн-школам, турагентствам, риелторам, консультантам и любым командам, которые отвечают на живые вопросы клиентов."
-      ],
-      [
-        "Он заменяет CRM или базу знаний?",
-        "Нет. LiveAssist работает поверх ваших текущих инструментов. Он читает документы и подсказывает ответ в нужный момент, а CRM, почта и звонки остаются как есть."
+        "Нет. Оверлей видит только менеджер на своём экране. По умолчанию он не показывается клиенту в звонке и не попадает в демонстрацию экрана."
       ]
     ]
   }

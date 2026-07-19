@@ -6,24 +6,31 @@ import {
   FileText,
   FileSearch,
   HelpCircle,
-  Layers,
   Keyboard,
-  Mic,
-  Shield,
+  CornerDownLeft,
+  Upload,
+  BadgeCheck,
+  PlayCircle,
   MessageSquareText,
   Headphones,
-  LockKeyhole,
 } from "lucide-react";
 import { strings, type Lang } from "../lib/strings";
 import { FaqPro, type FaqProItem } from "@/components/ui/faq-pro";
 import { NavBar } from "@/components/ui/tubelight-navbar";
+import { OriginLink } from "@/components/ui/origin-button";
 import { AnimateOnScroll } from "../components/ui/animate-on-scroll";
 import { InteractiveFooter } from "../components/InteractiveFooter";
+import { getLandingVisitorId, trackLandingEvent } from "../lib/clientAnalytics";
+import { portalSignupUrl } from "../lib/hosts";
 import ProductMockup from "./components/ProductMockup";
 import { StatsBand } from "./components/StatsBand";
+import HeroOrbit from "./components/HeroOrbit";
+import CrmShowcase from "./components/CrmShowcase";
+import FeatureBento from "./components/FeatureBento";
 
 const navConfig = [
-  { id: "download", labelKey: "navPricing", url: "#download", icon: CreditCard },
+  { id: "features", labelKey: "navHow", url: "#features", icon: PlayCircle },
+  { id: "pricing", labelKey: "navPricingNav", url: "#pricing", icon: CreditCard },
   { id: "faq", labelKey: "navFaq", url: "#faq", icon: HelpCircle },
 ] as const;
 
@@ -49,7 +56,7 @@ const INTER_UI_STACK =
 const SCROLL_DISPLAY_STYLE = {
   fontFamily: INTER_UI_STACK,
   fontSize: "clamp(42px, 5vw, 72px)",
-  fontWeight: 900,
+  fontWeight: 800,
   letterSpacing: "-2.5px",
   lineHeight: 1,
 } as const;
@@ -67,11 +74,6 @@ function mix(from: number, to: number, progress: number) {
   return from + (to - from) * progress;
 }
 
-type HeroMetric = {
-  title: string;
-  lines: [string, string];
-};
-
 type HintStory = {
   title: string;
   body: string;
@@ -83,6 +85,86 @@ type MobileStoryStep = {
   title: string;
   body: string;
 };
+
+type DownloadPlatform = "mac-arm64" | "windows" | "linux";
+
+function ShortcutCue({
+  compact = false,
+  label,
+  active = false,
+}: {
+  compact?: boolean;
+  label: string;
+  active?: boolean;
+}) {
+  return (
+    <div
+      role="img"
+      aria-label={label}
+      className={[
+        "relative inline-flex items-center justify-center overflow-visible motion-safe:transition-[transform,opacity,filter] motion-safe:duration-[360ms] motion-safe:ease-out",
+        compact ? "h-[92px] min-w-[190px]" : "h-[122px] min-w-[270px]",
+      ].join(" ")}
+      style={{
+        transform: active ? "translateY(0) scale(1)" : "translateY(14px) scale(0.94)",
+        opacity: active ? 1 : 0.78,
+        filter: active ? "drop-shadow(0 22px 42px rgba(217,152,30,0.22))" : "none",
+      }}
+    >
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-[16%] top-[14%] h-[58%] rounded-full bg-[radial-gradient(circle,rgba(210,194,172,0.32)_0%,rgba(255,255,255,0.18)_48%,rgba(255,255,255,0)_76%)] blur-2xl motion-safe:transition-opacity motion-safe:duration-[320ms]"
+        style={{ opacity: active ? 1 : 0 }}
+      />
+      <span
+        aria-hidden="true"
+        className={[
+          "absolute rounded-[26px] border border-white/70 bg-[linear-gradient(145deg,#fffbf8_0%,#fff1e7_52%,#ffe4cf_100%)] text-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.92),inset_0_-18px_26px_rgba(217,152,30,0.14),0_24px_54px_rgba(217,152,30,0.24)] motion-safe:animate-[shortcut-key-float_3.8s_ease-in-out_infinite]",
+          compact ? "left-0 top-0 h-14 w-14" : "left-0 top-1 h-[76px] w-[76px]",
+        ].join(" ")}
+      >
+        <span className="absolute inset-2 rounded-[20px] bg-[radial-gradient(circle_at_35%_22%,rgba(255,255,255,0.94),rgba(255,255,255,0.08)_58%,rgba(217,152,30,0.14)_100%)]" />
+        <Keyboard
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_0_14px_rgba(255,255,255,0.96)]"
+          size={compact ? 24 : 32}
+          strokeWidth={2.3}
+        />
+      </span>
+
+      <span
+        aria-hidden="true"
+        className={[
+          "absolute rounded-[24px] border border-white/65 bg-[linear-gradient(145deg,#fffbf9_0%,#fff4ed_50%,#ffe8d8_100%)] text-[#6b665e] shadow-[inset_0_2px_5px_rgba(255,255,255,0.88),inset_0_-16px_26px_rgba(15,23,42,0.08),0_22px_48px_rgba(30,90,180,0.18)] motion-safe:animate-[shortcut-key-float-alt_4.2s_ease-in-out_infinite]",
+          compact ? "right-1 bottom-1 h-12 w-12" : "right-0 bottom-2 h-[68px] w-[68px]",
+        ].join(" ")}
+      >
+        <CornerDownLeft
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+          size={compact ? 22 : 30}
+          strokeWidth={2.4}
+        />
+      </span>
+
+      <span
+        className={[
+          "relative isolate inline-flex items-center justify-center overflow-hidden rounded-full border border-white/35 bg-[linear-gradient(180deg,#e0a92e_0%,#c9820f_54%,#c9820f_100%)] font-[800] leading-none text-white shadow-[inset_0_2px_0_rgba(255,255,255,0.34),inset_0_-18px_28px_rgba(180,120,20,0.36),0_24px_54px_rgba(217,152,30,0.34)]",
+          compact ? "gap-2 px-5 py-3 text-[16px]" : "gap-3 px-7 py-4 text-[24px]",
+        ].join(" ")}
+      >
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-5 top-1 h-1/2 rounded-full bg-white/22 blur-[2px]"
+        />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-white/25 blur-md motion-safe:animate-[shortcut-sheen_2.8s_ease-in-out_infinite]"
+        />
+        <Keyboard size={compact ? 17 : 22} strokeWidth={2.2} className="relative" />
+        <span className="relative">{label}</span>
+      </span>
+    </div>
+  );
+}
 
 const MOBILE_HERO_MORPH = {
   heroFadeEnd: 0.18,
@@ -129,10 +211,16 @@ export default function HomePage() {
   const mobileHeroRef = useRef<HTMLElement>(null);
   const heroProgressRef = useRef(0);
   const heroTargetRef = useRef(0);
+  const heroExitRef = useRef(0);
+  const demoVideoRef = useRef<HTMLVideoElement>(null);
+  const landingViewTrackedRef = useRef(false);
 
   // Hero scroll state
   const [heroPhase, setHeroPhase] = useState<"hero" | "transition" | "hints">("hero");
   const [heroScrollProgress, setHeroScrollProgress] = useState(0);
+  // 0 while the hero is pinned, ramps 0→1 as it scrolls past the last phase so
+  // the card can dissolve into the next section instead of leaving a gap.
+  const [heroExit, setHeroExit] = useState(0);
   const [activeScrollHint, setActiveScrollHint] = useState<string | null>(null);
   const [animComplete, setAnimComplete] = useState(false);
   const [skipAnim, setSkipAnim] = useState(false);
@@ -140,6 +228,15 @@ export default function HomePage() {
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [viewportReady, setViewportReady] = useState(false);
+  const [landingVisitorId, setLandingVisitorId] = useState("");
+  // Header auto-hide on scroll down / reveal on scroll up.
+  const [headerHidden, setHeaderHidden] = useState(false);
+  // Chameleon header: light-on-dark while the header floats over the dark hero,
+  // then back to the default dark-on-light once it reaches the warm body.
+  const [onDark, setOnDark] = useState(true);
+  // True briefly while an anchor-link smooth scroll is in flight, so the
+  // scroll-snap is suppressed and the header stays visible during the jump.
+  const navigatingRef = useRef(false);
   const scrollLockedRef = useRef(false);
 
   const t = (key: string) => {
@@ -147,27 +244,70 @@ export default function HomePage() {
     return val as string;
   };
 
-  const tFeatures = (): [string, string][] => {
-    return (strings[lang] as Record<string, unknown>).features as [string, string][];
-  };
+  const getDownloadHref = useCallback(
+    (platform: DownloadPlatform) => {
+      const baseHref = `/api/download/${platform}`;
+      return landingVisitorId
+        ? `${baseHref}?visitor_id=${encodeURIComponent(landingVisitorId)}`
+        : baseHref;
+    },
+    [landingVisitorId]
+  );
 
-  const heroMetrics: HeroMetric[] =
+  const trackDownloadClick = useCallback(
+    (platform: DownloadPlatform) => {
+      trackLandingEvent(
+        "download_clicked",
+        {
+          download_platform: platform,
+          language: lang,
+          path: window.location.pathname,
+          platform,
+          source: "landing_download_button",
+        },
+        landingVisitorId || undefined
+      );
+    },
+    [landingVisitorId, lang]
+  );
+
+  const usageSteps =
     lang === "ru"
       ? [
-          { title: "1 кнопка", lines: ["Нажал —", "получил ответ"] },
-          { title: "Только ты", lines: ["Оверлей видишь", "только ты"] },
-          { title: "Твои файлы", lines: ["Прайс, FAQ,", "условия — всё тут"] },
+          {
+            icon: Keyboard,
+            title: "Спросите прямо в звонке",
+            body: "Нажимаете ⌥ Space (Ctrl Alt Space на Windows) — вопрос и ответ с источником, без переключения вкладок.",
+          },
+          {
+            icon: FileSearch,
+            title: "Ответ с доказательством",
+            body: "Мгновенный ответ с точным файлом и страницей — можете проверить сами при клиенте.",
+          },
+          {
+            icon: BadgeCheck,
+            title: "Подтвердите запись в amoCRM",
+            body: "После звонка агент собирает заметку, задачу и тег. Вы подтверждаете — и это записывается в CRM.",
+          },
         ]
       : [
-          { title: "1 hotkey", lines: ["Press once and", "get the answer"] },
-          { title: "Only you", lines: ["The overlay stays", "visible only to you"] },
-          { title: "Your files", lines: ["Pricing, FAQ,", "terms stay attached"] },
+          {
+            icon: Keyboard,
+            title: "Ask right on the call",
+            body: "Press ⌥ Space (Ctrl Alt Space on Windows) — question and a cited answer, no tab switching.",
+          },
+          {
+            icon: FileSearch,
+            title: "A cited answer you can trust",
+            body: "An instant answer with the exact file and page attached — verify it yourself, in front of the client.",
+          },
+          {
+            icon: BadgeCheck,
+            title: "Approve the amoCRM write-back",
+            body: "After the call the agent drafts the note, task, and tag. You approve, and it lands in your CRM.",
+          },
         ];
 
-  const heroHeadlineLines =
-    lang === "ru"
-      ? ["Знай ответ.", "До того, как", "они договорят."]
-      : ["Know the answer.", "Before they finish asking."];
 
   const scrollHintContent: Record<(typeof HINT_IDS)[number], HintStory> =
     lang === "ru"
@@ -213,41 +353,41 @@ export default function HomePage() {
       ? [
           {
             step: "01",
-            icon: Headphones,
+            icon: FileText,
             title: t("scrollyStep1"),
-            body: "Разговор уже идёт. Нельзя терять темп и уходить в поиск по вкладкам.",
+            body: "Один раз добавьте прайсы, FAQ, условия и внутренние документы, чтобы не искать их заново.",
           },
           {
             step: "02",
             icon: MessageSquareText,
             title: t("scrollyStep2"),
-            body: "Вопрос звучит внезапно, и ответ нужен в ту же секунду, а не после паузы.",
+            body: "Когда клиент задаёт сложный вопрос, не нужно ставить разговор на паузу и вспоминать всё вручную.",
           },
           {
             step: "03",
             icon: Keyboard,
             title: t("scrollyStep3"),
-            body: "Один хоткей открывает приватный слой поверх звонка, CRM или браузера.",
+            body: "Хоткей открывает приватный слой поверх звонка, CRM или браузера и сохраняет темп разговора.",
           },
           {
             step: "04",
-            icon: LockKeyhole,
+            icon: FileSearch,
             title: t("scrollyStep4"),
-            body: "Ответ, уверенность и источник приходят вместе, чтобы менеджер говорил спокойно и точно.",
+            body: "Ответ, уверенность и источник приходят вместе, чтобы вы ответили спокойно и точно.",
           },
         ]
       : [
           {
             step: "01",
-            icon: Headphones,
+            icon: FileText,
             title: t("scrollyStep1"),
-            body: "The call is already moving. There is no time to hunt through tabs or docs.",
+            body: "Upload pricing, FAQ, terms, and internal docs once so they are ready every time a call starts.",
           },
           {
             step: "02",
             icon: MessageSquareText,
             title: t("scrollyStep2"),
-            body: "The question lands unexpectedly, and the answer has to show up in the same moment.",
+            body: "When the client asks a hard question, you should not need to stall and dig through tabs.",
           },
           {
             step: "03",
@@ -257,9 +397,9 @@ export default function HomePage() {
           },
           {
             step: "04",
-            icon: LockKeyhole,
+            icon: FileSearch,
             title: t("scrollyStep4"),
-            body: "Answer, confidence, and source arrive together so the rep can respond with control.",
+            body: "Answer, confidence, and source arrive together so you can respond with control.",
           },
         ];
 
@@ -380,6 +520,24 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
+    if (landingViewTrackedRef.current) return;
+
+    landingViewTrackedRef.current = true;
+    const visitorId = getLandingVisitorId();
+    const savedLang = localStorage.getItem("liveassist-lang");
+    setLandingVisitorId(visitorId);
+    trackLandingEvent(
+      "landing_viewed",
+      {
+        language: savedLang === "ru" ? "ru" : lang,
+        path: window.location.pathname,
+        source: "landing_page",
+      },
+      visitorId
+    );
+  }, [lang]);
+
+  useEffect(() => {
     localStorage.setItem("liveassist-lang", lang);
     document.documentElement.lang = lang;
   }, [lang]);
@@ -414,7 +572,7 @@ export default function HomePage() {
   }, [isMobileViewport, prefersReducedMotion, viewportReady]);
 
   useEffect(() => {
-    const sectionIds = ["download", "faq"];
+    const sectionIds = ["features", "pricing", "faq"];
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -611,17 +769,28 @@ export default function HomePage() {
     let rafId: number;
 
     const onScroll = () => {
-      heroTargetRef.current = readSectionScrollProgress(section);
+      const rect = section.getBoundingClientRect();
+      const total = section.offsetHeight - window.innerHeight;
+      const raw = total > 0 ? -rect.top / total : 0;
+      heroTargetRef.current = clamp01(raw);
+      // Past raw === 1 the card is un-pinning and scrolling away: ramp the exit
+      // fade so it dissolves before the next section reaches centre.
+      const exit = clamp01((raw - 1) / 0.3);
+      if (exit !== heroExitRef.current) {
+        heroExitRef.current = exit;
+        setHeroExit(exit);
+      }
     };
 
     const initialProgress = readSectionScrollProgress(section);
-    heroTargetRef.current = initialProgress;
     heroProgressRef.current = initialProgress;
+    onScroll();
     updateHeroScrollState(initialProgress);
 
     const tick = () => {
       heroProgressRef.current +=
-        (heroTargetRef.current - heroProgressRef.current) * 0.1;
+        (heroTargetRef.current - heroProgressRef.current) *
+        (isMobileViewport ? 0.1 : 0.22);
       const p = heroProgressRef.current;
       updateHeroScrollState(p);
 
@@ -637,35 +806,196 @@ export default function HomePage() {
     };
   }, [animComplete, isMobileViewport, prefersReducedMotion, readSectionScrollProgress, updateHeroScrollState]);
 
-  const featureIcons = [FileText, FileSearch, Layers, Keyboard, Mic, Shield];
+  // Magnetically lock the hero → onboarding scroll to phases so it can never
+  // rest between them. Uses native CSS scroll-snap (light, no hijacking) and is
+  // enabled ONLY while this section owns the viewport, so the rest of the page
+  // keeps scrolling freely. Snap targets are the HERO_SNAP_MARKERS below.
+  // (Desktop pointer devices only.)
+  useEffect(() => {
+    const root = document.documentElement;
+    const disable = () => {
+      if (root.style.scrollSnapType) root.style.scrollSnapType = "";
+      if (root.style.scrollBehavior) root.style.scrollBehavior = "";
+    };
+
+    if (!animComplete || isMobileViewport || prefersReducedMotion) {
+      disable();
+      return;
+    }
+    const section = heroRef.current;
+    if (!section) return;
+
+    let active = false;
+    const update = () => {
+      // While an anchor jump is animating, keep snap off so the smooth scroll
+      // isn't trapped at the hero phases.
+      if (navigatingRef.current) {
+        if (active) {
+          active = false;
+          root.style.scrollSnapType = "";
+          root.style.scrollBehavior = "";
+        }
+        return;
+      }
+      const rect = section.getBoundingClientRect();
+      const total = section.offsetHeight - window.innerHeight;
+      const p = total > 0 ? -rect.top / total : 0;
+      // Pinned and not yet at the very bottom edge — keep the exit frictionless.
+      const next =
+        rect.top <= 0 && rect.bottom >= window.innerHeight && p < 0.97;
+      if (next === active) return;
+      active = next;
+      // Hard snap while pinned: drop the global `scroll-behavior: smooth` so the
+      // snap grabs firmly. The card/hints still glide smoothly because their
+      // motion is driven by the rAF easing, not the scroll position itself.
+      root.style.scrollSnapType = active ? "y mandatory" : "";
+      root.style.scrollBehavior = active ? "auto" : "";
+    };
+
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+      disable();
+    };
+  }, [animComplete, isMobileViewport, prefersReducedMotion]);
+
+  // Intercept every in-page anchor link so it scrolls smoothly with a fixed
+  // offset for the sticky header AND with scroll-snap suppressed (otherwise the
+  // hero phase locks would trap the jump halfway). Catches all `#…` links at
+  // once, so every button lands on the right section without hanging.
+  useEffect(() => {
+    const root = document.documentElement;
+    let releaseTimer = 0;
+    const HEADER_OFFSET = 92;
+
+    const onClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const target = event.target as Element | null;
+      const link = target?.closest?.('a[href^="#"]') as HTMLAnchorElement | null;
+      if (!link) return;
+      const hash = link.getAttribute("href");
+      if (!hash || hash === "#") return;
+      const el = document.getElementById(hash.slice(1));
+      if (!el) return;
+
+      event.preventDefault();
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const behavior: ScrollBehavior = reduce ? "auto" : "smooth";
+      navigatingRef.current = true;
+      setHeaderHidden(false);
+      root.style.scrollSnapType = "none";
+      root.style.scrollBehavior = behavior;
+      const y = Math.max(
+        0,
+        window.scrollY + el.getBoundingClientRect().top - HEADER_OFFSET
+      );
+      window.scrollTo({ top: y, behavior });
+
+      window.clearTimeout(releaseTimer);
+      releaseTimer = window.setTimeout(
+        () => {
+          navigatingRef.current = false;
+          // Hand scroll-snap / behaviour back to the hero snap controller.
+          root.style.scrollSnapType = "";
+          root.style.scrollBehavior = "";
+        },
+        reduce ? 60 : 900
+      );
+    };
+
+    document.addEventListener("click", onClick);
+    return () => {
+      document.removeEventListener("click", onClick);
+      window.clearTimeout(releaseTimer);
+    };
+  }, []);
+
+  // Hide the header when scrolling down, reveal it when scrolling up (and always
+  // show it near the top or during an anchor jump).
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const delta = y - lastY;
+        if (navigatingRef.current || y < 80) {
+          setHeaderHidden(false);
+        } else if (delta > 6) {
+          setHeaderHidden(true);
+        } else if (delta < -6) {
+          setHeaderHidden(false);
+        }
+        // Header sits over the dark hero until the warm body scrolls up under it.
+        const heroEl = document.getElementById("hero");
+        const heroBottom = heroEl ? heroEl.offsetHeight : window.innerHeight;
+        setOnDark(y < heroBottom - 120);
+        lastY = y;
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Play the demo video only while it is on screen (muted autoplay loop), and
+  // pause it otherwise to save CPU/battery.
+  useEffect(() => {
+    const video = demoVideoRef.current;
+    if (!video) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.35 }
+    );
+    io.observe(video);
+    return () => io.disconnect();
+  }, []);
+
   const activeMobileHintId =
     heroPhase === "hints" && activeScrollHint ? activeScrollHint : "question";
   const activeMobileHintContent =
     scrollHintContent[activeMobileHintId as (typeof HINT_IDS)[number]];
+  const MobileStepOneIcon = mobileStorySteps[0].icon;
+  const MobileStepFourIcon = mobileStorySteps[3].icon;
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-180 ease-out">
+      <header
+        className="fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ease-out"
+        style={{
+          transform: headerHidden ? "translateY(-130%)" : "translateY(0)",
+          willChange: "transform",
+        }}
+      >
         <nav
           className="mx-auto w-full px-4 pt-4 pb-3 sm:px-5 sm:pt-7 sm:pb-3"
           style={{ maxWidth: "min(1180px, calc(100% - 40px))" }}
           aria-label={t("navLabel")}
         >
-          <div className="relative md:hidden rounded-[20px] border border-[rgba(29,29,31,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.94)_0%,rgba(246,248,255,0.9)_100%)] px-3 py-2 shadow-[0_14px_32px_rgba(15,23,42,0.06),inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-md">
+          <div className="relative md:hidden rounded-[20px] border border-[rgba(255,255,255,0.5)] bg-[rgba(253,251,248,0.6)] px-3 py-2 shadow-[0_14px_32px_rgba(15,23,42,0.14),inset_0_1px_0_rgba(255,255,255,0.95)] backdrop-blur-xl backdrop-saturate-150">
             <div className="flex min-h-[40px] items-center justify-between gap-2">
-              <span className="inline-flex min-w-0 flex-1 select-none items-center gap-2 overflow-hidden whitespace-nowrap text-[13px] font-[700] text-[#1d1d1f]">
+              <span className="inline-flex min-w-0 flex-1 select-none items-center gap-2 overflow-hidden whitespace-nowrap text-[13px] font-[700] text-[#1a1917]">
                 {t("logo")}
               </span>
               <div className="flex shrink-0 items-center gap-1.5">
-                <a
-                  href="#download"
-                  className="inline-flex min-h-[32px] items-center justify-center rounded-full border border-[rgba(72,70,201,0.24)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-3 text-[11px] font-[700] leading-none text-white shadow-[0_10px_18px_rgba(94,92,230,0.16),inset_0_1px_0_rgba(255,255,255,0.18)] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e5ce6] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
-                >
-                  {t("navPricing")}
-                </a>
+                <OriginLink href={portalSignupUrl(lang)} size="xs">
+                  {t("getStarted")}
+                </OriginLink>
                 <button
                   onClick={() => setMenuOpen((current) => !current)}
-                  className="inline-flex min-h-[32px] min-w-[32px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.1)] bg-white/88 text-[16px] font-[700] leading-none text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e5ce6] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                  className="inline-flex min-h-[32px] min-w-[32px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.1)] bg-white/88 text-[16px] font-[700] leading-none text-[#1a1917] shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c9820f] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                   aria-label={menuOpen ? t("closeMenuLabel") : t("openMenuLabel")}
                   aria-expanded={menuOpen}
                 >
@@ -685,7 +1015,7 @@ export default function HomePage() {
                         setActiveTab(item.id as (typeof navConfig)[number]["id"]);
                         setMenuOpen(false);
                       }}
-                      className="inline-flex min-h-[36px] items-center rounded-full px-3 text-[13px] font-[600] text-[#3f3f46] transition-colors duration-150 hover:bg-[rgba(94,92,230,0.08)] hover:text-[#5e5ce6]"
+                      className="inline-flex min-h-[36px] items-center rounded-full px-3 text-[13px] font-[600] text-[#423d36] transition-colors duration-150 hover:bg-[rgba(217,152,30,0.08)] hover:text-[#a35707]"
                     >
                       {item.name}
                     </a>
@@ -695,10 +1025,10 @@ export default function HomePage() {
                       setLang(lang === "en" ? "ru" : "en");
                       setMenuOpen(false);
                     }}
-                    className="inline-flex min-h-[36px] items-center justify-between rounded-full px-3 text-[13px] font-[700] text-[#1d1d1f] transition-colors duration-150 hover:bg-[rgba(94,92,230,0.08)]"
+                    className="inline-flex min-h-[36px] items-center justify-between rounded-full px-3 text-[13px] font-[700] text-[#1a1917] transition-colors duration-150 hover:bg-[rgba(217,152,30,0.08)]"
                   >
                     <span>{lang === "en" ? "Russian" : "English"}</span>
-                    <span className="text-[#5e5ce6]">{lang === "en" ? "RU" : "EN"}</span>
+                    <span className="text-[#a35707]">{lang === "en" ? "RU" : "EN"}</span>
                   </button>
                 </div>
               </div>
@@ -706,7 +1036,11 @@ export default function HomePage() {
           </div>
 
           <div className="hidden md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-3">
-            <span className="inline-flex min-h-10 select-none items-center gap-2 text-[15px] font-[700] text-[#1d1d1f]">
+            <span
+              className={`inline-flex min-h-10 select-none items-center gap-2 text-[15px] font-[700] transition-colors duration-300 ${
+                onDark ? "text-white" : "text-[#1a1917]"
+              }`}
+            >
               {t("logo")}
             </span>
 
@@ -722,88 +1056,21 @@ export default function HomePage() {
             <div className="flex items-center justify-end gap-[10px]">
               <button
                 onClick={() => setLang(lang === "en" ? "ru" : "en")}
-                className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[rgba(29,29,31,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(244,246,255,0.92)_100%)] px-3 text-[13px] font-[500] text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] transition-all duration-150 hover:border-[rgba(99,91,255,0.22)] hover:bg-[linear-gradient(180deg,rgba(255,255,255,1)_0%,rgba(238,242,255,0.96)_100%)]"
+                className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-[rgba(255,255,255,0.5)] bg-[rgba(253,251,248,0.58)] px-3 text-[13px] font-[500] text-[#1a1917] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_10px_30px_rgba(15,15,20,0.16)] backdrop-blur-xl backdrop-saturate-150 transition-all duration-150 hover:border-[rgba(217,152,30,0.28)] hover:bg-[rgba(255,255,255,0.72)]"
                 aria-label={lang === "en" ? t("switchToRu") : t("switchToEn")}
               >
                 {lang === "en" ? "RU" : "EN"}
               </button>
-              <a
-                href="#download"
-                className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-[rgba(72,70,201,0.34)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-5 text-[15px] font-[600] leading-none text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] transition-all duration-150 hover:border-[rgba(72,70,201,0.42)] hover:bg-[linear-gradient(180deg,rgba(103,96,247,1)_0%,rgba(72,70,201,1)_100%)] hover:-translate-y-px"
-              >
-                {t("joinWaitlist")}
-              </a>
+              <OriginLink href={portalSignupUrl(lang)} size="sm">
+                {t("getStarted")}
+              </OriginLink>
             </div>
           </div>
         </nav>
       </header>
 
       <main id="top">
-        <section className="relative overflow-hidden px-4 pb-10 pt-28 md:hidden">
-          <div
-            className="absolute inset-0"
-            aria-hidden="true"
-            style={{
-              background:
-                "radial-gradient(circle at 18% 14%, rgba(94,92,230,0.18), transparent 30%), radial-gradient(circle at 82% 18%, rgba(33,168,154,0.14), transparent 28%), linear-gradient(180deg, #ffffff 0%, #fbfbff 52%, #f5f7ff 100%)",
-            }}
-          />
-          <div className="relative mx-auto max-w-[430px]">
-            <p className="inline-flex items-center gap-2 rounded-full border border-[rgba(94,92,230,0.12)] bg-[rgba(255,255,255,0.82)] px-3 py-2 text-[12px] font-[700] uppercase tracking-[0.14em] text-[#645FDE] shadow-[0_12px_30px_rgba(94,92,230,0.08)] backdrop-blur-sm">
-              <span className="h-2 w-2 rounded-full bg-[#5E5CE6]" aria-hidden="true" />
-              {t("heroEyebrow")}
-            </p>
-            <h1
-              className="mt-5 text-[#111111]"
-              style={{
-                ...UI_DISPLAY_STYLE,
-                fontSize: "clamp(42px, 13vw, 58px)",
-                lineHeight: 0.92,
-              }}
-            >
-              {heroHeadlineLines.map((line) => (
-                <span key={line} className="block">
-                  {line}
-                </span>
-              ))}
-            </h1>
-            <p className="mt-5 max-w-[32ch] text-[16px] font-[400] leading-[1.62] text-[#5a5a63]">
-              {t("heroSub")}
-            </p>
-            <div className="mt-8 grid gap-3">
-              <a
-                href="#download"
-                className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full border border-[rgba(72,70,201,0.34)] bg-[linear-gradient(180deg,rgba(114,107,255,0.98)_0%,rgba(94,92,230,1)_100%)] px-6 text-[15px] font-[600] leading-none text-white shadow-[0_20px_40px_rgba(94,92,230,0.22)]"
-              >
-                {t("heroPrimary")}
-              </a>
-              <a
-                href="#hero-mobile-demo"
-                className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.8)] px-6 text-[15px] font-[600] leading-none text-[#1d1d1f] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]"
-              >
-                {t("heroSecondary")}
-              </a>
-            </div>
-            <div className="mt-8 grid grid-cols-2 gap-3">
-              {heroMetrics.map((metric, index) => (
-                <div
-                  key={metric.title}
-                  className={`rounded-[22px] border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.84)] p-4 shadow-[0_14px_32px_rgba(15,23,42,0.05)] ${
-                    index === heroMetrics.length - 1 ? "col-span-2" : ""
-                  }`}
-                >
-                  <p className="text-[18px] font-[700] leading-none text-[#5B54D6]">
-                    {metric.title}
-                  </p>
-                  <p className="mt-2 text-[14px] font-[400] leading-[1.45] text-[#7d7d88]">
-                    <span className="block">{metric.lines[0]}</span>
-                    <span className="block">{metric.lines[1]}</span>
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <HeroOrbit lang={lang} />
 
         <section
           ref={mobileHeroRef}
@@ -812,15 +1079,27 @@ export default function HomePage() {
           style={{ minHeight: "320vh" }}
         >
           <div
-            className="sticky top-0 px-4 pb-6 pt-24"
+            className="sticky top-0 overflow-hidden px-4 pb-6 pt-24"
             style={{
               minHeight: "100svh",
               background:
-                "linear-gradient(180deg, rgba(249,250,255,0.94) 0%, rgba(255,255,255,1) 100%)",
+                "linear-gradient(180deg, rgba(255, 251, 251,0.98) 0%, rgba(255,255,255,1) 100%)",
             }}
           >
             <div
-              className="mx-auto flex max-w-[430px] items-center justify-center"
+              className="absolute inset-0"
+              aria-hidden="true"
+              style={{
+                background:
+                  "radial-gradient(circle at 16% 12%, rgba(217,152,30,0.05), transparent 26%), radial-gradient(circle at 82% 22%, rgba(210,194,172,0.12), transparent 24%)",
+              }}
+            />
+            <div
+              className="absolute inset-x-[-14%] bottom-[-14%] h-[30%] rounded-[100%] border border-[rgba(217,152,30,0.12)] opacity-70"
+              aria-hidden="true"
+            />
+            <div
+              className="relative mx-auto flex max-w-[430px] items-center justify-center"
               style={{
                 minHeight: "calc(100svh - 120px)",
               }}
@@ -839,12 +1118,13 @@ export default function HomePage() {
                     aria-hidden="true"
                     style={{
                       background:
-                        "radial-gradient(circle, rgba(94,92,230,0.18), transparent 62%), radial-gradient(circle at 36% 28%, rgba(33,168,154,0.14), transparent 38%)",
+                        "radial-gradient(circle, rgba(217,152,30,0.18), transparent 62%), radial-gradient(circle at 36% 28%, rgba(210,194,172,0.14), transparent 38%)",
                       opacity: mobileCardGlowOpacity,
                     }}
                   />
-                  <div className="relative rounded-[28px] border border-[rgba(94,92,230,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.94)_0%,rgba(244,246,255,0.99)_100%)] p-2.5 shadow-[0_24px_52px_rgba(94,92,230,0.12)]">
-                    <div className="rounded-[24px] bg-[linear-gradient(180deg,rgba(248,249,255,0.98)_0%,rgba(255,255,255,1)_100%)] p-1.5">
+                  <div className="relative rounded-[30px] border border-[rgba(217,152,30,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(255, 248, 247,0.94)_100%)] p-3 shadow-[0_24px_52px_rgba(217,152,30,0.1)] backdrop-blur-xl">
+                    <div className="absolute inset-x-8 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.92),transparent)]" />
+                    <div className="rounded-[24px] border border-[rgba(255,255,255,0.75)] bg-[linear-gradient(180deg,rgba(255, 249, 248,0.98)_0%,rgba(255,255,255,1)_100%)] p-1.5">
                       <ProductMockup
                         copy={strings[lang].mockup}
                         lang={lang}
@@ -866,13 +1146,13 @@ export default function HomePage() {
                   }}
                 >
                   <div className="rounded-[26px] border border-[rgba(29,29,31,0.08)] bg-[rgba(255,255,255,0.96)] px-5 py-4 shadow-[0_18px_44px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-                    <p className="text-[11px] font-[700] uppercase tracking-[0.15em] text-[#6B65CC]">
+                    <p className="text-[11px] font-[800] uppercase tracking-[0.15em] text-[#a35707]">
                       {lang === "ru" ? "Разберём по частям" : "Let's break it down"}
                     </p>
-                    <h2 className="mt-2.5 text-[20px] font-[700] leading-[1] tracking-[-0.04em] text-[#111111]">
+                    <h2 className="mt-2.5 text-[20px] font-[700] leading-[1] tracking-[-0.04em] text-[#1a1917]">
                       {activeMobileHintContent.title}
                     </h2>
-                    <p className="mt-2.5 text-[12px] leading-[1.45] text-[#61616a]">
+                    <p className="mt-2.5 text-[12px] leading-[1.45] text-[#6b665e]">
                       {activeMobileHintContent.body}
                     </p>
                     <div className="mt-4 flex gap-2">
@@ -883,7 +1163,7 @@ export default function HomePage() {
                           style={{
                             width: activeScrollHint === id ? 22 : 6,
                             height: 6,
-                            backgroundColor: activeScrollHint === id ? "#5e5ce6" : "#d1d1d6",
+                            backgroundColor: activeScrollHint === id ? "#c9820f" : "#d6d1d1",
                           }}
                         />
                       ))}
@@ -907,10 +1187,44 @@ export default function HomePage() {
             style={{
               minHeight: "100svh",
               padding: "132px clamp(20px, 4vw, 40px) 88px",
+              // Bottom fades to transparent (not solid #fff4ee) so the panel has
+              // no hard bottom edge — the blue dissolves into the section below
+              // instead of cutting a visible seam at the hero→scrolly handoff.
               background:
-                "radial-gradient(circle at 82% 22%, rgba(94,92,230,0.12), transparent 30%), linear-gradient(180deg, #ffffff 0%, #fbfbfd 78%, #f5f5f7 100%)",
+                "linear-gradient(180deg, #ffffff 0%, #fffaf7 48%, #fff4ee 84%, rgba(255, 244, 238,0) 100%)",
             }}
           >
+            <div
+              className="absolute inset-0"
+              aria-hidden="true"
+              style={{
+                background:
+                  "radial-gradient(circle at 16% 18%, rgba(217,152,30,0.06), transparent 26%), radial-gradient(circle at 84% 16%, rgba(210,194,172,0.16), transparent 24%), radial-gradient(circle at 48% 58%, rgba(255,255,255,0.74), transparent 26%)",
+              }}
+            />
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-[48vh] blur-2xl"
+              aria-hidden="true"
+              style={{
+                // Soft blue "cloud" that glows in the lower panel then dissipates
+                // back to transparent BEFORE the bottom edge, so it never stacks a
+                // hard bluish band at the seam — it just melts away.
+                background:
+                  "linear-gradient(180deg, rgba(255, 244, 240,0) 0%, rgba(255, 242, 232,0.32) 44%, rgba(255, 244, 234,0.4) 70%, rgba(255, 245, 238,0) 100%)",
+              }}
+            />
+            <div
+              className="absolute inset-x-[-8%] bottom-[-14%] h-[32%] rounded-[100%] border border-[rgba(217,152,30,0.26)] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.92)_0%,rgba(255, 246, 243,0.62)_58%,rgba(255, 246, 243,0)_100%)]"
+              aria-hidden="true"
+            />
+            <div
+              className="absolute inset-x-[-16%] bottom-[-23%] h-[42%] rounded-[100%] border border-[rgba(150,140,124,0.22)] opacity-80"
+              aria-hidden="true"
+            />
+            <div
+              className="absolute inset-x-[-26%] bottom-[-32%] h-[50%] rounded-[100%] border border-[rgba(150,140,124,0.16)] opacity-70"
+              aria-hidden="true"
+            />
             <div
               className="w-full mx-auto relative md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center"
               style={{
@@ -934,23 +1248,28 @@ export default function HomePage() {
                   willChange: "transform, opacity, filter",
                 }}
               >
+                <div className="relative max-w-[560px]">
                 <AnimateOnScroll
                   as="p"
                   delay={0}
-                  className="mb-5 text-[13px] font-[600] uppercase tracking-[0.18em] text-[#6B65CC]"
+                  className="mb-5 inline-flex items-center gap-2 rounded-full border border-[rgba(217,152,30,0.16)] bg-[rgba(255, 244, 232,0.72)] px-4 py-2 text-[12px] font-[800] uppercase tracking-[0.16em] text-[#a35707] shadow-[0_12px_30px_rgba(217,152,30,0.08)] backdrop-blur-sm"
                 >
-                  {t("heroEyebrow")}
+                  <span className="h-2 w-2 rounded-full bg-[#c9820f]" aria-hidden="true" />
+                  {lang === "ru" ? "Смотрите вживую" : "See it live"}
                 </AnimateOnScroll>
                 <AnimateOnScroll
-                  as="h1"
+                  as="h2"
                   delay={0.08}
-                  className="mb-6 max-w-[700px] leading-[0.96] text-[#111111]"
+                  className="mb-5 max-w-[640px] leading-[0.95] text-[#1a1917]"
                   style={{
                     ...UI_DISPLAY_STYLE,
-                    fontSize: "clamp(40px, 4.5vw, 62px)",
+                    fontSize: "clamp(42px, 4.5vw, 64px)",
                   }}
                 >
-                  {heroHeadlineLines.map((line) => (
+                  {(lang === "ru"
+                    ? ["Звонок клиента —", "в запись CRM."]
+                    : ["A client call becomes", "a clean CRM note."]
+                  ).map((line) => (
                     <span key={line} className="block">
                       {line}
                     </span>
@@ -959,26 +1278,13 @@ export default function HomePage() {
                 <AnimateOnScroll
                   as="p"
                   delay={0.16}
-                  className="mb-8 max-w-[420px] text-[16px] font-[400] leading-[1.62] text-[#5a5a63] md:max-w-[360px] md:text-[17px]"
+                  className="mb-8 max-w-[420px] text-[16px] font-[400] leading-[1.62] text-[#6b665e] md:max-w-[400px] md:text-[17px]"
                 >
-                  {t("heroSub")}
+                  {lang === "ru"
+                    ? "Спрашивайте прямо в моменте, получайте ответ с источником, а агент фиксирует каждую деталь — пока вы на звонке."
+                    : "Ask in the moment, get a cited answer, and let the agent log every detail — while you stay on the call."}
                 </AnimateOnScroll>
-                <AnimateOnScroll
-                  delay={0.22}
-                  className="flex flex-wrap gap-x-8 gap-y-5"
-                >
-                  {heroMetrics.map((metric) => (
-                    <div key={metric.title} className="min-w-[132px]">
-                      <p className="text-[18px] font-[700] leading-none text-[#5B54D6] md:text-[20px]">
-                        {metric.title}
-                      </p>
-                      <p className="mt-2 text-[15px] font-[400] leading-[1.45] text-[#8a8a94] md:text-[16px]">
-                        <span className="block">{metric.lines[0]}</span>
-                        <span className="block">{metric.lines[1]}</span>
-                      </p>
-                    </div>
-                  ))}
-                </AnimateOnScroll>
+                </div>
               </div>
 
               {animComplete && (
@@ -992,7 +1298,7 @@ export default function HomePage() {
                       0,
                       hintsRevealProgress
                     )}px)`,
-                    opacity: hintsRevealProgress,
+                    opacity: hintsRevealProgress * (1 - heroExit),
                     filter: `blur(${mix(10, 0, hintsRevealProgress)}px)`,
                     pointerEvents: "none",
                     zIndex: 10,
@@ -1002,13 +1308,12 @@ export default function HomePage() {
                   <div
                     style={{
                       paddingLeft: 28,
-                      borderLeft: "1px solid rgba(209,209,214,0.9)",
+                      borderLeft: "1px solid rgba(214, 209, 209,0.9)",
                     }}
                   >
-                    <p className="mb-5 text-[13px] font-[600] uppercase tracking-[0.16em] text-[#6e6e73]">
-                      {lang === "ru" ? "Разберём по частям" : "Let's break it down"}
+                    <p className="mb-5 text-[13px] font-[600] uppercase tracking-[0.16em] text-[#6b665e]">
+                      {lang === "ru" ? "Разберём по шагам" : "Let's break it down"}
                     </p>
-
                     {activeScrollHint ? (
                       <div>
                         <h2
@@ -1016,17 +1321,16 @@ export default function HomePage() {
                           style={{
                             ...UI_DISPLAY_STYLE,
                             fontSize: "clamp(30px, 3vw, 44px)",
-                            color: "#1d1d1f",
+                            color: "#1a1917",
                           }}
                         >
                           {scrollHintContent[activeScrollHint as (typeof HINT_IDS)[number]]?.title}
                         </h2>
-                        <p className="text-[16px] font-[400] leading-[1.62] text-[#6e6e73] md:text-[17px]">
+                        <p className="text-[16px] font-[400] leading-[1.62] text-[#6b665e] md:text-[17px]">
                           {scrollHintContent[activeScrollHint as (typeof HINT_IDS)[number]]?.body}
                         </p>
                       </div>
                     ) : null}
-
                     <div className="mt-8 flex gap-2">
                       {HINT_IDS.map((id) => (
                         <div
@@ -1035,8 +1339,7 @@ export default function HomePage() {
                           style={{
                             width: activeScrollHint === id ? 28 : 6,
                             height: 6,
-                            backgroundColor:
-                              activeScrollHint === id ? "#5e5ce6" : "#d1d1d6",
+                            backgroundColor: activeScrollHint === id ? "#c9820f" : "#d6d1d1",
                           }}
                         />
                       ))}
@@ -1049,10 +1352,11 @@ export default function HomePage() {
                 className="absolute top-1/2"
                 style={{
                   left: cardLeft,
-                  transform: `translate(-50%, -50%) scale(${cardScale})`,
+                  transform: `translate(-50%, calc(-50% - ${heroExit * 36}px)) scale(${cardScale * (1 - heroExit * 0.05)})`,
+                  opacity: 1 - heroExit,
                   transition: "none",
                   transformOrigin: "center center",
-                  willChange: "transform, left",
+                  willChange: "transform, left, opacity",
                 }}
               >
                 <div
@@ -1065,32 +1369,58 @@ export default function HomePage() {
                     left: "50%",
                     transform: "translate(-50%, -50%)",
                     background:
-                      "radial-gradient(circle, rgba(94,92,230,0.18), transparent 62%), radial-gradient(circle at 32% 28%, rgba(33,168,154,0.16), transparent 38%)",
-                    filter: "blur(10px)",
+                      "radial-gradient(circle, rgba(217,152,30,0.18), transparent 62%), radial-gradient(circle at 32% 28%, rgba(210,194,172,0.14), transparent 38%)",
+                    filter: "blur(12px)",
                     opacity: cardGlowOpacity,
                   }}
                 />
-
-                <ProductMockup
-                  copy={strings[lang].mockup}
-                  lang={lang}
-                  onboarding={animComplete}
-                  staticState={animComplete}
-                  large
-                  scrollActiveHintId={heroPhase === "hints" ? activeScrollHint : null}
-                  onAnimationComplete={() => setAnimComplete(true)}
-                  skipAnimation={skipAnim}
-                  skipAnimationInstant={skipAnimInstant}
-                />
+                <div className="relative rounded-[32px] border border-[rgba(217,152,30,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(255, 248, 247,0.94)_100%)] p-3 shadow-[0_30px_70px_rgba(217,152,30,0.1)] backdrop-blur-xl">
+                  <div className="absolute inset-x-10 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.94),transparent)]" />
+                  <div className="rounded-[28px] border border-[rgba(255,255,255,0.74)] bg-[linear-gradient(180deg,rgba(255, 250, 249,0.98)_0%,rgba(255,255,255,1)_100%)] p-2">
+                    <ProductMockup
+                      copy={strings[lang].mockup}
+                      lang={lang}
+                      onboarding={animComplete}
+                      staticState={animComplete}
+                      large
+                      scrollActiveHintId={heroPhase === "hints" ? activeScrollHint : null}
+                      onAnimationComplete={() => setAnimComplete(true)}
+                      skipAnimation={skipAnim}
+                      skipAnimationInstant={skipAnimInstant}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
+          {/* Invisible scroll-snap anchors — one per phase (hero, question,
+              answer, confidence, source). top % = progress * 2/3 because the
+              300vh section pins for 200vh, so progress p sits at p*200vh. */}
+          {[0, 0.4, 0.575, 0.745, 0.95].map((p) => (
+            <div
+              key={p}
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                top: `${((p * 2) / 3) * 100}%`,
+                left: 0,
+                width: 1,
+                height: 1,
+                pointerEvents: "none",
+                scrollSnapAlign: "start",
+                // Force a hard stop on every phase — the scroll can't skip past
+                // a phase or coast to rest between them.
+                scrollSnapStop: "always",
+              }}
+            />
+          ))}
         </section>
 
         <section
           ref={mobileScrollyRef}
           id="scrolly-mobile"
-          className="relative bg-[linear-gradient(180deg,#ffffff_0%,#fafbff_100%)] md:hidden"
+          className="relative bg-[linear-gradient(180deg,#fff4ee_0%,#ffffff_38%,#fffaf7_100%)] md:hidden"
           style={{ minHeight: "260vh" }}
         >
           <div
@@ -1112,10 +1442,10 @@ export default function HomePage() {
                   pointerEvents: scrollyStep === 0 ? "auto" : "none",
                 }}
               >
-                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(94,92,230,0.1)] text-[#5e5ce6]">
-                  <Headphones size={24} aria-hidden="true" />
+                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(217,152,30,0.1)] text-[#a35707]">
+                  <MobileStepOneIcon size={24} aria-hidden="true" />
                 </div>
-                <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
+                <p className="mt-4 text-[#1a1917]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
                   {mobileStorySteps[0].title}
                 </p>
               </div>
@@ -1134,10 +1464,10 @@ export default function HomePage() {
                   pointerEvents: scrollyStep === 1 ? "auto" : "none",
                 }}
               >
-                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(94,92,230,0.1)] text-[#5e5ce6]">
+                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(217,152,30,0.1)] text-[#a35707]">
                   <MessageSquareText size={24} aria-hidden="true" />
                 </div>
-                <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
+                <p className="mt-4 text-[#1a1917]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
                   {mobileStorySteps[1].title}
                 </p>
               </div>
@@ -1156,13 +1486,15 @@ export default function HomePage() {
                   pointerEvents: scrollyStep === 2 ? "auto" : "none",
                 }}
               >
-                <div
-                  className="mb-6 inline-flex items-center justify-center rounded-[22px] bg-[#f5f5f7] px-6 py-5 text-[#5e5ce6] shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(0,0,0,0.06)]"
-                  style={{ minWidth: 128 }}
-                >
-                  <span className="text-[34px] font-[700] leading-none">{t("scrollyKey")}</span>
+                <div className="mb-6">
+                  <ShortcutCue
+                    key={`mobile-shortcut-${lang}-${scrollyStep === 2 ? "active" : "idle"}`}
+                    compact
+                    active={scrollyStep === 2}
+                    label={lang === "ru" ? "Хоткей" : "Shortcut"}
+                  />
                 </div>
-                <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
+                <p className="mt-4 text-[#1a1917]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
                   {mobileStorySteps[2].title}
                 </p>
               </div>
@@ -1181,10 +1513,10 @@ export default function HomePage() {
                   pointerEvents: scrollyStep === 3 ? "auto" : "none",
                 }}
               >
-                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(33,168,154,0.12)] text-[#1f9d63]">
-                  <LockKeyhole size={24} aria-hidden="true" />
+                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px] bg-[rgba(217,152,30,0.12)] text-[#a35707]">
+                  <MobileStepFourIcon size={24} aria-hidden="true" />
                 </div>
-                <p className="mt-4 text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
+                <p className="mt-4 text-[#1a1917]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
                   {mobileStorySteps[3].title}
                 </p>
               </div>
@@ -1198,18 +1530,15 @@ export default function HomePage() {
                   pointerEvents: scrollyStep === 4 ? "auto" : "none",
                 }}
               >
-                <p className="text-[#111111]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
+                <p className="text-[#1a1917]" style={{ ...SCROLL_DISPLAY_STYLE, fontSize: "clamp(34px, 10vw, 48px)", letterSpacing: "-2px" }}>
                   {t("scrollyStep5")}
                 </p>
-                <p className="mx-auto mt-5 max-w-[28ch] text-[15px] leading-[1.6] text-[#666670]">
+                <p className="mx-auto mt-5 max-w-[28ch] text-[15px] leading-[1.6] text-[#6b665e]">
                   {t("scrollyStep5Sub")}
                 </p>
-                <a
-                  href="#download"
-                  className="mt-7 inline-flex min-h-[52px] w-full items-center justify-center rounded-full bg-[#1d1d1f] px-6 text-[15px] font-[600] leading-none text-white shadow-[0_16px_30px_rgba(29,29,31,0.16)]"
-                >
+                <OriginLink href="/download" size="lg" className="mt-7 w-full">
                   {t("joinWaitlist")}
-                </a>
+                </OriginLink>
               </div>
             </div>
           </div>
@@ -1219,11 +1548,40 @@ export default function HomePage() {
         <section
           ref={scrollyRef}
           id="scrolly-desktop"
-          className="relative hidden bg-white md:block"
-          style={{ minHeight: "320vh" }}
+          // The top remains partially transparent because this section is pulled
+          // into the hero handoff; then it fades to white so the background seam
+          // does not cut sharply across the scrolly transition.
+          // NOTE: overflow-hidden must NOT live on this section — it is the sticky
+          // child's parent, and a scroll-container ancestor breaks position:sticky
+          // (the steps would scroll away instead of pinning). The decorative orbs
+          // are clipped by their own inner overflow-hidden wrapper below instead.
+          className="relative hidden md:block"
+          // minHeight = pace of the step effect (taller = more scroll per step,
+          // so the text lingers longer). marginTop = how far it's pulled up into
+          // the hero handoff (less negative = text sits a little lower).
+          style={{
+            minHeight: "440vh",
+            marginTop: "-44vh",
+            background:
+              "linear-gradient(180deg, rgba(255, 250, 246,0) 0%, rgba(255, 249, 244,0.18) 22%, rgba(255, 251, 248,0.62) 48%, rgba(255,255,255,0.94) 72%, #ffffff 100%)",
+          }}
         >
+          {/* Seam glow removed: the bright water orbs that used to sit at the top
+              of this section only ever rendered during the hero→scrolly handoff,
+              where they washed a white/blue veil over the still-fading mockup.
+              The section background gradient + hero bottom glow carry the seam. */}
+          <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
           <div
-            className="sticky top-0 flex items-center bg-white"
+            className="pointer-events-none absolute inset-x-0 top-0 h-[22vh]"
+            aria-hidden="true"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(255, 244, 235,0.14) 0%, rgba(255,255,255,0.03) 46%, rgba(255,255,255,0) 100%)",
+            }}
+          />
+          </div>
+          <div
+            className="sticky top-0 flex items-center"
             style={{ minHeight: "100svh", padding: "112px 20px" }}
           >
             <div className="relative w-full mx-auto" style={{ maxWidth: "min(700px, 100%)", minHeight: 320 }}>
@@ -1237,7 +1595,7 @@ export default function HomePage() {
                 }}
               >
                 <div
-                  className="mb-8 inline-flex text-[#5e5ce6]"
+                  className="mb-8 inline-flex text-[#a35707]"
                   style={{
                     transition: "transform 350ms cubic-bezier(0.4, 0, 0.2, 1), opacity 350ms cubic-bezier(0.4, 0, 0.2, 1)",
                     transitionDelay: scrollyStep === 0 ? "100ms" : "0ms",
@@ -1246,9 +1604,9 @@ export default function HomePage() {
                   }}
                   aria-hidden="true"
                 >
-                  <Headphones size={32} />
+                  <MobileStepOneIcon size={32} />
                 </div>
-                <p className="text-[#1d1d1f]" style={SCROLL_DISPLAY_STYLE}>
+                <p className="text-[#1a1917]" style={SCROLL_DISPLAY_STYLE}>
                   {t("scrollyStep1")}
                 </p>
               </div>
@@ -1263,7 +1621,7 @@ export default function HomePage() {
                 }}
               >
                 <div
-                  className="mb-8 inline-flex text-[#5e5ce6]"
+                  className="mb-8 inline-flex text-[#a35707]"
                   style={{
                     transition: "transform 350ms cubic-bezier(0.4, 0, 0.2, 1), opacity 350ms cubic-bezier(0.4, 0, 0.2, 1)",
                     transitionDelay: scrollyStep === 1 ? "100ms" : "0ms",
@@ -1274,7 +1632,7 @@ export default function HomePage() {
                 >
                   <MessageSquareText size={32} />
                 </div>
-                <p className="text-[#1d1d1f]" style={SCROLL_DISPLAY_STYLE}>
+                <p className="text-[#1a1917]" style={SCROLL_DISPLAY_STYLE}>
                   {t("scrollyStep2")}
                 </p>
               </div>
@@ -1289,22 +1647,21 @@ export default function HomePage() {
                 }}
               >
                 <div
-                  className="mb-8 inline-flex items-center justify-center rounded-2xl bg-[#f5f5f7] text-[#5e5ce6] font-[700]"
+                  className="mb-8 inline-flex"
                   style={{
-                    minWidth: 100,
-                    minHeight: 72,
-                    fontSize: "clamp(28px, 3.5vw, 42px)",
-                    padding: "0 24px",
-                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8), 0 4px 12px rgba(0,0,0,0.06)",
                     transition: "transform 350ms cubic-bezier(0.4, 0, 0.2, 1), opacity 350ms cubic-bezier(0.4, 0, 0.2, 1)",
                     transitionDelay: scrollyStep === 2 ? "100ms" : "0ms",
                     transform: scrollyStep === 2 ? "scale(1)" : "scale(0.8)",
                     opacity: scrollyStep === 2 ? 1 : 0,
                   }}
                 >
-                  {"\u2318J"}
+                  <ShortcutCue
+                    key={`desktop-shortcut-${lang}-${scrollyStep === 2 ? "active" : "idle"}`}
+                    active={scrollyStep === 2}
+                    label={lang === "ru" ? "Хоткей" : "Shortcut"}
+                  />
                 </div>
-                <p className="text-[#1d1d1f]" style={SCROLL_DISPLAY_STYLE}>
+                <p className="text-[#1a1917]" style={SCROLL_DISPLAY_STYLE}>
                   {t("scrollyStep3")}
                 </p>
               </div>
@@ -1318,7 +1675,7 @@ export default function HomePage() {
                   transitionTimingFunction: scrollyStep === 3 ? "cubic-bezier(0.4, 0, 0.2, 1)" : "cubic-bezier(0.4, 0, 1, 1)",
                 }}
               >
-                <p className="text-[#1d1d1f]" style={SCROLL_DISPLAY_STYLE}>
+                <p className="text-[#1a1917]" style={SCROLL_DISPLAY_STYLE}>
                   {t("scrollyStep4")}
                 </p>
               </div>
@@ -1332,22 +1689,25 @@ export default function HomePage() {
                   transitionTimingFunction: scrollyStep === 4 ? "cubic-bezier(0.4, 0, 0.2, 1)" : "cubic-bezier(0.4, 0, 1, 1)",
                 }}
               >
-                <p className="mb-6 text-[#1d1d1f]" style={SCROLL_DISPLAY_STYLE}>
+                <p className="mb-6 text-[#1a1917]" style={SCROLL_DISPLAY_STYLE}>
                   {t("scrollyStep5")}
                 </p>
-                <p className="mx-auto mb-7 max-w-[560px] text-[16px] font-[400] leading-[1.58] text-[#6e6e73] md:text-[17px]">
+                <p className="mx-auto mb-7 max-w-[560px] text-[16px] font-[400] leading-[1.58] text-[#6b665e] md:text-[17px]">
                   {t("scrollyStep5Sub")}
                 </p>
-                <a
-                  href="#download"
-                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-[15px] font-[600] leading-none bg-[#5e5ce6] text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
-                >
+                <OriginLink href="/download" size="sm">
                   {t("heroPrimary")}
-                </a>
+                </OriginLink>
               </div>
             </div>
           </div>
         </section>
+
+        {/* CRM ASSISTANT — after-the-call write-back to amoCRM */}
+        <CrmShowcase lang={lang} />
+
+        {/* CAPABILITIES — bento grid */}
+        <FeatureBento lang={lang} />
 
         {/* STATS BAND */}
         <StatsBand lang={lang} />
@@ -1356,99 +1716,134 @@ export default function HomePage() {
         <section className="px-4 py-20 sm:px-5 md:py-28" id="features">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
             <AnimateOnScroll delay={0} className="mb-10 max-w-3xl md:mb-12">
-              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
-                {t("featuresEyebrow")}
+              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6b665e]">
+                {lang === "ru" ? "Как это работает" : "How it works"}
               </p>
               <h2 className="mb-5 text-[clamp(34px,4vw,54px)] font-[700] leading-[1.06] tracking-[-0.04em]">
                 {t("featuresTitle")}
               </h2>
-              <p className="max-w-[640px] text-[16px] font-[400] leading-[1.65] text-[#6e6e73] md:text-[17px]">
+              <p className="max-w-[640px] text-[16px] font-[400] leading-[1.65] text-[#6b665e] md:text-[17px]">
                 {t("featuresSub")}
               </p>
             </AnimateOnScroll>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {tFeatures().map(([title, body], i) => {
-                const IconComp = featureIcons[i];
-                return (
-                  <AnimateOnScroll
-                    key={title}
-                    delay={(i + 1) * 0.05}
-                    whileHover={{
-                      y: -6,
-                      boxShadow: "0 20px 40px -12px rgba(0,0,0,0.12)",
-                      transition: { type: "spring", stiffness: 300, damping: 20 },
-                    }}
-                    className="group relative cursor-default overflow-hidden rounded-[18px] border border-[#e5e5ea] bg-white p-7 transition-[border-color,box-shadow] duration-300 hover:border-[rgba(94,92,230,0.28)] hover:shadow-[0_24px_48px_-16px_rgba(94,92,230,0.22)]"
-                  >
-                    <div
-                      aria-hidden="true"
-                      className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full opacity-0 blur-[44px] transition-opacity duration-500 group-hover:opacity-100"
-                      style={{ background: "radial-gradient(circle, rgba(94,92,230,0.22), transparent 70%)" }}
-                    />
-                    <span className="absolute right-6 top-6 text-[13px] font-[700] tabular-nums tracking-[0.04em] text-[#d4d4dd] transition-colors duration-300 group-hover:text-[#a9a7f0]">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <div className="relative mb-5 flex h-12 w-12 items-center justify-center rounded-[14px] bg-[#f5f5f7] text-[#5e5ce6] transition-all duration-300 group-hover:-translate-y-[3px] group-hover:bg-[linear-gradient(135deg,#5e5ce6_0%,#4846c9_100%)] group-hover:text-white group-hover:shadow-[0_10px_22px_rgba(94,92,230,0.32)]">
-                      <IconComp size={22} aria-hidden="true" />
-                    </div>
-                    <h3 className="relative mb-2 text-[18px] font-[700] tracking-[-0.02em]">{title}</h3>
-                    <p className="relative text-[16px] font-[400] leading-[1.6] text-[#6e6e73]">{body}</p>
-                  </AnimateOnScroll>
-                );
-              })}
+            <div className="grid items-center gap-10 lg:grid-cols-[1.04fr_0.96fr] lg:gap-14">
+              {/* LEFT — demo video */}
+              <AnimateOnScroll delay={0.08} className="relative">
+                {/* Soft brand glow behind the player */}
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -inset-x-6 -top-8 bottom-4 rounded-[40px] opacity-80 blur-[56px]"
+                  style={{
+                    background:
+                      "radial-gradient(60% 60% at 50% 0%, rgba(217,152,30,0.20), transparent 72%)",
+                  }}
+                />
+                <div className="relative overflow-hidden rounded-[24px] border border-[rgba(217,152,30,0.16)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(255, 248, 247,0.96)_100%)] p-2 shadow-[0_40px_90px_-36px_rgba(217,152,30,0.28)] backdrop-blur-xl">
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-x-10 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.95),transparent)]"
+                  />
+                  <div className="relative overflow-hidden rounded-[16px] border border-[rgba(255,255,255,0.65)] bg-[#0c0c12]">
+                    <video
+                      ref={demoVideoRef}
+                      className="block aspect-[16/10] w-full object-cover"
+                      poster="/demo-poster.jpg"
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      aria-label={t("featuresTitle")}
+                    >
+                      <source src="/demo.webm" type="video/webm" />
+                      <source src="/demo.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                </div>
+              </AnimateOnScroll>
+
+              {/* RIGHT — 3-step usage plan */}
+              <AnimateOnScroll delay={0.16}>
+                <ol className="relative space-y-7">
+                  {usageSteps.map((step, i) => {
+                    const StepIcon = step.icon;
+                    const isLast = i === usageSteps.length - 1;
+                    return (
+                      <li key={step.title} className="relative flex gap-5">
+                        {!isLast && (
+                          <span
+                            aria-hidden="true"
+                            className="absolute left-[23px] top-[54px] -bottom-7 w-px bg-[linear-gradient(180deg,rgba(217,152,30,0.35),rgba(217,152,30,0.07))]"
+                          />
+                        )}
+                        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-[15px] border border-[rgba(217,152,30,0.16)] bg-[linear-gradient(135deg,rgba(255, 245, 245,0.92),rgba(255,255,255,0.96))] text-[#a35707] shadow-[0_8px_18px_-8px_rgba(217,152,30,0.4)]">
+                          <StepIcon size={22} aria-hidden="true" />
+                        </div>
+                        <div className="pt-0.5">
+                          <p className="text-[12px] font-[800] uppercase tracking-[0.16em] text-[#a35707]">
+                            {String(i + 1).padStart(2, "0")}
+                          </p>
+                          <h3 className="mt-1 text-[19px] font-[700] leading-[1.25] tracking-[-0.02em] text-[#1a1917]">
+                            {step.title}
+                          </h3>
+                          <p className="mt-1.5 text-[15px] font-[400] leading-[1.6] text-[#6b665e]">
+                            {step.body}
+                          </p>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </AnimateOnScroll>
             </div>
           </div>
         </section>
 
         {/* PRICING */}
-        <section className="bg-[#f5f5f7] px-4 py-20 sm:px-5 md:py-28" id="pricing">
+        <section className="bg-[linear-gradient(180deg,#fffbf8_0%,#fff6ed_100%)] px-4 py-20 sm:px-5 md:py-28" id="pricing">
           <div className="mx-auto" style={{ maxWidth: "min(1180px, 100%)" }}>
             <AnimateOnScroll delay={0} className="mb-10 max-w-3xl md:mb-12">
-              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
+              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6b665e]">
                 {t("pricingEyebrow")}
               </p>
               <h2 className="text-[clamp(34px,4vw,54px)] font-[700] leading-[1.06] tracking-[-0.04em]">
                 {t("pricingTitle")}
               </h2>
-              <p className="mt-5 max-w-[780px] text-[17px] font-[400] leading-[1.62] text-[#5a5a63]">
+              <p className="mt-5 max-w-[780px] text-[17px] font-[400] leading-[1.62] text-[#6b665e]">
                 {t("pricingSub")}
               </p>
-              <p className="mt-4 text-[14px] font-[600] text-[#3f3f46]">
+              <p className="mt-4 text-[14px] font-[600] text-[#423d36]">
                 {t("pricingTrustLine")}
               </p>
             </AnimateOnScroll>
             <AnimateOnScroll
               delay={0.06}
-              className="rounded-[28px] border border-[rgba(29,29,31,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(246,248,255,0.92)_100%)] p-7 shadow-[0_20px_48px_rgba(15,23,42,0.06)] sm:p-9"
+              className="rounded-[28px] border border-[rgba(29,29,31,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(255, 248, 246,0.92)_100%)] p-7 shadow-[0_20px_48px_rgba(15,23,42,0.06)] sm:p-9"
             >
               <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
                 <div>
-                  <p className="text-[13px] font-[700] uppercase tracking-[0.16em] text-[#645FDE]">
+                  <p className="text-[13px] font-[800] uppercase tracking-[0.16em] text-[#a35707]">
                     {t("downloadCardLabel")}
                   </p>
-                  <h3 className="mt-3 text-[clamp(28px,3vw,40px)] font-[700] leading-[1.05] tracking-[-0.04em] text-[#1d1d1f]">
+                  <h3 className="mt-3 text-[clamp(28px,3vw,40px)] font-[700] leading-[1.05] tracking-[-0.04em] text-[#1a1917]">
                     {t("downloadCardTitle")}
                   </h3>
-                  <p className="mt-4 max-w-[56ch] text-[16px] font-[400] leading-[1.65] text-[#5a5a63]">
+                  <p className="mt-4 max-w-[56ch] text-[16px] font-[400] leading-[1.65] text-[#6b665e]">
                     {t("downloadCardBody")}
                   </p>
                 </div>
-                <div className="rounded-[24px] border border-[rgba(94,92,230,0.12)] bg-[rgba(255,255,255,0.88)] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
-                  <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#8a8a94]">
+                <div className="rounded-[24px] border border-[rgba(217,152,30,0.12)] bg-[rgba(255,255,255,0.88)] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+                  <p className="text-[12px] font-[700] uppercase tracking-[0.16em] text-[#6b665e]">
                     {t("downloadCardStatusLabel")}
                   </p>
-                  <p className="mt-3 text-[34px] font-[700] leading-none tracking-[-0.04em] text-[#1d1d1f]">
+                  <p className="mt-3 text-[34px] font-[700] leading-none tracking-[-0.04em] text-[#1a1917]">
                     {t("downloadCardStatus")}
                   </p>
-                  <p className="mt-4 text-[15px] font-[400] leading-[1.6] text-[#6e6e73]">
+                  <p className="mt-4 text-[15px] font-[400] leading-[1.6] text-[#6b665e]">
                     {t("downloadCardNote")}
                   </p>
-                  <a
-                    href="#download"
-                    className="mt-6 inline-flex min-h-[48px] w-full items-center justify-center rounded-full bg-[#5e5ce6] px-6 text-[15px] font-[600] leading-none text-white shadow-[0_12px_24px_rgba(94,92,230,0.24)] transition-all duration-150 hover:bg-[#4846c9] hover:-translate-y-px"
-                  >
+                  <OriginLink href="/download" size="md" className="mt-6 w-full">
                     {t("downloadCta")}
-                  </a>
+                  </OriginLink>
                 </div>
               </div>
             </AnimateOnScroll>
@@ -1459,7 +1854,7 @@ export default function HomePage() {
         <section className="px-4 py-20 sm:px-5 md:py-28" id="faq">
           <div className="mx-auto" style={{ maxWidth: "min(720px, 100%)" }}>
             <AnimateOnScroll delay={0} className="max-w-3xl mb-16">
-              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6e6e73]">
+              <p className="mb-3 text-[13px] font-[600] tracking-[0.16em] uppercase text-[#6b665e]">
                 {t("faqEyebrow")}
               </p>
               <h2 className="text-[clamp(34px,4vw,54px)] font-[700] leading-[1.06] tracking-[-0.04em]">
@@ -1474,12 +1869,15 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="download" className="px-4 py-20 text-center sm:px-5 md:py-28">
+        <section
+          id="download"
+          className="border-y border-[rgba(217,152,30,0.12)] bg-[linear-gradient(180deg,#ffffff_0%,#fff8f1_54%,#fff5ea_100%)] px-4 py-20 text-center sm:px-5 md:py-28"
+        >
           <div className="mx-auto" style={{ maxWidth: "min(900px, 100%)" }}>
-            <h2 className="text-[clamp(28px,4vw,46px)] font-[700] leading-[1.08] tracking-[-0.04em] text-[#1d1d1f]">
+            <h2 className="text-[clamp(28px,4vw,46px)] font-[700] leading-[1.08] tracking-[-0.04em] text-[#1a1917]">
               {lang === "ru" ? "Скачать LiveAssist AI" : "Download LiveAssist AI"}
             </h2>
-            <p className="mx-auto mt-4 max-w-[52ch] text-[16px] font-[400] leading-[1.6] text-[#6e6e73] md:text-[17px]">
+            <p className="mx-auto mt-4 max-w-[52ch] text-[16px] font-[400] leading-[1.6] text-[#6b665e] md:text-[17px]">
               {lang === "ru"
                 ? "Доступно для Mac, Windows и Linux. Попробуйте бесплатно."
                 : "Available for Mac, Windows, and Linux. Free to try."}
@@ -1488,8 +1886,9 @@ export default function HomePage() {
             <div className="mx-auto mt-10 grid max-w-[640px] gap-3 sm:grid-cols-3">
               {[
                 {
-                  href: "https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI-0.1.0-arm64.dmg",
+                  href: getDownloadHref("mac-arm64"),
                   label: "Mac",
+                  platform: "mac-arm64" as DownloadPlatform,
                   sub: "Apple Silicon",
                   icon: (
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -1498,8 +1897,9 @@ export default function HomePage() {
                   ),
                 },
                 {
-                  href: "https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI.Setup.0.1.0.1.exe",
+                  href: getDownloadHref("windows"),
                   label: "Windows",
+                  platform: "windows" as DownloadPlatform,
                   sub: "Windows 10/11",
                   icon: (
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -1508,8 +1908,9 @@ export default function HomePage() {
                   ),
                 },
                 {
-                  href: "https://github.com/Aibek-koken/liveassist-downloads-/releases/download/v0.1.0/LiveAssist.AI-0.1.0.1.AppImage",
+                  href: getDownloadHref("linux"),
                   label: "Linux",
+                  platform: "linux" as DownloadPlatform,
                   sub: "AppImage",
                   icon: (
                     <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -1518,34 +1919,36 @@ export default function HomePage() {
                   ),
                 },
               ].map((item) => (
-                <a
+                <OriginLink
                   key={item.label}
                   href={item.href}
-                  className="group flex items-center gap-3 rounded-[18px] border border-[rgba(29,29,31,0.1)] bg-white px-4 py-3.5 text-left shadow-[0_10px_24px_rgba(15,23,42,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[rgba(94,92,230,0.32)] hover:shadow-[0_16px_32px_rgba(94,92,230,0.12)]"
+                  onClick={() => trackDownloadClick(item.platform)}
+                  variant="platform"
+                  contentClassName="flex min-w-0 items-center gap-3"
                 >
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[13px] bg-[#f5f5f7] text-[#1d1d1f] transition-colors duration-200 group-hover:bg-[rgba(94,92,230,0.1)] group-hover:text-[#5e5ce6]">
+                  <span className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-[rgba(74,47,8,0.08)] text-[#4a2f08] shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]">
                     {item.icon}
                   </span>
-                  <span className="min-w-0">
-                    <span className="block text-[11px] font-[500] uppercase tracking-[0.08em] text-[#8a8a94]">
+                  <span className="relative z-10 min-w-0">
+                    <span className="block text-[11px] font-[600] uppercase tracking-[0.08em] text-[rgba(74,47,8,0.6)]">
                       {lang === "ru" ? "Скачать для" : "Download for"}
                     </span>
-                    <span className="block text-[15px] font-[700] leading-tight tracking-[-0.01em] text-[#1d1d1f]">
+                    <span className="block text-[15px] font-[800] leading-tight tracking-[-0.01em] text-[#4a2f08]">
                       {item.label}
                     </span>
-                    <span className="block text-[11px] font-[400] text-[#9ca3af]">
+                    <span className="block text-[11px] font-[500] text-[rgba(74,47,8,0.6)]">
                       {item.sub}
                     </span>
                   </span>
-                </a>
+                </OriginLink>
               ))}
             </div>
 
-            <p className="mx-auto mt-7 inline-flex max-w-[52ch] flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-[13px] leading-[1.5] text-[#8a8a94]">
+            <p className="mx-auto mt-7 inline-flex max-w-[52ch] flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-[13px] leading-[1.5] text-[#6b665e]">
               {lang === "ru"
                 ? "Для Mac после установки выполните в Terminal:"
                 : "Mac users — after install, run in Terminal:"}
-              <code className="rounded-md bg-[#f5f5f7] px-2 py-0.5 text-[12px] text-[#3f3f46]">
+              <code className="rounded-md bg-[#f7f5f5] px-2 py-0.5 text-[12px] text-[#423d36]">
                 {"xattr -cr /Applications/LiveAssist\\ AI.app"}
               </code>
             </p>
@@ -1557,6 +1960,12 @@ export default function HomePage() {
         copy={{
           logo: t("logo"),
           tagline: t("footerTagline"),
+          description: t("footerDescription"),
+          connect: t("footerConnect"),
+          legal: t("footerLegal"),
+          follow: t("footerFollow"),
+          rights: t("footerRights"),
+          builtBy: t("footerBuiltBy"),
           privacy: t("privacy"),
           terms: t("terms"),
           contact: t("contact"),

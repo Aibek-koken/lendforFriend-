@@ -4,6 +4,30 @@
 
 :root {
   color-scheme: light;
+
+  /*
+   * Canonical palette — warm editorial off-white, with a calm COOL-BLUE accent
+   * used sparingly (primary CTA, links, a few key highlights). Source of truth
+   * for every color on the landing. Backgrounds are warm neutrals — never a
+   * blue/lavender wash. Do not introduce teal/mint/violet.
+   */
+
+  /* Cool-blue accent — used sparingly */
+  --blue: #2563eb;          /* primary accent (CTA/links) */
+  --blue-strong: #1d4ed8;   /* pressed / deeper */
+  --blue-soft: #eef2fd;     /* faint accent fill (chips) */
+
+  /* Text on warm surfaces (warm grays) */
+  --text: #1a1917;          /* warm near-black */
+  --muted: #6b665e;         /* standard secondary text */
+  --muted-strong: #423d36;  /* emphasized secondary text */
+
+  /* Warm surfaces */
+  --bg: #faf8f5;            /* page base (warm off-white) */
+  --surface: #ffffff;       /* cards / raised surfaces */
+  --surface-1: #f6f2ec;     /* soft warm tint */
+  --surface-2: #efe9e0;     /* deeper warm tint */
+  --line: #e9e3da;          /* warm hairline / border */
 }
 
 * {
@@ -22,20 +46,42 @@ html {
 
 body {
   margin: 0;
-  background: #ffffff;
-  color: #1d1d1f;
+  background: #faf8f5;
+  color: #1a1917;
   font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
 
+.signup-surface {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255, 210, 122, 0.18), transparent 28rem),
+    radial-gradient(circle at 88% 92%, rgba(233, 227, 218, 0.72), transparent 30rem),
+    #faf8f5;
+}
+
+.signup-enter {
+  animation: signup-enter 360ms cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+@keyframes signup-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signup-enter {
+    animation: none;
+  }
+}
+
 ::-moz-selection {
-  background: rgba(94, 92, 230, 0.18);
+  background: rgba(37, 133, 255, 0.18);
 }
 
 ::selection {
-  background: rgba(94, 92, 230, 0.18);
+  background: rgba(37, 133, 255, 0.18);
 }
 
 @keyframes float {
@@ -98,4 +144,20 @@ body {
 @keyframes wave-pulse {
   0%, 100% { opacity: 0.2; }
   50% { opacity: 0.7; }
+}
+
+@keyframes shortcut-key-float {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-10deg); }
+  50% { transform: translate3d(0, -8px, 0) rotate(-6deg); }
+}
+
+@keyframes shortcut-key-float-alt {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(10deg); }
+  50% { transform: translate3d(0, 7px, 0) rotate(6deg); }
+}
+
+@keyframes shortcut-sheen {
+  0%, 24% { transform: translateX(-160%) rotate(14deg); opacity: 0; }
+  34% { opacity: 0.8; }
+  58%, 100% { transform: translateX(260%) rotate(14deg); opacity: 0; }
 }
